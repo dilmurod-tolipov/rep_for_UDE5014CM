@@ -2,11 +2,11 @@
 
 - **Date:** 2026-10-17 (Week 6)
 - **Status:** Accepted; Module Leader to be informed (change to the backup list)
-- **Related:** approved proposal, "Collection plan"; `docs/compliance/COMPLIANCE-CHECK-2026-10-17.md`
+- **Related:** v2 proposal, "Collection plan"; `docs/compliance/COMPLIANCE-CHECK-2026-10-17.md`
 
 ## Context
 
-The approved plan named four competitors (pro-buket.uz, loveflowers.uz, uzflowers.com,
+The v2 proposal named four competitors (pro-buket.uz, loveflowers.uz, uzflowers.com,
 dostavka-cvetov365.uz) and two backups (dostavka-cvetov24.uz, ultraflowers.uz), with the
 rule: *"if sites share an operator or catalogue, they count as one source"*.
 Reconnaissance on 2026-10-17 tested that rule.
@@ -47,8 +47,8 @@ The database records this in a `operator` column on `shops`; all "per shop" anal
 ## Consequences
 
 - Kamila's catalogue is small (about 29 products), so most category coverage will come from
-  the other three. Coverage per category is checked against the approved rule
+  the other three. Coverage per category is checked against the proposal's rule
   (≥20 listings from ≥3 sources) at Checkpoint 2.
 - Possible extension (not in scope): the network sells the same product at different prices
   on different brands, which could be a later robustness check.
-- Kamila's was not in the approved backup list, so the Module Leader is told by email.
+- Kamila's was not in the proposal's backup list, so the Module Leader is told by email.

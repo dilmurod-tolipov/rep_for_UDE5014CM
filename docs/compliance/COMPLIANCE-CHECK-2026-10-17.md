@@ -1,6 +1,6 @@
 # Source compliance check — 2026-10-17 (Teaching Week 6)
 
-Done before any assessed collection, as promised in the approved proposal.
+Done before any assessed collection, as promised in the v2 proposal.
 Each site's robots.txt and published terms (user agreement / privacy policy /
 public offer) were read. Requests used the user agent
 `SecretPriceResearchBot/0.1 (student project UDE5014CM)`, were spaced at least

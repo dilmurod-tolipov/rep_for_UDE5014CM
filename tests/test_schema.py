@@ -18,7 +18,7 @@ def test_init_creates_schema_and_is_idempotent(tmp_path):
     conn = connect(path)
     assert conn.execute("SELECT COUNT(*) FROM shops").fetchone()[0] == 10  # no duplicates
     active = {r[0] for r in conn.execute("SELECT operator FROM shops WHERE is_active = 1 AND is_own_shop = 0")}
-    assert len(active) >= 4  # approved minimum: four independent competitor operators
+    assert len(active) >= 4  # v2 proposal minimum: four independent competitor operators
 
 
 def test_valid_observation_is_stored_with_full_provenance(market_db):

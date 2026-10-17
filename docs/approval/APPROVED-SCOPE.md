@@ -1,4 +1,4 @@
-# Approved project scope
+# Project scope (v2 proposal)
 
 | Field | Value |
 |---|---|
@@ -7,11 +7,23 @@
 | Student | Dilmurod Tolipov (50000161) |
 | Module Leader | Sanjar Bekov |
 | Approval route | University email |
-| Approval date / reference | <!-- FILL IN: date and subject line of Mr Bekov's "Approved" reply --> |
-| Proposal versions | v1 (initial request) → feedback (8 points) → v2 (revised, approved) |
+| Approval status | **Awaiting the Module Leader's decision on v2** |
+| Approval date / reference | <!-- FILL IN when Mr Bekov records "Approved": date and subject line --> |
 
-This page is the working summary of the approved v2 proposal. The emails themselves are the
-authoritative record. Later changes are recorded as ADRs in `docs/decisions/`.
+## Approval history (from the email thread)
+
+| Date (Asia/Tashkent) | From | Message |
+|---|---|---|
+| Wed 2026-09-30 11:32 | Student | v1: "Coursework approval request: Competitive Price Intelligence for a Tashkent Flower Shop" |
+| Mon 2026-10-05 | Sanjar Bekov | Suitable in principle; **revisions required** (8 points) before formal approval |
+| Sat 2026-10-17 21:40 | Student | v2: "Revised proposal for formal approval", answering all 8 points |
+| — | Sanjar Bekov | *(decision pending)* |
+
+Until approval is recorded, **no assessed primary data is collected** (as promised in v2):
+the collector only runs with `purpose = dev`, and those rows are excluded from the analysis.
+
+This page summarises the v2 proposal. The emails themselves are the authoritative record.
+Later changes are recorded as ADRs in `docs/decisions/`.
 
 ## Problem, stakeholder, decision
 
