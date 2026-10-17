@@ -23,6 +23,18 @@ jobs:
         run: python -m priceintel collect --shop uzflora --purpose dev --max-pages 1 || true
       - name: Secret channel (last day only)
         run: python -m priceintel collect-secret --days 1 --purpose dev || true
+      - name: uzflora default vs ?currency=UZS (first 3 cards)
+        run: |
+          python - <<'EOF2'
+          import requests, time
+          from priceintel.collect.http import USER_AGENT
+          from priceintel.collect.parsers import uzflora
+          for url in ("https://uzflora.com/shop/", "https://uzflora.com/shop/?currency=UZS"):
+              html = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30).text
+              items = uzflora.parse(html, url).items[:3]
+              print(url, [(i.title, i.price_text, i.currency) for i in items])
+              time.sleep(6)
+          EOF2
       - name: What was stored and rejected
         run: |
           python -m priceintel listings --limit 5
