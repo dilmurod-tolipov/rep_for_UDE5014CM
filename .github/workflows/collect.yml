@@ -43,6 +43,7 @@ jobs:
 
       - name: Restore databases from the previous successful run
         run: |
+          mkdir -p data
           prev=$(gh run list --workflow collect.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
           if [ -n "$prev" ]; then
             # If a previous run exists, its data MUST be restored; never continue from an empty database.
