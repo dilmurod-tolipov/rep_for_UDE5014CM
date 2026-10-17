@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+/* dark: follows the site theme (html.dark), NOT the phone/PC light-dark setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Fonts chosen for Uzbek (Latin), Russian (Cyrillic) and English:
+   - Manrope: body, buttons, prices. Full Latin + Cyrillic (incl. oʻ gʻ), same-height numbers, open shapes = easy to read.
+   - Playfair Display: headings. Elegant high-contrast serif (luxury, gifting) with Cyrillic, readable at large sizes.
+   - Cinzel: only the SECRET wordmark (Latin capitals, matches the logo). */
+@theme {
+  --font-sans: 'Manrope', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-display: 'Cinzel', 'Playfair Display', Georgia, serif;
+}
+
+@layer base {
+  :root {
+    
+    /* Logo Brand Palette */
+    --color-logo-plum: #291823;
+    --color-logo-plum-dark: #170b13;
+    --color-logo-rose: #d7a9a3;
+    --color-logo-rose-light: #f5ecea;
+    --color-logo-rose-deep: #b88680;
+    --color-logo-wine: #4a2e3f;
+  }
+
+  html {
+    /* all numbers the same height, everywhere */
+    font-variant-numeric: lining-nums;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    /* long words (e.g. Russian) wrap instead of spilling out of cards */
+    overflow-wrap: break-word;
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.dark { color-scheme: dark; }
+  html:not(.dark) { color-scheme: light; }
+
+  html.dark, html.dark body {
+    background-color: #0c060b;
+    color: #f7f3f2;
+  }
+
+  html:not(.dark), html:not(.dark) body {
+    background-color: #ffffff;
+    color: #1a0e16;
+  }
+
+  h1, h2, h3, .font-serif-luxury {
+    font-family: var(--font-serif);
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* Secret Brand Color Utility Classes */
+.text-logo-rose {
+  color: #d7a9a3;
+}
+.bg-logo-rose {
+  background-color: #d7a9a3;
+}
+.border-logo-rose {
+  border-color: #d7a9a3;
+}
+.text-logo-plum {
+  color: #291823;
+}
+.bg-logo-plum {
+  background-color: #291823;
+}
+.border-logo-plum {
+  border-color: #291823;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Custom luxury scrollbar matching the Secret logo */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(215, 169, 163, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(215, 169, 163, 0.7);
+}
+
+/* ------------------------------------------------------------------
+   Phone performance guard.
+   Large blurs and frosted-glass (backdrop-filter) layers are the most
+   expensive things a phone GPU can draw; on budget Android phones and
+   older iPhones they cause stutter and can make the browser kill the tab.
+   On touch screens and small widths we swap them for plain translucent
+   backgrounds, which look almost the same.
+------------------------------------------------------------------- */
+html {
+  overflow-x: hidden;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  /* the huge decorative glow blobs behind the hero and preloader */
+  [class*="blur-[1"] {
+    display: none !important;
+  }
+  /* the hover "shine" layer on product cards: invisible on touch, but still costly to blend */
+  .mix-blend-overlay {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

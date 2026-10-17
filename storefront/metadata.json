@@ -1,0 +1,7 @@
+{
+  "name": "Secret — Luxury Florals, Green Mood & Berries",
+  "description": "Exclusive luxury flower boutique 'Secret' Tashkent, houseplants 'Green Mood', and Belgian chocolate strawberries 'Secret Berries' with online ordering, Payme/Click payments, CRM, and courier dispatch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
