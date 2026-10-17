@@ -18,6 +18,7 @@ data/*.db-journal
 data/*.db-wal
 data/*.db-shm
 data/backups/
+data/dev/
 
 # Secrets and local config
 .env

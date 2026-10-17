@@ -1,0 +1,11 @@
+# Store text with LF in the repository and check it out with LF on every OS,
+# so file hashes and SQL/CSV snapshots are identical on the marker's machine.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.db binary
+*.sqlite binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.zip binary
