@@ -1,0 +1,10 @@
+[project]
+name = "priceintel"
+version = "0.1.0"
+description = "Competitive price intelligence for a Tashkent flower shop (UDE5014CM Assessment 2)"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
