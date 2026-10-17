@@ -1,7 +1,7 @@
 # ADR-001: Which competitor sites count as independent sources
 
 - **Date:** 2026-10-17 (Week 6)
-- **Status:** Accepted; Module Leader to be informed (change to the backup list)
+- **Status:** Accepted; Module Leader informed by email on 2026-10-17 23:20
 - **Related:** v2 proposal, "Collection plan"; `docs/compliance/COMPLIANCE-CHECK-2026-10-17.md`
 
 ## Context
@@ -51,4 +51,4 @@ The database records this in a `operator` column on `shops`; all "per shop" anal
   (≥20 listings from ≥3 sources) at Checkpoint 2.
 - Possible extension (not in scope): the network sells the same product at different prices
   on different brands, which could be a later robustness check.
-- Kamila's was not in the proposal's backup list, so the Module Leader is told by email.
+- Kamila's was not in the proposal's backup list, so the Module Leader was told by email (2026-10-17 23:20).

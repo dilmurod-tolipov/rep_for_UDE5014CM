@@ -17,6 +17,7 @@
 | Wed 2026-09-30 11:32 | Student | v1: "Coursework approval request: Competitive Price Intelligence for a Tashkent Flower Shop" |
 | Mon 2026-10-05 | Sanjar Bekov | Suitable in principle; **revisions required** (8 points) before formal approval |
 | Sat 2026-10-17 21:40 | Student | v2: "Revised proposal for formal approval", answering all 8 points |
+| Sat 2026-10-17 23:20 | Student | Update to v2: independent sources (ADR-001), Secret's prices from its Telegram channel (ADR-003), hypothesis options A/B (ADR-004) |
 | — | Sanjar Bekov | *(decision pending)* |
 
 Until approval is recorded, **no assessed primary data is collected** (as promised in v2):
@@ -47,6 +48,9 @@ Later changes are recorded as ADRs in `docs/decisions/`.
    H0: median r_g = 0; H1: ≠ 0. Wilcoxon signed-rank test after a symmetry check; sign test as fallback.
    Effect sizes are the median % difference and the rank-biserial correlation, with bootstrap CIs.
    Sale prices are analysed separately.
+   **Revision proposed 2026-10-17 (ADR-004, awaiting decision):** Secret's posts rarely state flower type and
+   never stem count, so the primary test becomes a within-category comparison of median log prices
+   (stratified bootstrap CI, permutation p-value, Holm correction), with flower-type matches as a secondary analysis.
 3. What predicts a listing's price? Category-median baseline vs ridge regression vs a tree-based model.
 
 ## Objectives and success criteria
