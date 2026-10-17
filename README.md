@@ -36,6 +36,8 @@ storefront/      React demo storefront + admin (pre-approval baseline, see docs/
 
 Requires Python 3.13 and Git. No API keys or accounts are needed.
 
+On Windows, clone into a short path (e.g. `C:\dev\`): pip can fail inside very long folder paths.
+
 ```bash
 python -m venv .venv
 .venv\Scripts\activate        # Windows  (macOS/Linux: source .venv/bin/activate)
