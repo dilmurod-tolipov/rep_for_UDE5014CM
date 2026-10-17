@@ -65,6 +65,31 @@ What the database enforces itself (`sql/market_intel/001_core.sql`):
 | Assessed runs only from committed, unmodified code | `CHECK` on `scrape_runs` |
 | A shop can only be active if robots.txt allowed it | `CHECK` on `shops` |
 
+## Collecting competitor prices
+
+```bash
+python -m priceintel collect --shop uzflora               # one shop, purpose=dev (default)
+python -m priceintel collect --all --purpose assessed     # only after approval, from committed code
+python -m priceintel listings --limit 20                  # latest price of each listing (retrieval)
+python -m priceintel listings --run 1                     # what a given run collected
+python -m priceintel runs                                 # run history: status, pages, commit
+```
+
+What one run does (`priceintel/collect/runner.py`):
+
+1. Records a `scrape_runs` row with purpose, trigger, git commit and whether the code was modified.
+2. Reads the shop's `robots.txt` (logged in `fetch_log`). Wildcard rules such as `/*?*` are applied
+   (`priceintel/collect/robots.py`); if robots.txt cannot be read, the shop is not crawled.
+3. Fetches catalogue pages one by one, at least 5 s apart (or the site's Crawl-delay if longer),
+   with an identifying user agent. Network errors, 429 and 5xx are retried up to 3 times; every
+   attempt is logged with HTTP status, size, SHA-256 of the content and timing.
+4. Parses product cards (`priceintel/collect/parsers/`), validates each record
+   (`priceintel/collect/validate.py`) and stores valid ones as listings + price observations.
+   Invalid records go to `rejected_records` with the rule that failed and the raw payload.
+5. Marks the run `success` (>= 80% of pages fetched and parsed), `partial` or `failed`.
+
+Parsers available: `uzflora`. More shops are added at Checkpoint 2.
+
 ## Tests
 
 ```bash
