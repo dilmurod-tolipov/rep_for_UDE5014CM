@@ -1,0 +1,35 @@
+# Reachability probe for issue #6 (choose the scheduler host): can GitHub's runners fetch the
+# sources, and do they get UZS prices? Manual only; dev purpose; nothing is committed back.
+name: probe-sources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt
+      - run: python -m priceintel init-db
+      - name: Competitor (uzflora, first page only)
+        run: python -m priceintel collect --shop uzflora --purpose dev --max-pages 1 || true
+      - name: Secret channel (last day only)
+        run: python -m priceintel collect-secret --days 1 --purpose dev || true
+      - name: What was stored and rejected
+        run: |
+          python -m priceintel listings --limit 5
+          python -m priceintel secret-prices --limit 3
+          python - <<'EOF'
+          from priceintel.db import connect
+          m = connect("data/market_intel.db")
+          print("fetch_log:", [tuple(r) for r in m.execute("SELECT url, http_status, bytes FROM fetch_log")])
+          print("rejected rules:", [tuple(r) for r in m.execute("SELECT rule, COUNT(*) FROM rejected_records GROUP BY rule")])
+          EOF
