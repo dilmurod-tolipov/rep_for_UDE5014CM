@@ -72,6 +72,10 @@ Fresh, dated observations written by our own system after approval (`source_type
 `is_own_shop = 1`), kept apart from competitor observations and from any pre-existing reference catalogue
 (marked `reference` and excluded from the primary comparison).
 
+**Refined in ADR-002 (2026-10-17):** the owner does not use the admin system, so prices are read by the
+student from Secret's own public pages and recorded through our admin entry form with the source URL and
+dates, at least weekly. Prices not shown publicly are left missing, never estimated.
+
 ## Model evaluation
 
 Unseen listings: grouped CV, with all observations of a listing in one fold. Future prices: chronological
