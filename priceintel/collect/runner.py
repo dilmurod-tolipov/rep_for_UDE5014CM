@@ -105,12 +105,20 @@ def _store_item(conn, run_id, fetch_id, shop_id, item, observed_at) -> bool:
     return cur.rowcount == 1
 
 
+def _with_query(url: str, query: str | None) -> str:
+    """Append a parser's fixed query (e.g. currency=UZS) if the URL does not already carry it."""
+    if not query or query in urlsplit(url).query:
+        return url
+    return url + ("&" if urlsplit(url).query else "?") + query
+
+
 def _collect_shop(conn, run_id, shop, fetcher: Fetcher, summary: RunSummary, max_pages: int) -> None:
     parser = get_parser(shop["code"])
+    query = getattr(parser, "QUERY", None)
     rules = _load_robots(conn, run_id, shop, fetcher)
     delay = max(shop["crawl_delay_s"], rules.crawl_delay or 0)
     shop_host = urlsplit(shop["base_url"]).hostname
-    queue = [shop["base_url"].rstrip("/") + p for p in parser.START_PATHS]
+    queue = [_with_query(shop["base_url"].rstrip("/") + p, query) for p in parser.START_PATHS]
     seen: set[str] = set()
     pages = 0
     while queue and pages < max_pages:
@@ -161,7 +169,7 @@ def _collect_shop(conn, run_id, shop, fetcher: Fetcher, summary: RunSummary, max
         if parse_ok:
             summary.pages_ok += 1
             if result.next_url:
-                queue.append(result.next_url)
+                queue.append(_with_query(result.next_url, query))
         else:
             reason = parse_error or final.error or f"HTTP {final.status}"
             summary.errors.append(f"{shop['code']}: {url}: {reason}")

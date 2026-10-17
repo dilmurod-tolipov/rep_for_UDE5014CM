@@ -15,6 +15,10 @@ from priceintel.collect.parsers import PageResult
 from priceintel.collect.validate import RawItem
 
 START_PATHS = ["/shop/"]
+# The WOOCS currency switcher shows USD to visitors outside Uzbekistan (seen from GitHub's runners,
+# 2026-10-17). Forcing UZS returns exactly the prices a local customer sees (verified: identical to a
+# run from Tashkent). UZS is the shop's base currency; robots.txt allows query strings here.
+QUERY = "currency=UZS"
 
 
 def _text(el) -> str | None:

@@ -1,0 +1,78 @@
+# Scheduled collection every 12 hours (objective O1, ADR-005).
+# Databases travel between runs as a workflow artifact; each run restores the previous one,
+# collects, and uploads verified backups. Purpose stays 'dev' until approval is recorded; then
+# set the repository variable COLLECT_PURPOSE=assessed (assessed runs require a clean checkout,
+# which a fresh CI checkout always is).
+name: collect
+
+on:
+  schedule:
+    - cron: "0 1,13 * * *"   # 06:00 and 18:00 Asia/Tashkent (UTC+5)
+  workflow_dispatch:
+    inputs:
+      purpose:
+        description: "dev or assessed"
+        type: choice
+        options: [dev, assessed]
+        default: dev
+
+permissions:
+  contents: read
+  actions: read          # to download the previous run's database artifact
+
+concurrency:
+  group: collector       # never two runs writing at the same time
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PURPOSE: ${{ inputs.purpose || vars.COLLECT_PURPOSE || 'dev' }}
+      TRIGGER: ${{ github.event_name == 'schedule' && 'scheduled' || 'manual' }}
+      GH_TOKEN: ${{ github.token }}
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Restore databases from the previous successful run
+        run: |
+          prev=$(gh run list --workflow collect.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          if [ -n "$prev" ]; then
+            # If a previous run exists, its data MUST be restored; never continue from an empty database.
+            gh run download "$prev" --name collector-db --dir data || { echo "::error::could not restore databases from run $prev"; exit 1; }
+            echo "restored from run $prev"
+          else
+            echo "no previous successful run: starting new databases"
+          fi
+          ls -la data
+
+      - run: python -m priceintel init-db
+
+      - name: Collect competitor prices
+        run: python -m priceintel collect --shop uzflora --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
+
+      - name: Collect Secret's prices
+        run: python -m priceintel collect-secret --days 14 --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::Secret run did not succeed (status is recorded in collection_runs)"
+
+      - name: Copy Secret's prices into market_intel and check cross-database integrity
+        run: python -m priceintel snapshot-secret --purpose "$PURPOSE"
+
+      - name: Verified backups
+        run: python -m priceintel backup --out backup
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: collector-db
+          path: backup/*.db
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Summary
+        run: python -m priceintel runs --limit 4

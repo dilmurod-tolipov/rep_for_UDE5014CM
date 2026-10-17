@@ -45,8 +45,8 @@ def uzflora_routes(robots="User-agent: *\nDisallow: /wp-admin/\n", page2=None):
     p2 = (FIXTURES / "uzflora_page2_synthetic.html").read_text(encoding="utf-8")
     return {
         "https://uzflora.com/robots.txt": (200, robots),
-        "https://uzflora.com/shop/": (200, p1),
-        "https://uzflora.com/shop/page/2/": page2 if page2 is not None else (200, p2),
+        "https://uzflora.com/shop/?currency=UZS": (200, p1),
+        "https://uzflora.com/shop/page/2/?currency=UZS": page2 if page2 is not None else (200, p2),
     }
 
 
@@ -65,7 +65,7 @@ def test_run_saves_valid_records_with_provenance_and_quarantines_invalid(market_
         " JOIN scrape_runs r ON r.run_id = o.run_id JOIN listings l ON l.listing_id = o.listing_id"
         " ORDER BY o.price_uzs").fetchall()
     assert [(r["price_uzs"], r["old_price_uzs"]) for r in rows] == [(450000, None), (560000, 700000)]
-    assert all(r["fetched"] == "https://uzflora.com/shop/" and r["http_status"] == 200 for r in rows)
+    assert all(r["fetched"] == "https://uzflora.com/shop/?currency=UZS" and r["http_status"] == 200 for r in rows)
     assert all(len(r["content_sha256"]) == 64 and r["git_commit"] == "1" * 40 for r in rows)
     assert {r["site_category"] for r in rows} == {"bukety", "czvetochnye-kompoziczii,podarki"}
 
@@ -92,16 +92,16 @@ def test_server_error_is_retried_and_every_attempt_logged(market_db):
     s = collect(market_db, ["uzflora"], fetcher=fetcher, git=FAKE_GIT)
     assert s.status == "success"
     attempts = market_db.execute(
-        "SELECT attempt, http_status FROM fetch_log WHERE url LIKE '%/page/2/' ORDER BY attempt").fetchall()
+        "SELECT attempt, http_status FROM fetch_log WHERE url LIKE '%/page/2/%' ORDER BY attempt").fetchall()
     assert [(a["attempt"], a["http_status"]) for a in attempts] == [(1, 503), (2, 200)]
 
 
 def test_robots_disallowed_page_is_never_requested(market_db):
     fetcher, site = make_fetcher(uzflora_routes(robots="User-agent: *\nDisallow: /shop/page/\n"))
     s = collect(market_db, ["uzflora"], fetcher=fetcher, git=FAKE_GIT)
-    assert "https://uzflora.com/shop/page/2/" not in site.requests
+    assert not any("/shop/page/2/" in u for u in site.requests)
     assert s.robots_skipped == 1 and s.pages_requested == 1
-    refused = market_db.execute("SELECT robots_allowed, http_status FROM fetch_log WHERE url LIKE '%/page/2/'").fetchone()
+    refused = market_db.execute("SELECT robots_allowed, http_status FROM fetch_log WHERE url LIKE '%/page/2/%'").fetchone()
     assert (refused["robots_allowed"], refused["http_status"]) == (0, None)
 
 
@@ -123,3 +123,11 @@ def test_assessed_run_refused_from_uncommitted_code_and_inactive_shop_refused(ma
         except CollectError:
             pass
     assert market_db.execute("SELECT COUNT(*) FROM scrape_runs").fetchone()[0] == 0
+
+
+def test_every_uzflora_request_forces_uzs_currency(market_db):
+    """Regression for the probe finding: without currency=UZS, foreign IPs get USD prices."""
+    fetcher, site = make_fetcher(uzflora_routes())
+    collect(market_db, ["uzflora"], fetcher=fetcher, git=FAKE_GIT)
+    pages = [u for u in site.requests if "/shop/" in u]
+    assert pages and all(u.endswith("?currency=UZS") for u in pages)

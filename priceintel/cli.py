@@ -183,6 +183,32 @@ def cmd_runs(args) -> int:
     return 0
 
 
+def cmd_backup(args) -> int:
+    from priceintel.backup import backup_db
+    out = Path(args.out)
+    for src in (args.db, args.secret_db):
+        if not Path(src).exists():
+            print(f"error: {src} does not exist")
+            return 1
+        info = backup_db(Path(src), out / Path(src).name)
+        total = sum(info["rows"].values())
+        print(f"{Path(src).name}: integrity={info['integrity']} rows={total} sha256={info['sha256'][:16]}... -> {info['path']}")
+    return 0
+
+
+def cmd_restore(args) -> int:
+    from priceintel.backup import restore_db
+    src = Path(args.backup_dir)
+    for dest in (args.db, args.secret_db):
+        backup = src / Path(dest).name
+        if not backup.exists():
+            print(f"error: {backup} not found")
+            return 1
+        info = restore_db(backup, Path(dest))
+        print(f"restored {dest} from {backup}: integrity={info['integrity']} rows={sum(info['rows'].values())}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m priceintel", description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
@@ -216,6 +242,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
     s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
     s.set_defaults(func=cmd_check_integrity)
+
+    s = sub.add_parser("backup", help="consistent, verified copies of both databases")
+    s.add_argument("--out", default="data/backups/latest")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.set_defaults(func=cmd_backup)
+
+    s = sub.add_parser("restore", help="replace both databases with a verified backup")
+    s.add_argument("backup_dir")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.set_defaults(func=cmd_restore)
 
     s = sub.add_parser("db-info", help="show migrations, row counts and shops")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
