@@ -61,9 +61,9 @@ python -m priceintel snapshot-secret          # copy into market_intel; runs the
 | Polite collection | robots.txt disallowing page 2 | page 2 never requested; refusal logged | `pytest tests/test_collect_integration.py::test_robots_disallowed_page_is_never_requested` | no HTTP request to a disallowed URL | pass |
 | Recovery | server answers 503 then 200 | both attempts logged; page saved | `...::test_server_error_is_retried_and_every_attempt_logged` | run status `success` | pass |
 | Secret's prices | synthetic channel pages | 3 prices; 2 posts rejected; stop at 14-day cutoff | `pytest tests/test_secret_pipeline.py` | contacts not stored; dev never in assessed snapshot | pass |
-| Live demo | real uzflora.com and t.me/secret_flowersuz | new records appear in `listings` / `secret-prices` | commands above | new rows with today's timestamp | TODO at tag time |
+| Live demo | real uzflora.com and t.me/secret_flowersuz | new records appear in `listings` / `secret-prices` | commands above | new rows with today's timestamp | pass on a fresh clone (2026-10-17); repeat at tag time |
 
-Full suite at the time of writing: **60 passed**.
+Full suite at the time of writing: **62 passed** (also on a fresh clone).
 
 ## Substantive change (since project start)
 
@@ -81,12 +81,14 @@ is empty at this checkpoint).
 | Validation and quarantine | #4 (closed) | `43b48bc` | validation tests; mutation check |
 | Secret's prices (ADR-002/003) | #7 (closed) | `f250170`, `c94c59d` | pipeline tests; dev run |
 | Hypothesis design (ADR-004) | — | `b18bbf1` | awaiting Module Leader |
-| Scheduler | #6 (open) | TODO | TODO |
+| Scheduler (ADR-005) | #6 (closed) | `d13bf3a`, `290a0ba` | two GitHub Actions runs; second restored the first's databases |
+| Clean-checkout reproduction | #5 (open) | `1d00219` | `docs/evidence/clean-checkout-2026-10-17.md` (62 passed) |
 
 ## Known limitations / next steps
 
 - Only one competitor parser (uzflora); pro-buket, loveflowers and kamilas follow at CP2.
-- uzflora prices may be currency-converted (issue #8).
+- uzflora shows USD to foreign visitors; the collector forces UZS (ADR-005). Stability of UZS prices over days is checked at CP2 (issue #8).
+- Scheduled runs (06:00/18:00 Tashkent) are in `dev` mode until approval is recorded.
 - All data so far is `purpose = dev`; assessed collection starts only after approval is recorded.
 - Secret captions rarely give flower type or stem count (ADR-003/004).
 
