@@ -22,7 +22,8 @@ Secret's admin system.
 
 ```
 priceintel/      Python package: database layer and command line (python -m priceintel)
-sql/market_intel numbered schema migrations (001_core.sql, ...)
+sql/market_intel numbered schema migrations for the market database (001_core.sql, ...)
+sql/secret_shop  numbered schema migrations for Secret's own catalogue database
 config/          shops.json: shop registry with compliance status (ADR-001)
 tests/           automated tests; all test data is synthetic and stays in temp databases
 tools/recon/     dev-only reconnaissance scripts (not assessed collection)
@@ -44,7 +45,7 @@ pip install -r requirements.txt
 ## Database
 
 ```bash
-python -m priceintel init-db     # creates data/market_intel.db, applies migrations, loads shops
+python -m priceintel init-db     # creates data/market_intel.db + data/secret_shop.db, loads shops and Secret's channel
 python -m priceintel db-info     # migrations, row counts, shop registry
 ```
 
@@ -89,6 +90,22 @@ What one run does (`priceintel/collect/runner.py`):
 5. Marks the run `success` (>= 80% of pages fetched and parsed), `partial` or `failed`.
 
 Parsers available: `uzflora`. More shops are added at Checkpoint 2.
+
+## Collecting Secret's own prices
+
+Secret publishes every bouquet with its price on its public Telegram channel
+(https://t.me/secret_flowersuz). The collector reads the public web preview into `secret_shop`,
+then a snapshot copies the current prices into `market_intel` (ADR-003).
+
+```bash
+python -m priceintel collect-secret --days 14             # posts from the last 14 days -> secret_shop
+python -m priceintel secret-prices --limit 20             # Secret's current prices (retrieval)
+python -m priceintel snapshot-secret                      # copy into market_intel as own_system rows
+python -m priceintel check-integrity                      # cross-database orphan check
+```
+
+Only labelled prices (`Стоимость:`, `Цена:`, `Все по:`) are accepted; posts without a price or with several
+different prices go to `rejected_posts`. Phone numbers and @handles are removed before captions are stored.
 
 ## Tests
 

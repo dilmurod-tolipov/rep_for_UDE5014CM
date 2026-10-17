@@ -1,7 +1,8 @@
 # ADR-002: Where Secret's own prices come from
 
 - **Date:** 2026-10-17 (Week 6)
-- **Status:** Accepted by the student; to be included in the reply to the Module Leader
+- **Status:** Partly superseded by ADR-003 (same day): prices are now collected automatically from
+  Secret's public Telegram channel. The honesty rules below still apply.
 - **Related:** v2 proposal "Secret's prices"; approval feedback point 2; issue #7
 
 ## Context

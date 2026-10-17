@@ -10,3 +10,7 @@ CONFIG_DIR = REPO_ROOT / "config"
 MARKET_DB = DATA_DIR / "market_intel.db"
 MARKET_MIGRATIONS = SQL_DIR / "market_intel"
 SHOPS_FILE = CONFIG_DIR / "shops.json"
+
+SECRET_DB = DATA_DIR / "secret_shop.db"
+SECRET_MIGRATIONS = SQL_DIR / "secret_shop"
+SECRET_SOURCES_FILE = CONFIG_DIR / "secret_sources.json"

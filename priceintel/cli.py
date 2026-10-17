@@ -3,19 +3,87 @@ import argparse
 from pathlib import Path
 
 from priceintel import config
-from priceintel.db import MigrationError, connect, init_market_db
+from priceintel.db import MigrationError, connect, init_market_db, init_secret_db
 
 
 def cmd_init_db(args) -> int:
     try:
-        applied, n_shops = init_market_db(args.db, config.MARKET_MIGRATIONS, config.SHOPS_FILE)
+        m_applied, n_shops = init_market_db(args.db, config.MARKET_MIGRATIONS, config.SHOPS_FILE)
+        s_applied, n_channels = init_secret_db(args.secret_db, config.SECRET_MIGRATIONS,
+                                               config.SECRET_SOURCES_FILE)
     except MigrationError as e:
         print(f"error: {e}")
         return 1
-    print(f"database: {args.db}")
-    print(f"migrations applied now: {', '.join(applied) if applied else 'none (already up to date)'}")
-    print(f"shops loaded from {config.SHOPS_FILE.name}: {n_shops}")
+    for name, path, applied, extra in (
+            ("market_intel", args.db, m_applied, f"shops loaded: {n_shops}"),
+            ("secret_shop", args.secret_db, s_applied, f"Secret channels loaded: {n_channels}")):
+        print(f"{name}: {path}")
+        print(f"  migrations applied now: {', '.join(applied) if applied else 'none (already up to date)'}")
+        print(f"  {extra}")
     return 0
+
+
+def cmd_collect_secret(args) -> int:
+    from priceintel.collect.runner import CollectError
+    from priceintel.secret.collector import collect_secret
+    conn = _open_existing(args.secret_db)
+    if conn is None:
+        return 1
+    try:
+        s = collect_secret(conn, args.channel, since_days=args.days, purpose=args.purpose,
+                           triggered_by=args.trigger)
+    except CollectError as e:
+        print(f"error: {e}")
+        return 1
+    print(f"secret_shop run {s.run_id} [{args.purpose}] status={s.status}")
+    print(f"  pages ok/requested: {s.pages_ok}/{s.pages_requested}  prices saved: {s.prices_saved}"
+          f"  posts rejected: {s.posts_rejected}  older than {args.days} days: {s.posts_too_old}")
+    for e in s.errors[:10]:
+        print(f"  ! {e}")
+    return 0 if s.status in ("success", "partial") else 2
+
+
+def cmd_snapshot_secret(args) -> int:
+    from priceintel.integrity import cross_db_orphans
+    from priceintel.secret.snapshot import snapshot_secret
+    market, secret = _open_existing(args.db), _open_existing(args.secret_db)
+    if market is None or secret is None:
+        return 1
+    run_id, n = snapshot_secret(market, secret, purpose=args.purpose, max_age_days=args.max_age_days)
+    problems = cross_db_orphans(market, secret)
+    print(f"market_intel run {run_id} [own_snapshot, {args.purpose}]: {n} Secret prices written")
+    print(f"cross-database check: {'OK' if not problems else f'{len(problems)} problem(s)'}")
+    for p in problems[:10]:
+        print(f"  ! {p}")
+    return 0 if not problems else 3
+
+
+def cmd_secret_prices(args) -> int:
+    conn = _open_existing(args.secret_db)
+    if conn is None:
+        return 1
+    rows = conn.execute("SELECT * FROM v_current_prices ORDER BY published_at DESC LIMIT ?",
+                        (args.limit,)).fetchall()
+    if not rows:
+        print("no Secret prices yet")
+        return 0
+    print(f"{'price UZS':>11} {'published (UTC)':20} {'observed (UTC)':20} {'run':>4} {'purpose':8} title / post")
+    for r in rows:
+        print(f"{r['price_uzs']:>11,} {r['published_at']:20} {r['observed_at']:20} {r['run_id']:>4} "
+              f"{r['purpose']:8} {r['title'][:45]}\n{'':67}{r['post_url']}")
+    return 0
+
+
+def cmd_check_integrity(args) -> int:
+    from priceintel.integrity import cross_db_orphans
+    market, secret = _open_existing(args.db), _open_existing(args.secret_db)
+    if market is None or secret is None:
+        return 1
+    problems = cross_db_orphans(market, secret)
+    print("cross-database check: OK" if not problems else f"{len(problems)} problem(s):")
+    for p in problems:
+        print(f"  ! {p}")
+    return 0 if not problems else 3
 
 
 def cmd_db_info(args) -> int:
@@ -119,9 +187,35 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m priceintel", description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
 
-    s = sub.add_parser("init-db", help="create/upgrade market_intel.db and load the shop registry")
+    s = sub.add_parser("init-db", help="create/upgrade both databases and load shops and Secret's channel")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
     s.set_defaults(func=cmd_init_db)
+
+    s = sub.add_parser("collect-secret", help="read Secret's prices from its public Telegram channel")
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--channel", default="secret_flowersuz")
+    s.add_argument("--days", type=int, default=14, help="posts published in the last N days")
+    s.add_argument("--purpose", choices=["dev", "assessed"], default="dev")
+    s.add_argument("--trigger", choices=["manual", "scheduled"], default="manual")
+    s.set_defaults(func=cmd_collect_secret)
+
+    s = sub.add_parser("snapshot-secret", help="copy Secret's current prices into market_intel (own_system)")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--purpose", choices=["dev", "assessed"], default="dev")
+    s.add_argument("--max-age-days", type=int, default=2, help="only prices observed this recently")
+    s.set_defaults(func=cmd_snapshot_secret)
+
+    s = sub.add_parser("secret-prices", help="show Secret's current prices (secret_shop)")
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--limit", type=int, default=20)
+    s.set_defaults(func=cmd_secret_prices)
+
+    s = sub.add_parser("check-integrity", help="cross-database orphan check")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.set_defaults(func=cmd_check_integrity)
 
     s = sub.add_parser("db-info", help="show migrations, row counts and shops")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)

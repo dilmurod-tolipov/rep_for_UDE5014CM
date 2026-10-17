@@ -119,6 +119,36 @@ def seed_shops(conn: sqlite3.Connection, shops_file: Path) -> int:
     return len(shops)
 
 
+def seed_secret_sources(conn: sqlite3.Connection, sources_file: Path) -> int:
+    """Insert or update categories and Secret's public channels. Safe to run repeatedly."""
+    data = json.loads(sources_file.read_text(encoding="utf-8"))
+    with transaction(conn):
+        for c in data["categories"]:
+            conn.execute("INSERT INTO categories (code, name) VALUES (:code, :name)"
+                         " ON CONFLICT (code) DO UPDATE SET name = excluded.name", c)
+        for ch in data["channels"]:
+            row = {"crawl_delay_s": 5.0, "consent_note": None, **ch}
+            row["crawl_delay_s"] = float(row["crawl_delay_s"])
+            conn.execute(
+                "INSERT INTO source_channels (code, kind, preview_url, robots_status, robots_checked_at,"
+                " crawl_delay_s, consent_note) VALUES (:code, :kind, :preview_url, :robots_status,"
+                " :robots_checked_at, :crawl_delay_s, :consent_note)"
+                " ON CONFLICT (code) DO UPDATE SET preview_url = excluded.preview_url,"
+                " robots_status = excluded.robots_status, robots_checked_at = excluded.robots_checked_at,"
+                " crawl_delay_s = excluded.crawl_delay_s, consent_note = excluded.consent_note", row)
+    return len(data["channels"])
+
+
+def init_secret_db(path: Path, migrations: Path, sources_file: Path) -> tuple[list[str], int]:
+    conn = connect(path)
+    try:
+        applied = migrate(conn, migrations)
+        n = seed_secret_sources(conn, sources_file)
+    finally:
+        conn.close()
+    return applied, n
+
+
 def init_market_db(path: Path, migrations: Path, shops_file: Path) -> tuple[list[str], int]:
     conn = connect(path)
     try:

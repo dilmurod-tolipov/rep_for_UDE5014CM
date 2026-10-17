@@ -17,6 +17,7 @@ here are part of the assessed dataset.
 | loveflowers.uz | Disallows `/*?`, `/wp-json/`, admin paths | `/politika-konfidentsialnosti/` (user agreement), `/dostavka-i-oplata/` | Not prohibited; quoting site material requires a link to the site | **Use** as the single representative of the operator network below |
 | dostavka-cvetov365.uz, dostavka-cvetov24.uz, ultraflowers.uz, loveflowers24.uz | Identical template to loveflowers.uz | Identical user-agreement text | Not prohibited | **Do not count as separate sources** (see ADR-001) |
 | kamilas.uz | `Allow: /` | No terms page found | Not prohibited | **Use** (new backup replacing the network backups) |
+| t.me/s/secret_flowersuz (Secret's own channel) | `t.me/robots.txt` returns 404: no restrictions | Telegram public channel preview (no login) | Not prohibited | **Use** for Secret's own prices (ADR-003); contact lines removed before storage; owner's consent to be recorded |
 | fiori.uz | `Disallow: /` | — | **Disallowed** | **Excluded** |
 | tashkent.my-present.com | Disallows `*-flowers-*.html` product pages; blocks `Claude-SearchBot` | — | Product pages disallowed | **Excluded** (also an international relay priced in USD) |
 | uz-flowers.com | Disallows `/en`, `/ru`, currency pages | — | Mostly disallowed | **Excluded** (international, priced in USD) |

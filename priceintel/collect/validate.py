@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, urlunsplit
 MIN_PRICE_UZS = 5_000        # below this is not a real bouquet/plant/gift price
 MAX_PRICE_UZS = 50_000_000   # above this is almost certainly a parsing error
 UZS_MARKERS = {"uzs", "сум", "so'm", "soʻm", "sum", "сўм"}
-NUMBER = re.compile(r"\d[\d\s  ,.]*\d|\d")
+NUMBER = re.compile(r"\d[\d   ,.]*\d|\d")  # spaces allowed inside, line breaks not
 
 
 @dataclass(frozen=True)
