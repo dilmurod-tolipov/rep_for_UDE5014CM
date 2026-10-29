@@ -62,6 +62,84 @@ def cmd_reference_report(args) -> int:
     return 0
 
 
+def cmd_query(args) -> int:
+    """Run one of the stakeholder queries in sql/queries/, or list them."""
+    from priceintel.queries import QueryError, available, format_table, question_of, run
+    queries = available(config.QUERIES_DIR)
+    if args.list or not args.name:
+        print("stakeholder queries (sql/queries/):")
+        for name, path in sorted(queries.items()):
+            if name[0].isdigit():
+                print(f"  {name}")
+                print(f"      {question_of(path)}")
+        return 0
+    if args.name not in queries:
+        print(f"error: no query {args.name!r}; use --list")
+        return 1
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    params = {"rules_version": args.rules_version, "purpose": args.purpose,
+              "min_items": args.min_items, "limit": args.limit}
+    if params["rules_version"] is None:
+        from priceintel.analysis.categories import load_rules
+        params["rules_version"] = load_rules(args.rules).version
+    try:
+        columns, rows = run(conn, queries[args.name], params)
+    except QueryError as e:
+        print(f"error: {e}")
+        return 1
+    print(question_of(queries[args.name]))
+    print(f"[purpose={args.purpose}, rules={params['rules_version']}, min_items={args.min_items}]")
+    print()
+    print(format_table(columns, rows))
+    return 0
+
+
+def cmd_quality(args) -> int:
+    """Run the data-quality checks and record them in data_quality_checks."""
+    from priceintel.quality import run_checks
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    rules_version = args.rules_version
+    if rules_version is None:
+        from priceintel.analysis.categories import load_rules
+        rules_version = load_rules(args.rules).version
+    results = run_checks(conn, purpose=args.purpose, rules_version=rules_version,
+                         store=not args.no_store)
+    width = max(len(r.check_name) for r in results)
+    print(f"data-quality checks [purpose={args.purpose}, rules={rules_version}]")
+    for r in results:
+        target = "" if r.threshold is None else f" (threshold {r.threshold:g} {r.unit})"
+        print(f"  {r.status.upper():4} {r.check_name.ljust(width)} {r.measured:>10,.2f} {r.unit}{target}")
+        if r.detail:
+            print(f"       {r.detail}")
+    worst = "fail" if any(r.status == "fail" for r in results) else (
+        "warn" if any(r.status == "warn" for r in results) else "pass")
+    print(f"  overall: {worst}")
+    return 0 if worst != "fail" else 4
+
+
+def cmd_snapshot(args) -> int:
+    """Write a committed CSV snapshot of the collected data, with provenance and a manifest."""
+    from priceintel.snapshot import write_snapshot
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    out = Path(args.out) if args.out else config.SNAPSHOT_DIR / f"{args.purpose}-{args.label or 'latest'}"
+    result = write_snapshot(conn, out, purpose=args.purpose,
+                            include_reference=args.include_reference, label=args.label)
+    print(f"snapshot of {args.purpose} data -> {result.directory}")
+    for table, n in result.rows.items():
+        print(f"  {table:22} {n:>7,} rows")
+    print(f"  commit {result.commit[:10]}{' (dirty)' if result.dirty else ''}; manifest written")
+    if result.dirty:
+        print("  note: the working tree was modified, so this snapshot is not reproducible from a"
+              " commit; commit first for assessed snapshots")
+    return 0
+
+
 def cmd_check_integrity(args) -> int:
     from priceintel.integrity import cross_db_orphans
     market, secret = _open_existing(args.db), _open_existing(args.secret_db)
@@ -273,6 +351,35 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--since", help="first publication date to include (YYYY-MM-DD)")
     s.add_argument("--until", help="last publication date to include (YYYY-MM-DD)")
     s.set_defaults(func=cmd_reference_report)
+
+    s = sub.add_parser("query", help="run a stakeholder query from sql/queries/")
+    s.add_argument("name", nargs="?", help="query name, e.g. price_position_by_category")
+    s.add_argument("--list", action="store_true", help="list the queries and their questions")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--rules-version", help="default: the version of the current rules file")
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--min-items", type=int, default=10,
+                   help="minimum offers and products for a displayed comparison (plan: 10)")
+    s.add_argument("--limit", type=int, default=20)
+    s.set_defaults(func=cmd_query)
+
+    s = sub.add_parser("quality", help="run the data-quality checks and record the results")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--rules-version")
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--no-store", action="store_true", help="print only, do not record the results")
+    s.set_defaults(func=cmd_quality)
+
+    s = sub.add_parser("snapshot", help="write a committed CSV snapshot of the collected data")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--out", help="default: data/snapshots/<purpose>-<label>")
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--label", default="", help="e.g. cp2 or 2026-11-29")
+    s.add_argument("--include-reference", action="store_true",
+                   help="also export Secret's reference offers (submission package only)")
+    s.set_defaults(func=cmd_snapshot)
 
     s = sub.add_parser("check-integrity", help="cross-database orphan check")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)

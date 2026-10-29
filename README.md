@@ -117,6 +117,31 @@ evidence (`listing_categories`). Re-running `classify` is idempotent; a new `rul
 set of assignments instead of overwriting the old one. Listings that no rule matches are stored as
 `unclassified` and reported as a count - they are excluded from the analysis, never dropped.
 
+## Stakeholder queries, data quality and snapshots
+
+```bash
+python -m priceintel query --list                      # the five questions and their files
+python -m priceintel query price_position_by_category --purpose assessed
+python -m priceintel quality --purpose assessed        # recorded in data_quality_checks
+python -m priceintel snapshot --purpose assessed --label cp2   # CSV + MANIFEST.md under data/snapshots/
+```
+
+The queries live in `sql/queries/*.sql`, one file per stakeholder question, each with the question and
+how to read the result in its header. They take named parameters (`:purpose`, `:rules_version`,
+`:min_items`), and `query` refuses to run one with a parameter missing rather than guessing a default.
+SQLite has no `median()`, so each median is computed by numbering the rows and averaging the middle
+one or two.
+
+`quality` runs nine checks over the stored data - data target, completed runs, run success rate,
+quarantine rate, unclassified rate, price-outlier rate, freshness, duplicate observations and orphan
+observations - and records every result in `data_quality_checks` with its threshold and status, so the
+report can show how healthy the data was on the day the analysis ran.
+
+`snapshot` writes the committed evidence of collection: CSV exports of the shops, runs, fetch log,
+listings, price observations, quarantine, categories and quality checks for one purpose only, plus a
+`MANIFEST.md` with row counts, each file's SHA-256 and the collecting commit. Secret's reference
+offers are exported only with `--include-reference`, for the submission package.
+
 ## Secret's offers (reference data, not primary data)
 
 Secret's own offers are **reference data**: they are imported from an export the owner produces with
