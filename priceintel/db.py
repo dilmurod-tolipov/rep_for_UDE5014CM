@@ -93,15 +93,16 @@ def migrate(conn: sqlite3.Connection, directory: Path) -> list[str]:
 
 
 SHOP_FIELDS = (
-    "code", "name", "base_url", "operator", "is_own_shop", "is_active", "robots_status",
-    "robots_checked_at", "terms_url", "terms_checked_at", "crawl_delay_s", "compliance_notes",
+    "code", "name", "base_url", "operator", "operator_group", "is_mirror", "is_own_shop",
+    "is_active", "robots_status", "robots_checked_at", "terms_url", "terms_checked_at",
+    "crawl_delay_s", "compliance_notes",
 )
 
 
 def seed_shops(conn: sqlite3.Connection, shops_file: Path) -> int:
     """Insert or update the shop registry from JSON. Safe to run repeatedly."""
     shops = json.loads(shops_file.read_text(encoding="utf-8"))["shops"]
-    defaults = {"is_own_shop": 0, "is_active": 1, "robots_status": "unchecked",
+    defaults = {"is_own_shop": 0, "is_active": 1, "robots_status": "unchecked", "is_mirror": 0,
                 "robots_checked_at": None, "terms_url": None, "terms_checked_at": None,
                 "crawl_delay_s": 5.0, "compliance_notes": None}
     cols = ", ".join(SHOP_FIELDS)
@@ -111,6 +112,7 @@ def seed_shops(conn: sqlite3.Connection, shops_file: Path) -> int:
         for shop in shops:
             row = {**defaults, **shop}
             row["crawl_delay_s"] = float(row["crawl_delay_s"])
+            row.setdefault("operator_group", row["operator"].upper().replace(" ", "_"))
             conn.execute(
                 f"INSERT INTO shops ({cols}) VALUES ({marks}) "
                 f"ON CONFLICT (code) DO UPDATE SET {updates}",
@@ -127,12 +129,12 @@ def seed_secret_sources(conn: sqlite3.Connection, sources_file: Path) -> int:
             conn.execute("INSERT INTO categories (code, name) VALUES (:code, :name)"
                          " ON CONFLICT (code) DO UPDATE SET name = excluded.name", c)
         for ch in data["channels"]:
-            row = {"crawl_delay_s": 5.0, "consent_note": None, **ch}
+            row = {"crawl_delay_s": 5.0, "consent_note": None, "is_active": 0, **ch}
             row["crawl_delay_s"] = float(row["crawl_delay_s"])
             conn.execute(
                 "INSERT INTO source_channels (code, kind, preview_url, robots_status, robots_checked_at,"
-                " crawl_delay_s, consent_note) VALUES (:code, :kind, :preview_url, :robots_status,"
-                " :robots_checked_at, :crawl_delay_s, :consent_note)"
+                " crawl_delay_s, consent_note, is_active) VALUES (:code, :kind, :preview_url, :robots_status,"
+                " :robots_checked_at, :crawl_delay_s, :consent_note, :is_active)"
                 " ON CONFLICT (code) DO UPDATE SET preview_url = excluded.preview_url,"
                 " robots_status = excluded.robots_status, robots_checked_at = excluded.robots_checked_at,"
                 " crawl_delay_s = excluded.crawl_delay_s, consent_note = excluded.consent_note", row)

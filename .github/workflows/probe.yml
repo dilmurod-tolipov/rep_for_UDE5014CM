@@ -21,8 +21,11 @@ jobs:
       - run: python -m priceintel init-db
       - name: Competitor (uzflora, first page only)
         run: python -m priceintel collect --shop uzflora --purpose dev --max-pages 1 || true
-      - name: Secret channel (last day only)
-        run: python -m priceintel collect-secret --days 1 --purpose dev || true
+      - name: Other groups (first page only)
+        run: |
+          python -m priceintel collect --shop probuket --purpose dev --max-pages 1 || true
+          python -m priceintel collect --shop loveflowers --purpose dev --max-pages 1 || true
+          python -m priceintel collect --shop kamilas --purpose dev --max-pages 4 || true
       - name: uzflora default vs ?currency=UZS (first 3 cards)
         run: |
           python - <<'EOF2'
@@ -38,7 +41,6 @@ jobs:
       - name: What was stored and rejected
         run: |
           python -m priceintel listings --limit 5
-          python -m priceintel secret-prices --limit 3
           python - <<'EOF'
           from priceintel.db import connect
           m = connect("data/market_intel.db")

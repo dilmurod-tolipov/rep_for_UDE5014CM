@@ -1,5 +1,5 @@
 {
-  "_comment": "Shop registry with compliance results (docs/compliance/COMPLIANCE-CHECK-2026-10-17.md, ADR-001). Loaded by `python -m priceintel init-db`. Only active shops are collected.",
+  "_comment": "Shop registry with compliance results (docs/compliance/source_groups.md, docs/compliance/COMPLIANCE-CHECK-2026-10-17.md, ADR-001). Loaded by `python -m priceintel init-db`. Only active shops are collected, and exactly one active domain per operator_group: mirrors are registered with is_mirror = 1 so they cannot inflate competitor or product counts.",
   "shops": [
     {
       "code": "secret",
@@ -9,7 +9,9 @@
       "is_own_shop": 1,
       "is_active": 1,
       "robots_status": "not_applicable",
-      "compliance_notes": "Own prices are recorded through secret_shop, not scraped."
+      "compliance_notes": "Own prices are recorded through secret_shop, not scraped.",
+      "operator_group": "SECRET",
+      "is_mirror": 0
     },
     {
       "code": "probuket",
@@ -22,7 +24,9 @@
       "terms_url": "https://pro-buket.uz/dostavka-i-oplata/",
       "terms_checked_at": "2026-10-17T00:00:00Z",
       "crawl_delay_s": 5,
-      "compliance_notes": "robots: Crawl-delay 5; disallows /*?*, /all/, /search/, /c/nedorogie-cvety/, /c/voshititelnye-bukety/. No user agreement published."
+      "compliance_notes": "robots: Crawl-delay 5; disallows /*?*, /all/, /search/, /c/nedorogie-cvety/, /c/voshititelnye-bukety/. No user agreement published.",
+      "operator_group": "PROBUKET",
+      "is_mirror": 0
     },
     {
       "code": "uzflora",
@@ -35,7 +39,9 @@
       "terms_url": "https://uzflora.com/oferta/",
       "terms_checked_at": "2026-10-17T00:00:00Z",
       "crawl_delay_s": 5,
-      "compliance_notes": "robots disallows add-to-cart URLs and admin paths only. Public offer has no clause on automated access."
+      "compliance_notes": "robots disallows add-to-cart URLs and admin paths only. Public offer has no clause on automated access.",
+      "operator_group": "UZFLORA",
+      "is_mirror": 0
     },
     {
       "code": "loveflowers",
@@ -48,7 +54,9 @@
       "terms_url": "https://loveflowers.uz/politika-konfidentsialnosti/",
       "terms_checked_at": "2026-10-17T00:00:00Z",
       "crawl_delay_s": 6,
-      "compliance_notes": "robots disallows /*? and admin paths. User agreement: quoting site material requires a link to the site (source URL is stored). Representative of the network (ADR-001)."
+      "compliance_notes": "robots disallows /*? and admin paths. User agreement: quoting site material requires a link to the site (source URL is stored). Representative of the network (ADR-001).",
+      "operator_group": "LOVEFLOWERS_NET",
+      "is_mirror": 0
     },
     {
       "code": "kamilas",
@@ -59,7 +67,9 @@
       "robots_status": "allowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
       "crawl_delay_s": 5,
-      "compliance_notes": "robots: Allow /. No terms page found. Replaces the network backups (ADR-001)."
+      "compliance_notes": "robots: Allow /. No terms page found. Replaces the network backups (ADR-001).",
+      "operator_group": "KAMILAS",
+      "is_mirror": 0
     },
     {
       "code": "uzflowers",
@@ -69,7 +79,9 @@
       "is_active": 0,
       "robots_status": "partly_allowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
-      "compliance_notes": "Not collected: same phone number as uzflora.com; Tilda store prices are not in the page HTML."
+      "compliance_notes": "Not collected: same phone number as uzflora.com; Tilda store prices are not in the page HTML.",
+      "operator_group": "UZFLORA",
+      "is_mirror": 1
     },
     {
       "code": "cvetov365",
@@ -79,7 +91,9 @@
       "is_active": 0,
       "robots_status": "partly_allowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
-      "compliance_notes": "Not collected: part of the Love Flowers network (ADR-001)."
+      "compliance_notes": "Not collected: part of the Love Flowers network (ADR-001).",
+      "operator_group": "LOVEFLOWERS_NET",
+      "is_mirror": 1
     },
     {
       "code": "cvetov24",
@@ -89,7 +103,9 @@
       "is_active": 0,
       "robots_status": "partly_allowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
-      "compliance_notes": "Not collected: shares 220/224 product slugs with dostavka-cvetov365.uz (ADR-001)."
+      "compliance_notes": "Not collected: shares 220/224 product slugs with dostavka-cvetov365.uz (ADR-001).",
+      "operator_group": "LOVEFLOWERS_NET",
+      "is_mirror": 1
     },
     {
       "code": "ultraflowers",
@@ -99,7 +115,9 @@
       "is_active": 0,
       "robots_status": "partly_allowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
-      "compliance_notes": "Not collected: part of the Love Flowers network (ADR-001)."
+      "compliance_notes": "Not collected: part of the Love Flowers network (ADR-001).",
+      "operator_group": "LOVEFLOWERS_NET",
+      "is_mirror": 1
     },
     {
       "code": "fiori",
@@ -109,7 +127,9 @@
       "is_active": 0,
       "robots_status": "disallowed",
       "robots_checked_at": "2026-10-17T00:00:00Z",
-      "compliance_notes": "Excluded: robots.txt is 'Disallow: /'."
+      "compliance_notes": "Excluded: robots.txt is 'Disallow: /'.",
+      "operator_group": "FIORI",
+      "is_mirror": 0
     }
   ]
 }

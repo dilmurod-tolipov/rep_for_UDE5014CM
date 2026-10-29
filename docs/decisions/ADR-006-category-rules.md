@@ -2,7 +2,8 @@
 
 - **Date:** 2026-10-29 (Week 8)
 - **Status:** Accepted for implementation; the rules file is committed and tagged before any
-  analysis run. The categories themselves were accepted by the Module Leader (email 26/10/2026,
+  analysis run. **Rules 1.1.0** (2026-10-29) is the version in force; 1.0.0 was tagged earlier the
+  same day and had been applied to development data only. The categories themselves were accepted by the Module Leader (email 26/10/2026,
   point 2: "Define categories independently of price").
 - **Related:** ADR-001 (operator groups), ADR-004 (within-category comparison),
   Module Leader feedback 26/10/2026 points 2-4 and the addendum in preparation.
@@ -100,3 +101,21 @@ a new rules version adds a new set of rows beside the old one instead of overwri
 - Changing a rule after results exist requires a new `rules_version`, which is visible in the database
   and in the report.
 - The flower lexicon is reused for the flower-type-restricted secondary comparison (feedback point 3).
+
+## Changes in rules 1.1.0 (2026-10-29)
+
+All three came from running 1.0.0 against real text, and none of them uses price, a promotion or an
+occasion, so the price-independence of the rules is unchanged.
+
+1. **The words "букет" and "композиция" in a title** are now bouquet evidence (rule S05). Secret's
+   channel captions are marketing lines with no section slug ("Прекрасные букеты для любимой"), so
+   under 1.0.0 most of its offers were unclassified: 104 of 123 observed posts, against 64 under
+   1.1.0.
+2. **Inflected flower names** ("с тюльпанами и пионами") are listed in the lexicon. Matching is
+   whole-word, so every form has to be spelled out; a missing form silently made a mixed bouquet look
+   unspecified.
+3. **Plain Russian section names** ("Букеты", "Растения", "Каталог букетов") were added beside the
+   URL slugs, because kamilas.uz publishes its category as schema.org text rather than as a slug.
+
+The counts each version produces are reported together in `docs/analysis_plan.md`, and
+`listing_categories` keeps both sets of assignments side by side.

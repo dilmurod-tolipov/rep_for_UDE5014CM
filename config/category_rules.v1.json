@@ -1,5 +1,5 @@
 {
-  "rules_version": "1.0.0",
+  "rules_version": "1.1.0",
   "effective_from": "2026-10-29",
   "_comment": [
     "Analysis categories for the price-position comparison (ADR-006).",
@@ -12,9 +12,16 @@
     "Matching: titles and URL paths are lower-cased, punctuation becomes spaces, and a keyword matches",
     "only as a whole word or whole phrase. Section slugs must match exactly.",
     "First matching rule wins; exclusions are tried before sections.",
-    "This file is versioned and tagged before any analysis run; changes get a new rules_version."
+    "This file is versioned and tagged before any analysis run; changes get a new rules_version.",
+    "1.1.0: S05 also matches the words 'букет' / 'композиция' in a title. Secret's channel captions are marketing lines with no section slug ('Прекрасные букеты для любимой'), so without this rule most of its offers were unclassified. These are product-type words, not price, promotion or occasion words, so the price-independence of the rules is unchanged.",
+    "1.1.0: the lexicon also lists instrumental/plural forms ('с тюльпанами и пионами'), which the channel captions use constantly; whole-word matching means each form must be listed explicitly.",
+    "1.1.0: section lists also hold the plain Russian section names ('Букеты', 'Растения'), because kamilas.uz publishes its category as schema.org text rather than as a URL slug."
   ],
-  "fields_used": ["title", "url_path", "site_category"],
+  "fields_used": [
+    "title",
+    "url_path",
+    "site_category"
+  ],
   "categories": {
     "roses_mono": "Roses and mono-bouquets (one named flower type)",
     "mixed_bouquets": "Mixed bouquets (two or more named flower types)",
@@ -30,16 +37,52 @@
       "id": "X01",
       "category": "out_of_scope",
       "reason": "balloons",
-      "site_category_any": ["vozdushnye-shary", "shary", "gelievye-shary", "balloons"],
-      "title_any": ["шар", "шара", "шары", "шарик", "шарики", "шарами", "balloon", "balloons"]
+      "site_category_any": [
+        "vozdushnye-shary",
+        "shary",
+        "gelievye-shary",
+        "balloons"
+      ],
+      "title_any": [
+        "шар",
+        "шара",
+        "шары",
+        "шарик",
+        "шарики",
+        "шарами",
+        "balloon",
+        "balloons"
+      ]
     },
     {
       "id": "X02",
       "category": "out_of_scope",
       "reason": "add-ons sold beside a bouquet (vases, toys, cakes, cards, candles)",
-      "site_category_any": ["k-buketu", "dopolnenie", "dopolneniya", "vazy", "otkrytki", "igrushki"],
-      "title_any": ["ваза", "вазу", "вазе", "вазы", "мишка", "мишки", "медвежонок", "teddy", "тедди",
-                    "открытка", "открытки", "торт", "тортик", "свеча", "свечи"]
+      "site_category_any": [
+        "k-buketu",
+        "dopolnenie",
+        "dopolneniya",
+        "vazy",
+        "otkrytki",
+        "igrushki"
+      ],
+      "title_any": [
+        "ваза",
+        "вазу",
+        "вазе",
+        "вазы",
+        "мишка",
+        "мишки",
+        "медвежонок",
+        "teddy",
+        "тедди",
+        "открытка",
+        "открытки",
+        "торт",
+        "тортик",
+        "свеча",
+        "свечи"
+      ]
     }
   ],
   "sections": [
@@ -47,57 +90,228 @@
       "id": "S01",
       "category": "boxes_baskets",
       "reason": "the shop publishes the listing in a box/basket section, or the title says box or basket",
-      "site_category_any": ["tsvety-v-korobke", "czvety-v-korobke", "cvety-v-korobke",
-                            "korziny-s-tsvetami", "korziny-s-czvetami", "korziny", "korzina",
-                            "flowers-in-box", "baskets"],
-      "url_any": ["tsvety v korobke", "czvety v korobke", "cvety v korobke", "korziny", "korzina",
-                  "v korobke", "flowers in box"],
-      "title_any": ["в коробке", "коробка", "коробке", "коробочка", "корзина", "корзине", "корзинка",
-                    "корзинке", "корзину", "box", "basket"]
+      "site_category_any": [
+        "baskets",
+        "cvety-v-korobke",
+        "czvety-v-korobke",
+        "flowers-in-box",
+        "korzina",
+        "korziny",
+        "korziny-s-czvetami",
+        "korziny-s-tsvetami",
+        "tsvety-v-korobke",
+        "корзины",
+        "корзины с цветами",
+        "коробки",
+        "цветы в коробке"
+      ],
+      "url_any": [
+        "tsvety v korobke",
+        "czvety v korobke",
+        "cvety v korobke",
+        "korziny",
+        "korzina",
+        "v korobke",
+        "flowers in box"
+      ],
+      "title_any": [
+        "в коробке",
+        "коробка",
+        "коробке",
+        "коробочка",
+        "корзина",
+        "корзине",
+        "корзинка",
+        "корзинке",
+        "корзину",
+        "box",
+        "basket"
+      ]
     },
     {
       "id": "S02",
       "category": "potted_plants",
       "reason": "plant section, or the title names a houseplant or says in a pot",
-      "site_category_any": ["rasteniya", "komnatnye-rasteniya", "plants", "houseplants", "orhidei",
-                            "czvety-v-gorshkah", "cvety-v-gorshkah", "gorshechnye-rasteniya"],
-      "url_any": ["rasteniya", "plants", "gorshk", "houseplants"],
-      "title_any": ["в горшке", "горшке", "горшок", "орхидея", "орхидеи", "фаленопсис", "азалия",
-                    "антуриум", "бромелия", "замиокулькас", "спатифиллум", "драцена", "фикус",
-                    "монстера", "суккулент", "суккуленты", "кактус", "бонсай", "пуансеттия",
-                    "каланхоэ", "сансевиерия", "хлорофитум"]
+      "site_category_any": [
+        "cvety-v-gorshkah",
+        "czvety-v-gorshkah",
+        "gorshechnye-rasteniya",
+        "houseplants",
+        "komnatnye-rasteniya",
+        "orhidei",
+        "plants",
+        "rasteniya",
+        "горшечные растения",
+        "комнатные растения",
+        "растения"
+      ],
+      "url_any": [
+        "rasteniya",
+        "plants",
+        "gorshk",
+        "houseplants"
+      ],
+      "title_any": [
+        "в горшке",
+        "горшке",
+        "горшок",
+        "орхидея",
+        "орхидеи",
+        "фаленопсис",
+        "азалия",
+        "антуриум",
+        "бромелия",
+        "замиокулькас",
+        "спатифиллум",
+        "драцена",
+        "фикус",
+        "монстера",
+        "суккулент",
+        "суккуленты",
+        "кактус",
+        "бонсай",
+        "пуансеттия",
+        "каланхоэ",
+        "сансевиерия",
+        "хлорофитум"
+      ]
     },
     {
       "id": "S03",
       "category": "edible_sets",
       "reason": "edible/berry section, or the title names berries, chocolate, sweets or fruit",
-      "site_category_any": ["yagodnye-bukety", "klubnika-v-shokolade", "sladosti", "fruktovye-korziny",
-                            "edible", "berry-sets"],
-      "url_any": ["klubnika", "yagodn", "sladost", "fruktov", "shokolad"],
-      "title_any": ["клубника", "клубнике", "клубники", "клубничный", "клубничные", "в шоколаде",
-                    "шоколад", "шоколадные", "шоколадная", "конфеты", "конфет", "конфетами",
-                    "раффаэлло", "raffaello", "ferrero", "milka", "фрукты", "фруктовый", "фруктовые",
-                    "фруктовое", "ассорти", "ягоды", "ягодный", "ягодные", "макаруны", "макарон",
-                    "сладкий", "сладкое", "сладкая", "сладости", "strawberry", "strawberries",
-                    "berry", "chocolate", "sweets"]
+      "site_category_any": [
+        "berry-sets",
+        "edible",
+        "fruktovye-korziny",
+        "klubnika-v-shokolade",
+        "sladosti",
+        "yagodnye-bukety",
+        "сладости",
+        "фруктовые корзины",
+        "ягодные букеты"
+      ],
+      "url_any": [
+        "klubnika",
+        "yagodn",
+        "sladost",
+        "fruktov",
+        "shokolad"
+      ],
+      "title_any": [
+        "клубника",
+        "клубнике",
+        "клубники",
+        "клубничный",
+        "клубничные",
+        "в шоколаде",
+        "шоколад",
+        "шоколадные",
+        "шоколадная",
+        "конфеты",
+        "конфет",
+        "конфетами",
+        "раффаэлло",
+        "raffaello",
+        "ferrero",
+        "milka",
+        "фрукты",
+        "фруктовый",
+        "фруктовые",
+        "фруктовое",
+        "ассорти",
+        "ягоды",
+        "ягодный",
+        "ягодные",
+        "макаруны",
+        "макарон",
+        "сладкий",
+        "сладкое",
+        "сладкая",
+        "сладости",
+        "strawberry",
+        "strawberries",
+        "berry",
+        "chocolate",
+        "sweets"
+      ]
     },
     {
       "id": "S04",
       "category": "roses_mono",
       "reason": "the shop publishes the listing in a single-flower-type section",
-      "site_category_any": ["rozy", "roses", "bukety-iz-roz", "tyulpany", "tulips", "pivonii",
-                            "piony", "hrizantemy", "lilii", "gerbery", "eustoma", "giatsinty"],
-      "url_any": ["rozy", "roses", "tyulpany", "piony", "hrizantemy", "lilii"]
+      "site_category_any": [
+        "bukety-iz-roz",
+        "eustoma",
+        "gerbery",
+        "giatsinty",
+        "hrizantemy",
+        "lilii",
+        "piony",
+        "pivonii",
+        "roses",
+        "rozy",
+        "tulips",
+        "tyulpany",
+        "пионы",
+        "розы",
+        "тюльпаны",
+        "хризантемы"
+      ],
+      "url_any": [
+        "rozy",
+        "roses",
+        "tyulpany",
+        "piony",
+        "hrizantemy",
+        "lilii"
+      ]
     },
     {
       "id": "S05",
       "category": "bouquets_split",
-      "reason": "bouquet or arrangement section; the split below decides mono vs mixed",
-      "site_category_any": ["bukety", "bouquets", "buket", "czvetochnye-kompoziczii",
-                            "cvetochnye-kompozicii", "floral-arrangements", "tsvety-raznye",
-                            "czvety-raznye", "vip-bouquets", "vip-bukety", "monobukety"],
-      "url_any": ["bukety", "bouquets", "kompozicz", "kompozic", "floral arrangements",
-                  "tsvety raznye", "czvety raznye"]
+      "reason": "bouquet or arrangement section, or the title calls the item a bouquet or an arrangement; the split below decides mono vs mixed",
+      "site_category_any": [
+        "bouquets",
+        "buket",
+        "bukety",
+        "cvetochnye-kompozicii",
+        "czvetochnye-kompoziczii",
+        "czvety-raznye",
+        "floral-arrangements",
+        "monobukety",
+        "tsvety-raznye",
+        "vip-bouquets",
+        "vip-bukety",
+        "авторские букеты",
+        "букеты",
+        "каталог букетов",
+        "композиции",
+        "цветочные композиции"
+      ],
+      "url_any": [
+        "bukety",
+        "bouquets",
+        "kompozicz",
+        "kompozic",
+        "floral arrangements",
+        "tsvety raznye",
+        "czvety raznye"
+      ],
+      "title_any": [
+        "букет",
+        "букеты",
+        "букета",
+        "букетов",
+        "букетик",
+        "монобукет",
+        "композиция",
+        "композиции",
+        "композицию",
+        "композиций",
+        "bouquet",
+        "bouquets"
+      ]
     },
     {
       "id": "S06",
@@ -120,27 +334,170 @@
     "no_type": "bouquets_unspecified"
   },
   "flower_lexicon": {
-    "rose": ["роза", "розы", "роз", "розу", "розой", "розами", "розе", "rose", "roses", "atirgul"],
-    "tulip": ["тюльпан", "тюльпана", "тюльпаны", "тюльпанов", "tulip", "tulips"],
-    "peony": ["пион", "пиона", "пионы", "пионов", "пионовидные", "peony", "peonies"],
-    "chrysanthemum": ["хризантема", "хризантемы", "хризантем", "chrysanthemum"],
-    "hydrangea": ["гортензия", "гортензии", "гортензий", "гортензиями", "hydrangea"],
-    "orchid": ["орхидея", "орхидеи", "орхидей", "фаленопсис", "orchid"],
-    "lily": ["лилия", "лилии", "лилий", "лилиями", "lily", "lilies"],
-    "gerbera": ["гербера", "герберы", "гербер", "gerbera"],
-    "eustoma": ["эустома", "эустомы", "эустому", "лизиантус", "eustoma", "lisianthus"],
-    "alstroemeria": ["альстромерия", "альстромерии", "альстромерий", "alstroemeria"],
-    "carnation": ["гвоздика", "гвоздики", "гвоздик", "carnation"],
-    "hyacinth": ["гиацинт", "гиацинты", "гиацинтов", "hyacinth"],
-    "ranunculus": ["ранункулюс", "ранункулюсы", "ranunculus"],
-    "anemone": ["анемон", "анемоны", "анемонов", "anemone"],
-    "freesia": ["фрезия", "фрезии", "freesia"],
-    "gypsophila": ["гипсофила", "гипсофилы", "gypsophila"],
-    "sunflower": ["подсолнух", "подсолнухи", "подсолнухов", "sunflower"],
-    "iris": ["ирис", "ирисы", "iris"],
-    "matthiola": ["матиола", "маттиола", "matthiola"],
-    "narcissus": ["нарцисс", "нарциссы", "narcissus"],
-    "chamomile": ["ромашка", "ромашки", "chamomile"],
-    "statice": ["статица", "статице", "statice"]
+    "rose": [
+      "atirgul",
+      "rose",
+      "roses",
+      "роз",
+      "роза",
+      "розами",
+      "розе",
+      "розой",
+      "розочки",
+      "розу",
+      "розы"
+    ],
+    "tulip": [
+      "tulip",
+      "tulips",
+      "тюльпан",
+      "тюльпана",
+      "тюльпанами",
+      "тюльпанах",
+      "тюльпанов",
+      "тюльпаны"
+    ],
+    "peony": [
+      "peonies",
+      "peony",
+      "пион",
+      "пиона",
+      "пионами",
+      "пионов",
+      "пионовидная",
+      "пионовидные",
+      "пионовидных",
+      "пионы"
+    ],
+    "chrysanthemum": [
+      "chrysanthemum",
+      "хризантем",
+      "хризантема",
+      "хризантемами",
+      "хризантемы"
+    ],
+    "hydrangea": [
+      "hydrangea",
+      "гортензии",
+      "гортензий",
+      "гортензия",
+      "гортензиями"
+    ],
+    "orchid": [
+      "orchid",
+      "орхидеи",
+      "орхидей",
+      "орхидея",
+      "орхидеями",
+      "фаленопсис",
+      "фаленопсисы"
+    ],
+    "lily": [
+      "lilies",
+      "lily",
+      "лилии",
+      "лилий",
+      "лилия",
+      "лилиями"
+    ],
+    "gerbera": [
+      "gerbera",
+      "гербер",
+      "гербера",
+      "герберами",
+      "герберы"
+    ],
+    "eustoma": [
+      "eustoma",
+      "lisianthus",
+      "лизиантус",
+      "эустома",
+      "эустомами",
+      "эустомой",
+      "эустому",
+      "эустомы"
+    ],
+    "alstroemeria": [
+      "alstroemeria",
+      "альстромерии",
+      "альстромерий",
+      "альстромерия",
+      "альстромериями"
+    ],
+    "carnation": [
+      "carnation",
+      "гвоздик",
+      "гвоздика",
+      "гвоздиками",
+      "гвоздики"
+    ],
+    "hyacinth": [
+      "hyacinth",
+      "гиацинт",
+      "гиацинтами",
+      "гиацинтов",
+      "гиацинты"
+    ],
+    "ranunculus": [
+      "ranunculus",
+      "ранункулюс",
+      "ранункулюсами",
+      "ранункулюсы"
+    ],
+    "anemone": [
+      "anemone",
+      "анемон",
+      "анемонами",
+      "анемонов",
+      "анемоны"
+    ],
+    "freesia": [
+      "freesia",
+      "фрезии",
+      "фрезия",
+      "фрезиями"
+    ],
+    "gypsophila": [
+      "gypsophila",
+      "гипсофила",
+      "гипсофилой",
+      "гипсофилы"
+    ],
+    "sunflower": [
+      "sunflower",
+      "подсолнух",
+      "подсолнухами",
+      "подсолнухи",
+      "подсолнухов"
+    ],
+    "iris": [
+      "iris",
+      "ирис",
+      "ирисами",
+      "ирисы"
+    ],
+    "matthiola": [
+      "matthiola",
+      "матиола",
+      "матиолой",
+      "маттиола"
+    ],
+    "narcissus": [
+      "narcissus",
+      "нарцисс",
+      "нарциссами",
+      "нарциссы"
+    ],
+    "chamomile": [
+      "chamomile",
+      "ромашка",
+      "ромашками",
+      "ромашки"
+    ],
+    "statice": [
+      "статица",
+      "статице",
+      "statice"
+    ]
   }
 }

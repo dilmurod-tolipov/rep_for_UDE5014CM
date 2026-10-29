@@ -142,7 +142,7 @@ def _collect_shop(conn, run_id, shop, fetcher: Fetcher, summary: RunSummary, max
         if final.ok:
             try:
                 result = parser.parse(final.text, url)
-                if not result.items:
+                if not result.items and not result.extra_urls:
                     parse_error = "no products found on page (layout changed?)"
             except Exception as e:  # a parser bug must not lose the fetch evidence
                 parse_error = f"parser error: {type(e).__name__}: {e}"
@@ -170,6 +170,8 @@ def _collect_shop(conn, run_id, shop, fetcher: Fetcher, summary: RunSummary, max
             summary.pages_ok += 1
             if result.next_url:
                 queue.append(_with_query(result.next_url, query))
+            # Pages a sitemap or index points at (kamilas lists its products that way).
+            queue.extend(_with_query(u, query) for u in result.extra_urls)
         else:
             reason = parse_error or final.error or f"HTTP {final.status}"
             summary.errors.append(f"{shop['code']}: {url}: {reason}")

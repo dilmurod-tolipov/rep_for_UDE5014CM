@@ -23,54 +23,42 @@ def cmd_init_db(args) -> int:
     return 0
 
 
-def cmd_collect_secret(args) -> int:
-    from priceintel.collect.runner import CollectError
-    from priceintel.secret.collector import collect_secret
-    conn = _open_existing(args.secret_db)
+def cmd_import_reference(args) -> int:
+    """Import Secret's offers from the owner's own export (reference data, not primary data)."""
+    from priceintel.analysis.categories import load_rules
+    from priceintel.reference.offers import ImportError_, import_offers
+    conn = _open_existing(args.db)
     if conn is None:
         return 1
     try:
-        s = collect_secret(conn, args.channel, since_days=args.days, purpose=args.purpose,
-                           triggered_by=args.trigger)
-    except CollectError as e:
+        s = import_offers(conn, args.file, exported_at=args.exported_at,
+                          consent_note=args.consent_note, purpose=args.purpose,
+                          rules=load_rules(args.rules))
+    except (ImportError_, FileNotFoundError) as e:
         print(f"error: {e}")
         return 1
-    print(f"secret_shop run {s.run_id} [{args.purpose}] status={s.status}")
-    print(f"  pages ok/requested: {s.pages_ok}/{s.pages_requested}  prices saved: {s.prices_saved}"
-          f"  posts rejected: {s.posts_rejected}  older than {args.days} days: {s.posts_too_old}")
-    for e in s.errors[:10]:
-        print(f"  ! {e}")
-    return 0 if s.status in ("success", "partial") else 2
+    print(f"reference import {s.import_id} [{args.purpose}] from {args.file}")
+    print(f"  posts read: {s.rows_read}  offers stored: {s.rows_stored}  skipped: {s.rows_skipped}")
+    for line in s.skipped[:10]:
+        print(f"  - {line}")
+    return 0
 
 
-def cmd_snapshot_secret(args) -> int:
-    from priceintel.integrity import cross_db_orphans
-    from priceintel.secret.snapshot import snapshot_secret
-    market, secret = _open_existing(args.db), _open_existing(args.secret_db)
-    if market is None or secret is None:
-        return 1
-    run_id, n = snapshot_secret(market, secret, purpose=args.purpose, max_age_days=args.max_age_days)
-    problems = cross_db_orphans(market, secret)
-    print(f"market_intel run {run_id} [own_snapshot, {args.purpose}]: {n} Secret prices written")
-    print(f"cross-database check: {'OK' if not problems else f'{len(problems)} problem(s)'}")
-    for p in problems[:10]:
-        print(f"  ! {p}")
-    return 0 if not problems else 3
-
-
-def cmd_secret_prices(args) -> int:
-    conn = _open_existing(args.secret_db)
+def cmd_reference_report(args) -> int:
+    """Table 2: distinct Secret offers per category, with reposts collapsed."""
+    from priceintel.reference.offers import distinct_offers_by_category
+    conn = _open_existing(args.db)
     if conn is None:
         return 1
-    rows = conn.execute("SELECT * FROM v_current_prices ORDER BY published_at DESC LIMIT ?",
-                        (args.limit,)).fetchall()
+    rows = distinct_offers_by_category(conn, since=args.since, until=args.until)
     if not rows:
-        print("no Secret prices yet")
+        print("no reference offers imported yet")
         return 0
-    print(f"{'price UZS':>11} {'published (UTC)':20} {'observed (UTC)':20} {'run':>4} {'purpose':8} title / post")
+    window = f" ({args.since or 'start'} .. {args.until or 'now'})"
+    print(f"distinct Secret offers per category{window}; reposts counted once")
     for r in rows:
-        print(f"{r['price_uzs']:>11,} {r['published_at']:20} {r['observed_at']:20} {r['run_id']:>4} "
-              f"{r['purpose']:8} {r['title'][:45]}\n{'':67}{r['post_url']}")
+        print(f"  {str(r['category'] or 'unclassified'):24} {r['n_offers']:>5}")
+    print(f"  {'total':24} {sum(r['n_offers'] for r in rows):>5}")
     return 0
 
 
@@ -269,25 +257,22 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
     s.set_defaults(func=cmd_init_db)
 
-    s = sub.add_parser("collect-secret", help="read Secret's prices from its public Telegram channel")
-    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
-    s.add_argument("--channel", default="secret_flowersuz")
-    s.add_argument("--days", type=int, default=14, help="posts published in the last N days")
-    s.add_argument("--purpose", choices=["dev", "assessed"], default="dev")
-    s.add_argument("--trigger", choices=["manual", "scheduled"], default="manual")
-    s.set_defaults(func=cmd_collect_secret)
-
-    s = sub.add_parser("snapshot-secret", help="copy Secret's current prices into market_intel (own_system)")
+    s = sub.add_parser("import-reference",
+                       help="import Secret's offers from the owner's export (reference data)")
+    s.add_argument("file", help="Telegram Desktop export (result.json) or a CSV price log")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
-    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--exported-at", required=True, help="date the owner produced the file (YYYY-MM-DD)")
+    s.add_argument("--consent-note", required=True,
+                   help="how the owner agreed to the academic use and sharing of these prices")
     s.add_argument("--purpose", choices=["dev", "assessed"], default="dev")
-    s.add_argument("--max-age-days", type=int, default=2, help="only prices observed this recently")
-    s.set_defaults(func=cmd_snapshot_secret)
+    s.set_defaults(func=cmd_import_reference)
 
-    s = sub.add_parser("secret-prices", help="show Secret's current prices (secret_shop)")
-    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
-    s.add_argument("--limit", type=int, default=20)
-    s.set_defaults(func=cmd_secret_prices)
+    s = sub.add_parser("reference-report", help="Table 2: distinct Secret offers per category")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--since", help="first publication date to include (YYYY-MM-DD)")
+    s.add_argument("--until", help="last publication date to include (YYYY-MM-DD)")
+    s.set_defaults(func=cmd_reference_report)
 
     s = sub.add_parser("check-integrity", help="cross-database orphan check")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)

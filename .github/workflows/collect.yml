@@ -28,7 +28,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 90  # kamilas is one request per product
     env:
       PURPOSE: ${{ inputs.purpose || vars.COLLECT_PURPOSE || 'dev' }}
       TRIGGER: ${{ github.event_name == 'schedule' && 'scheduled' || 'manual' }}
@@ -57,8 +57,8 @@ jobs:
 
       - run: python -m priceintel init-db
 
-      - name: Collect competitor prices
-        run: python -m priceintel collect --shop uzflora --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
+      - name: Collect competitor prices (all four operator groups)
+        run: python -m priceintel collect --all --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
 
       # Secret's own prices are NOT collected here any more.
       # Reading the public Telegram channel (collect-secret) was disabled after Telegram's Content
@@ -67,8 +67,11 @@ jobs:
       # from the owner's own Telegram Desktop export, and will never be written into
       # price_observations (hence no snapshot-secret step either). See ADR-003 and the addendum.
 
-      - name: Cross-database integrity check
-        run: python -m priceintel check-integrity
+      - name: Categories and coverage (Table 1) + cross-database integrity
+        run: |
+          python -m priceintel classify
+          python -m priceintel category-report --purpose "$PURPOSE"
+          python -m priceintel check-integrity
 
       - name: Verified backups
         run: python -m priceintel backup --out backup

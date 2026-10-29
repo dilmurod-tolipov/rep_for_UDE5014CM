@@ -239,7 +239,8 @@ def coverage_rows(conn, rules_version: str, *, purpose: str | None = None) -> li
     Counting is over *listings*, not observations, so repeated price snapshots of the same product
     cannot inflate the counts (feedback point 4, 26/10/2026). With ``purpose`` only listings that
     were observed in a run of that purpose are counted, which keeps dev and assessed data apart."""
-    sql = ("SELECT s.operator, s.is_own_shop, c.category, COUNT(DISTINCT l.listing_id) AS n_listings"
+    sql = ("SELECT s.operator_group AS operator, s.is_own_shop, c.category,"
+           " COUNT(DISTINCT l.listing_id) AS n_listings"
            " FROM listing_categories c"
            " JOIN listings l ON l.listing_id = c.listing_id"
            " JOIN shops    s ON s.shop_id    = l.shop_id"
@@ -249,5 +250,6 @@ def coverage_rows(conn, rules_version: str, *, purpose: str | None = None) -> li
         sql += (" AND EXISTS (SELECT 1 FROM price_observations o JOIN scrape_runs r"
                 " ON r.run_id = o.run_id WHERE o.listing_id = l.listing_id AND r.purpose = ?)")
         params.append(purpose)
-    sql += " GROUP BY s.operator, s.is_own_shop, c.category ORDER BY s.operator, c.category"
+    sql += (" GROUP BY s.operator_group, s.is_own_shop, c.category"
+            " ORDER BY s.operator_group, c.category")
     return [dict(r) for r in conn.execute(sql, params).fetchall()]

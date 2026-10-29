@@ -1,11 +1,12 @@
-"""Secret channel captions: labelled price only, contacts removed, ambiguous posts rejected."""
+"""Caption parsing for Secret's offers: labelled price only, contacts removed, ambiguous posts
+rejected. The channel-page parser these rules were first written for was removed on 2026-10-29;
+the same functions now serve the owner-provided export (`priceintel/reference/offers.py`)."""
 from pathlib import Path
 
 import pytest
 
 from priceintel.collect.validate import Rejection
 from priceintel.secret.extract import clean_caption, extract_price, title_of
-from priceintel.secret.telegram import parse_channel_page
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -38,13 +39,3 @@ def test_contact_lines_are_removed_and_title_taken_from_first_line():
     assert "+998" not in cleaned and "@" not in cleaned and "t.me" not in cleaned
     assert title_of(cleaned, 1) == "Нежные пионы 🎀"
     assert title_of("Стоимость: 1.000.000", 7) == "Post 7"
-
-
-def test_channel_page_parsing():
-    html = (FIXTURES / "telegram_page1_synthetic.html").read_text(encoding="utf-8")
-    posts, older = parse_channel_page(html, "https://t.me/s/test_channel")
-    assert [p.post_id for p in posts] == [101, 104, 106, 108]
-    assert posts[0].post_url == "https://t.me/test_channel/101"
-    assert posts[0].published_at == "2026-10-17T05:00:00Z"      # +05:00 converted to UTC
-    assert "Стоимость: 1.180.000🤍" in posts[0].text.splitlines()   # <br/> became line breaks
-    assert older == "https://t.me/s/test_channel?before=101"

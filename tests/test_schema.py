@@ -12,8 +12,9 @@ def test_init_creates_schema_and_is_idempotent(tmp_path):
     from priceintel.db import init_market_db
     path = tmp_path / "m.db"
     applied, n = init_market_db(path, config.MARKET_MIGRATIONS, config.SHOPS_FILE)
-    assert applied == ["001_core.sql", "002_listing_site_category.sql",
-                       "003_listing_categories.sql"] and n == 10
+    # every migration in the folder, in order, on a clean database
+    assert applied == [f.name for f in sorted(config.MARKET_MIGRATIONS.glob("*.sql"))]
+    assert applied[0] == "001_core.sql" and n == 10
     applied_again, _ = init_market_db(path, config.MARKET_MIGRATIONS, config.SHOPS_FILE)
     assert applied_again == []
     conn = connect(path)

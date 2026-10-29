@@ -91,7 +91,13 @@ What one run does (`priceintel/collect/runner.py`):
    Invalid records go to `rejected_records` with the rule that failed and the raw payload.
 5. Marks the run `success` (>= 80% of pages fetched and parsed), `partial` or `failed`.
 
-Parsers available: `uzflora`. More shops are added at Checkpoint 2.
+Parsers: `uzflora` (WooCommerce cards), `probuket` (three currencies on one card - the UZS span is
+the one read), `loveflowers` (section pages; `/shop/` now builds its grid with a disallowed ajax
+endpoint), `kamilas` (catalogue is built in the browser, so the collector follows the sitemap the shop
+publishes and reads the schema.org Product block on each product page).
+
+One domain per operator group is collected; mirrors are registered and never crawled
+(`docs/compliance/source_groups.md`).
 
 ## Analysis categories
 
@@ -111,21 +117,21 @@ evidence (`listing_categories`). Re-running `classify` is idempotent; a new `rul
 set of assignments instead of overwriting the old one. Listings that no rule matches are stored as
 `unclassified` and reported as a count - they are excluded from the analysis, never dropped.
 
-## Collecting Secret's own prices
+## Secret's offers (reference data, not primary data)
 
-Secret publishes every bouquet with its price on its public Telegram channel
-(https://t.me/secret_flowersuz). The collector reads the public web preview into `secret_shop`,
-then a snapshot copies the current prices into `market_intel` (ADR-003).
+Secret's own offers are **reference data**: they are imported from an export the owner produces with
+Telegram Desktop, kept in their own table, and never written into `price_observations` or used by any
+model (ADR-007). Reading the channel automatically was withdrawn on 2026-10-29.
 
 ```bash
-python -m priceintel collect-secret --days 14             # posts from the last 14 days -> secret_shop
-python -m priceintel secret-prices --limit 20             # Secret's current prices (retrieval)
-python -m priceintel snapshot-secret                      # copy into market_intel as own_system rows
-python -m priceintel check-integrity                      # cross-database orphan check
+python -m priceintel import-reference path/to/result.json     --exported-at 2026-11-30 --consent-note "owner's written consent, 2026-11-30"
+python -m priceintel reference-report --since 2026-11-02 --until 2026-11-29   # Table 2
 ```
 
-Only labelled prices (`Стоимость:`, `Цена:`, `Все по:`) are accepted; posts without a price or with several
-different prices go to `rejected_posts`. Phone numbers and @handles are removed before captions are stored.
+The import records the file's SHA-256, strips contact lines, groups reposts (same title and price
+within 14 days) under one `offer_group_id`, and is idempotent: re-importing a longer export adds only
+the new posts. The real export is not committed; `tests/fixtures/telegram_export_synthetic.json` is a
+synthetic file in the same shape so the tests and a clean checkout work without it.
 
 ## Tests
 

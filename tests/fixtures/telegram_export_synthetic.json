@@ -1,0 +1,21 @@
+{
+  "name": "SYNTHETIC test channel (not Secret)",
+  "type": "public_channel",
+  "id": 1111111111,
+  "_comment": "Synthetic sample in the shape of a Telegram Desktop export (JSON, no media). Written for tests only: no real channel content. Covers a normal offer, a repost two days later, a post with no price, a post with two prices, a service message, and a caption with contact lines that must be stripped.",
+  "messages": [
+    {"id": 101, "type": "service", "date": "2026-11-02T09:00:00", "action": "edit_group_photo"},
+    {"id": 102, "type": "message", "date": "2026-11-02T09:15:00",
+     "text": "Нежный букет из роз и эустомы\nСтоимость: 1 250 000"},
+    {"id": 103, "type": "message", "date": "2026-11-02T18:40:00",
+     "text": "Композиция в коробке с пионами\nСтоимость: 2 400 000\n+998 90 000 00 00\n@example_handle"},
+    {"id": 104, "type": "message", "date": "2026-11-04T10:05:00",
+     "text": "Нежный букет из роз и эустомы\nСтоимость: 1 250 000"},
+    {"id": 105, "type": "message", "date": "2026-11-05T11:00:00",
+     "text": "Доброе утро! Сегодня работаем с 9 до 21"},
+    {"id": 106, "type": "message", "date": "2026-11-06T12:00:00",
+     "text": "Два варианта\nСтоимость: 900 000\nСтоимость: 1 500 000"},
+    {"id": 107, "type": "message", "date": "2026-11-20T12:00:00",
+     "text": "Нежный букет из роз и эустомы\nСтоимость: 1 250 000"}
+  ]
+}

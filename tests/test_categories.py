@@ -41,7 +41,7 @@ def add_listing(conn, run_id, title, *, shop="uzflora", url=None, site_category=
 # ---------------------------------------------------------------------------
 
 def test_rules_file_loads_and_declares_only_text_fields(rules):
-    assert rules.version == "1.0.0"
+    assert rules.version == "1.1.0"
     assert len(rules.sha256) == 64
     declared = json.loads(config.CATEGORY_RULES_FILE.read_text(encoding="utf-8"))["fields_used"]
     assert declared == ["title", "url_path", "site_category"]
@@ -109,6 +109,9 @@ def test_flower_types_in_title(rules, title, expected):
     # Bouquet section, nothing said about the flowers -> composition unknown, never guessed
     ("Нежный флёр", "8-marta,bukety", "https://uzflora.com/product/nezhnyj-flyor/",
      "bouquets_unspecified", "S05"),
+    # A Secret channel caption: no section slug at all, the word "букеты" is the only type evidence
+    ("Прекрасные букеты для любимой", None, None, "bouquets_unspecified", "S05"),
+    ("Изящная композиция с тюльпанами и пионами", None, None, "mixed_bouquets", "S05"),
     ("Фата-моргана", "czvetochnye-kompoziczii", "https://uzflora.com/product/fata-morgana/",
      "bouquets_unspecified", "S05"),
     # Boxes and baskets
@@ -209,6 +212,6 @@ def test_coverage_counts_distinct_listings_not_observations(market_db, rules):
 
     classify_listings(market_db, rules)
     rows = coverage_rows(market_db, rules.version)
-    assert rows == [{"operator": "Uzflora", "is_own_shop": 0, "category": "roses_mono",
+    assert rows == [{"operator": "UZFLORA", "is_own_shop": 0, "category": "roses_mono",
                      "n_listings": 1}]
     assert coverage_rows(market_db, rules.version, purpose="dev") == []
