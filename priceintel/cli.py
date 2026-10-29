@@ -140,6 +140,16 @@ def cmd_snapshot(args) -> int:
     return 0
 
 
+def cmd_dashboard(args) -> int:
+    """Serve the dashboard over both databases."""
+    from priceintel.web.app import serve
+    if not Path(args.db).exists():
+        print(f"error: {args.db} does not exist; run `python -m priceintel init-db` first")
+        return 1
+    secret = Path(args.secret_db) if Path(args.secret_db).exists() else None
+    return serve(args.db, secret, host=args.host, port=args.port)
+
+
 def cmd_check_integrity(args) -> int:
     from priceintel.integrity import cross_db_orphans
     market, secret = _open_existing(args.db), _open_existing(args.secret_db)
@@ -380,6 +390,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--include-reference", action="store_true",
                    help="also export Secret's reference offers (submission package only)")
     s.set_defaults(func=cmd_snapshot)
+
+    s = sub.add_parser("dashboard", help="serve the dashboard (both databases) on localhost")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--host", default="127.0.0.1")
+    s.add_argument("--port", type=int, default=8000)
+    s.set_defaults(func=cmd_dashboard)
 
     s = sub.add_parser("check-integrity", help="cross-database orphan check")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)

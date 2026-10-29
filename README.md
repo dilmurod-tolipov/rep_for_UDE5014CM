@@ -117,6 +117,24 @@ evidence (`listing_categories`). Re-running `classify` is idempotent; a new `rul
 set of assignments instead of overwriting the old one. Listings that no rule matches are stored as
 `unclassified` and reported as a count - they are excluded from the analysis, never dropped.
 
+## Dashboard
+
+```bash
+python -m priceintel dashboard            # http://127.0.0.1:8000/
+python -m priceintel dashboard --port 8731
+```
+
+Six pages over **both** databases - overview, price position, coverage, price changes, market and
+discounts, data quality - plus a JSON API at `/api/<query name>.json` for every stakeholder query.
+The pages are driven by the same `sql/queries/*.sql` files as the command line, so a number on a page
+and a number in the report have one source.
+
+It is built on the standard library (`http.server`) with hand-written inline SVG charts, so nothing
+beyond the pinned dependencies is needed to run it. Input is validated against what the database
+actually holds: `?purpose=banana` returns 400 and lists the real options rather than silently showing
+something else. The dashboard only ever reads; the cross-database integrity check runs on every load
+of the overview page and is shown there.
+
 ## Stakeholder queries, data quality and snapshots
 
 ```bash
