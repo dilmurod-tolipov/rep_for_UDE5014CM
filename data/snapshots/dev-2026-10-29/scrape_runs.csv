@@ -1,0 +1,6 @@
+run_id,kind,purpose,triggered_by,started_at,finished_at,status,git_commit,git_dirty,scraper_version,runner_host,pages_requested,pages_ok,observations_saved,records_rejected,error_message
+1,competitor_scrape,dev,manual,2026-10-17T17:45:15Z,2026-10-17T17:46:07Z,success,f250170342b787553d652a3e430e2254aae17a49,1,0.1.0,Anick,10,10,154,0,
+3,competitor_scrape,dev,manual,2026-10-29T12:40:30Z,2026-10-29T12:41:38Z,success,74ad72f2ec8df1692df3b9ff2cf9e3d763f6d39b,1,0.1.0,Anick,12,11,218,0,loveflowers: https://loveflowers.uz/shop/: no products found on page (layout changed?)
+4,competitor_scrape,dev,manual,2026-10-29T12:43:55Z,2026-10-29T12:44:38Z,success,74ad72f2ec8df1692df3b9ff2cf9e3d763f6d39b,1,0.1.0,Anick,7,7,354,0,
+5,competitor_scrape,dev,manual,2026-10-29T12:44:45Z,2026-10-29T12:49:45Z,success,74ad72f2ec8df1692df3b9ff2cf9e3d763f6d39b,1,0.1.0,Anick,60,60,14,44,
+6,competitor_scrape,dev,manual,2026-10-29T12:50:16Z,2026-10-29T12:52:51Z,success,74ad72f2ec8df1692df3b9ff2cf9e3d763f6d39b,1,0.1.0,Anick,31,31,7,22,

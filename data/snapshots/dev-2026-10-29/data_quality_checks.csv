@@ -1,0 +1,10 @@
+check_run_id,run_at,purpose,check_name,scope,measured,threshold,unit,status,detail
+1,2026-10-29T13:35:38Z,dev,products_collected,all,586.0,300.0,count,pass,"distinct competitor products, mirrors excluded by design"
+2,2026-10-29T13:35:38Z,dev,runs_completed,all,5.0,50.0,count,fail,
+3,2026-10-29T13:35:38Z,dev,run_success_rate,all,100.0,95.0,percent,pass,5 of 5 runs
+4,2026-10-29T13:35:38Z,dev,quarantine_rate,all,8.1,5.0,percent,fail,66 of 813 parsed records; most common rule: missing_price (66)
+5,2026-10-29T13:35:38Z,dev,unclassified_rate,all,11.6,25.0,percent,pass,68 of 586 products excluded by the rules
+6,2026-10-29T13:35:38Z,dev,price_outlier_rate,all,5.3,2.0,percent,fail,"31 products above 10x their category median; counted, not removed - the robustness checks handle them"
+7,2026-10-29T13:35:38Z,dev,freshness_days,all,0.03,1.0,days,pass,newest observation: 2026-10-29T12:52:51Z
+8,2026-10-29T13:35:38Z,dev,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
+9,2026-10-29T13:35:38Z,dev,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
