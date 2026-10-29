@@ -170,6 +170,57 @@ def cmd_listings(args) -> int:
     return 0
 
 
+def cmd_classify(args) -> int:
+    """Assign categories to stored listings from the versioned rules file."""
+    from priceintel.analysis.categories import RulesError, classify_listings, load_rules
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    try:
+        rules = load_rules(args.rules)
+        counts = classify_listings(conn, rules, shop_codes=args.shop or None)
+    except RulesError as e:
+        print(f"error: {e}")
+        return 1
+    print(f"rules {rules.version} ({rules.source_file}, sha256 {rules.sha256[:12]}...)")
+    print(f"listings classified: {sum(counts.values())}")
+    for code in rules.categories:
+        if counts.get(code):
+            print(f"  {code:22} {counts[code]:>5}")
+    excluded = counts.get("out_of_scope", 0) + counts.get("unclassified", 0)
+    print(f"  (excluded from analysis: {excluded} = out_of_scope + unclassified)")
+    return 0
+
+
+def cmd_category_report(args) -> int:
+    """Table 1: distinct listings per category and operator group, for one rules version."""
+    from priceintel.analysis.categories import coverage_rows, load_rules
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    version = args.rules_version or load_rules(args.rules).version
+    rows = coverage_rows(conn, version, purpose=args.purpose)
+    if not rows:
+        print(f"no classifications for rules version {version}; run `classify` first")
+        return 0
+    operators = sorted({r["operator"] for r in rows})
+    categories = sorted({r["category"] for r in rows})
+    n = {(r["operator"], r["category"]): r["n_listings"] for r in rows}
+    own = {r["operator"] for r in rows if r["is_own_shop"]}
+    scope = f", purpose={args.purpose}" if args.purpose else ""
+    print(f"distinct listings per category and operator group (rules {version}{scope})")
+    print(f"{'category':22}" + "".join(f"{o[:13]:>15}" for o in operators) + f"{'total':>8}")
+    for cat in categories:
+        cells = "".join(f"{n.get((o, cat), 0):>15,}" for o in operators)
+        print(f"{cat:22}{cells}{sum(n.get((o, cat), 0) for o in operators):>8,}")
+    print(f"{'total':22}" + "".join(
+        f"{sum(n.get((o, c), 0) for c in categories):>15,}" for o in operators))
+    for o in operators:
+        if o in own:
+            print(f"note: {o} is the own shop (reference data), not a competitor group")
+    return 0
+
+
 def cmd_runs(args) -> int:
     conn = _open_existing(args.db)
     if conn is None:
@@ -275,6 +326,20 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--run", type=int, help="only listings whose latest observation is from this run")
     s.add_argument("--limit", type=int, default=20)
     s.set_defaults(func=cmd_listings)
+
+    s = sub.add_parser("classify", help="assign analysis categories to stored listings (text only)")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--shop", action="append", default=[], help="shop code (repeatable; default: all)")
+    s.set_defaults(func=cmd_classify)
+
+    s = sub.add_parser("category-report", help="Table 1: distinct listings per category and operator")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--rules-version", help="report an older rules version instead of the current file")
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"],
+                   help="only listings observed in runs of this purpose")
+    s.set_defaults(func=cmd_category_report)
 
     s = sub.add_parser("runs", help="show recent collection runs")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)

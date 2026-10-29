@@ -93,6 +93,24 @@ What one run does (`priceintel/collect/runner.py`):
 
 Parsers available: `uzflora`. More shops are added at Checkpoint 2.
 
+## Analysis categories
+
+Categories are defined by a versioned rules file that is committed and tagged **before** any analysis
+run, and are derived from text only - the product title, the section part of the URL and the shop's own
+section slugs. Price, old price and sale state are never read; price-band slugs (`nedorogie-czvety`),
+promotion slugs (`aktsii-*`, `topsale`) and occasion slugs (`8-marta`) are deliberately ignored
+(ADR-006).
+
+```bash
+python -m priceintel classify --shop uzflora      # assign categories from config/category_rules.v1.json
+python -m priceintel category-report --purpose dev  # Table 1: distinct listings per category and operator
+```
+
+Each assignment records the rules version, the SHA-256 of the rules file, which rule fired and on what
+evidence (`listing_categories`). Re-running `classify` is idempotent; a new `rules_version` adds a new
+set of assignments instead of overwriting the old one. Listings that no rule matches are stored as
+`unclassified` and reported as a count - they are excluded from the analysis, never dropped.
+
 ## Collecting Secret's own prices
 
 Secret publishes every bouquet with its price on its public Telegram channel

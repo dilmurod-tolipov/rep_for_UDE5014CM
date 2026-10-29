@@ -10,6 +10,8 @@ CONFIG_DIR = REPO_ROOT / "config"
 MARKET_DB = DATA_DIR / "market_intel.db"
 MARKET_MIGRATIONS = SQL_DIR / "market_intel"
 SHOPS_FILE = CONFIG_DIR / "shops.json"
+# Versioned, price-independent category rules (ADR-006); tagged before any analysis run.
+CATEGORY_RULES_FILE = CONFIG_DIR / "category_rules.v1.json"
 
 SECRET_DB = DATA_DIR / "secret_shop.db"
 SECRET_MIGRATIONS = SQL_DIR / "secret_shop"
