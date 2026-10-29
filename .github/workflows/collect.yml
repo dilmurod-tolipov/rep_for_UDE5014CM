@@ -1,4 +1,5 @@
-# Scheduled collection every 12 hours (objective O1, ADR-005).
+# Scheduled collection of COMPETITOR catalogues every 12 hours (objective O1, ADR-005).
+# Secret's own prices are not collected by this workflow (see the comment at the Secret step below).
 # Databases travel between runs as a workflow artifact; each run restores the previous one,
 # collects, and uploads verified backups. Purpose stays 'dev' until approval is recorded; then
 # set the repository variable COLLECT_PURPOSE=assessed (assessed runs require a clean checkout,
@@ -59,11 +60,15 @@ jobs:
       - name: Collect competitor prices
         run: python -m priceintel collect --shop uzflora --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
 
-      - name: Collect Secret's prices
-        run: python -m priceintel collect-secret --days 14 --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::Secret run did not succeed (status is recorded in collection_runs)"
+      # Secret's own prices are NOT collected here any more.
+      # Reading the public Telegram channel (collect-secret) was disabled after Telegram's Content
+      # Licensing and AI Scraping Terms were reviewed, as stated to the Module Leader on 26/10/2026.
+      # Secret's offers will arrive instead as a separately identified reference dataset, imported
+      # from the owner's own Telegram Desktop export, and will never be written into
+      # price_observations (hence no snapshot-secret step either). See ADR-003 and the addendum.
 
-      - name: Copy Secret's prices into market_intel and check cross-database integrity
-        run: python -m priceintel snapshot-secret --purpose "$PURPOSE"
+      - name: Cross-database integrity check
+        run: python -m priceintel check-integrity
 
       - name: Verified backups
         run: python -m priceintel backup --out backup
