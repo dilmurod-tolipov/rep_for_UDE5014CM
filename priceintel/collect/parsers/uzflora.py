@@ -52,6 +52,10 @@ def parse(html: str, page_url: str) -> PageResult:
             availability=availability,
             external_id=post_id,
             site_category=",".join(cats) or None,
+            # The theme shows one price per card, in whichever currency the switcher returns; QUERY
+            # above asks for UZS and the label is stored so that can be checked (ADR-008).
+            variant_label=None,
+            composition_text=None,
         ))
     nxt = soup.select_one("a.next.page-numbers")
     return PageResult(items, urljoin(page_url, nxt["href"]) if nxt and nxt.get("href") else None)

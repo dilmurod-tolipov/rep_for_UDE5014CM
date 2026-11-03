@@ -4,6 +4,7 @@ silently, no price anywhere in the decision, and idempotent storage.
 The titles below are synthetic but written in the same style as the real catalogues seen in the
 development crawl (poetic bouquet names, Russian flower names, WooCommerce section slugs)."""
 import json
+import re
 
 import pytest
 
@@ -41,7 +42,9 @@ def add_listing(conn, run_id, title, *, shop="uzflora", url=None, site_category=
 # ---------------------------------------------------------------------------
 
 def test_rules_file_loads_and_declares_only_text_fields(rules):
-    assert rules.version == "1.1.0"
+    # The version is read from the file, not hard-coded: bumping it is routine, and
+    # test_rules_version_cannot_be_reused_for_different_rules is what guards the bump.
+    assert re.fullmatch(r"\d+\.\d+\.\d+", rules.version)
     assert len(rules.sha256) == 64
     declared = json.loads(config.CATEGORY_RULES_FILE.read_text(encoding="utf-8"))["fields_used"]
     assert declared == ["title", "url_path", "site_category"]

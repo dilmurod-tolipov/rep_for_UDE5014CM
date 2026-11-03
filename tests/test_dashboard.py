@@ -113,7 +113,8 @@ def test_api_rejects_an_unknown_query(db):
 
 
 def test_product_prices_collapse_repeated_observations(db):
-    prices = product_prices(db.market, Selection(purpose="test", rules_version="1.1.0"))
+    version = load_rules(config.CATEGORY_RULES_FILE).version
+    prices = product_prices(db.market, Selection(purpose="test", rules_version=version))
     assert sorted(prices) == [200_000, 300_000, 400_000]
 
 

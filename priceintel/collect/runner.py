@@ -96,11 +96,13 @@ def _store_item(conn, run_id, fetch_id, shop_id, item, observed_at) -> bool:
     ).fetchone()[0]
     cur = conn.execute(
         "INSERT INTO price_observations (listing_id, run_id, fetch_id, observed_at, source_type,"
-        " title, price_uzs, old_price_uzs, is_from_price, availability, raw_price_text)"
-        " VALUES (?, ?, ?, ?, 'scrape', ?, ?, ?, ?, ?, ?)"
+        " title, price_uzs, old_price_uzs, is_from_price, availability, raw_price_text,"
+        " currency_shown, variant_label, composition_text)"
+        " VALUES (?, ?, ?, ?, 'scrape', ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         " ON CONFLICT (listing_id, run_id) DO NOTHING",
         (listing_id, run_id, fetch_id, observed_at, item.title, item.price_uzs, item.old_price_uzs,
-         int(item.is_from_price), item.availability, item.raw_price_text),
+         int(item.is_from_price), item.availability, item.raw_price_text, item.currency_shown,
+         item.variant_label, item.composition_text),
     )
     return cur.rowcount == 1
 

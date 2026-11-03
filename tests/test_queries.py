@@ -16,8 +16,11 @@ from tests.conftest import TS, add_fetch, add_run, shop_id
 QUERIES = available(config.QUERIES_DIR)
 
 
+RULES_VERSION = load_rules(config.CATEGORY_RULES_FILE).version
+
+
 def params(**over):
-    base = {"rules_version": "1.1.0", "purpose": "test", "min_items": 3, "limit": 20}
+    base = {"rules_version": RULES_VERSION, "purpose": "test", "min_items": 3, "limit": 20}
     return base | over
 
 

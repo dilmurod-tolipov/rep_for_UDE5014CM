@@ -7,8 +7,11 @@
 | Student | Dilmurod Tolipov (50000161) |
 | Module Leader | Sanjar Bekov |
 | Approval route | University email |
-| Approval status | **Awaiting the Module Leader's decision on v2** |
-| Approval date / reference | <!-- FILL IN when Mr Bekov records "Approved": date and subject line --> |
+| Approval status | **APPROVED** by the Module Leader, by University email |
+| Approval date | 2026-11-03 <!-- student: confirm the exact timestamp in Outlook and correct if needed --> |
+| Approval reference | Email from Sanjar Bekov, subject "Re: UDE5014CM Assessment 2 - updated method and Telegram collection route", body begins "Thank you. Approved." Saved in `docs/emails/`. |
+| Approved collection window | **9 November - 6 December 2026** (28 days), set by the Module Leader |
+| Submission deadline | **14 December 2026** |
 
 ## Approval history (from the email thread)
 
@@ -18,10 +21,18 @@
 | Mon 2026-10-05 | Sanjar Bekov | Suitable in principle; **revisions required** (8 points) before formal approval |
 | Sat 2026-10-17 21:40 | Student | v2: "Revised proposal for formal approval", answering all 8 points |
 | Sat 2026-10-17 23:20 | Student | Update to v2: independent sources (ADR-001), Secret's prices from its Telegram channel (ADR-003), hypothesis options A/B (ADR-004) |
-| — | Sanjar Bekov | *(decision pending)* |
+| Mon 2026-10-26 | Sanjar Bekov | Revisions required (4 points): primary vs reference data, feasible sampling plan, bootstrap and percentage, modelling plan |
+| Thu 2026-10-29 | Student | Completed addendum answering all four points, with Table 1 from the development crawl |
+| Tue 2026-11-03 | Sanjar Bekov | **Approved**, covering the four operator groups and the reference-only arrangement, with four implementation clarifications (ADR-008) |
 
-Until approval is recorded, **no assessed primary data is collected** (as promised in v2):
-the collector only runs with `purpose = dev`, and those rows are excluded from the analysis.
+Assessed collection runs **only inside the approved window** (9 November - 6 December 2026) and only
+from committed, unmodified code. Everything collected before 9 November is `purpose = dev` and is
+excluded from the assessed dataset and from the analysis; the scheduled workflow decides the purpose
+from the date, so it cannot be set by hand or forgotten.
+
+The approval email's four clarifications are implemented and recorded in
+`docs/decisions/ADR-008-approval-clarifications.md`, with the dated figures in
+`docs/analysis_plan.md`.
 
 This page summarises the v2 proposal. The emails themselves are the authoritative record.
 Later changes are recorded as ADRs in `docs/decisions/`.

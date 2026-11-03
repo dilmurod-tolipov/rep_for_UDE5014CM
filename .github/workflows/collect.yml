@@ -1,14 +1,19 @@
 # Scheduled collection of COMPETITOR catalogues every 12 hours (objective O1, ADR-005).
 # Secret's own prices are not collected by this workflow (see the comment at the Secret step below).
+#
+# The APPROVED WINDOW is 2026-11-09 to 2026-12-06 inclusive (Module Leader, 2026-11-03). The job
+# works out the purpose from the date rather than from a repository variable: inside the window a run
+# is 'assessed', outside it the run is 'dev'. A date cannot be forgotten, and no assessed row can be
+# created before approval or after the window closes - which is also why no test record can ever be
+# relabelled as assessed data.
 # Databases travel between runs as a workflow artifact; each run restores the previous one,
-# collects, and uploads verified backups. Purpose stays 'dev' until approval is recorded; then
-# set the repository variable COLLECT_PURPOSE=assessed (assessed runs require a clean checkout,
-# which a fresh CI checkout always is).
+# collects, and uploads verified backups. Assessed runs require committed, unmodified code, which a
+# fresh CI checkout always is.
 name: collect
 
 on:
   schedule:
-    - cron: "0 1,13 * * *"   # 06:00 and 18:00 Asia/Tashkent (UTC+5)
+    - cron: "0 3,15 * * *"   # 08:00 and 20:00 Asia/Tashkent (UTC+5), as approved
   workflow_dispatch:
     inputs:
       purpose:
@@ -30,11 +35,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90  # kamilas is one request per product
     env:
-      PURPOSE: ${{ inputs.purpose || vars.COLLECT_PURPOSE || 'dev' }}
+      WINDOW_START: "2026-11-09"
+      WINDOW_END: "2026-12-06"
+      FORCED_PURPOSE: ${{ inputs.purpose }}
       TRIGGER: ${{ github.event_name == 'schedule' && 'scheduled' || 'manual' }}
       GH_TOKEN: ${{ github.token }}
       PYTHONIOENCODING: utf-8
     steps:
+      - name: Decide the purpose from the approved window
+        shell: bash
+        run: |
+          # ISO dates compare correctly as strings, so no date arithmetic is needed.
+          today=$(TZ=Asia/Tashkent date +%F)
+          if [[ -n "$FORCED_PURPOSE" ]]; then
+            purpose="$FORCED_PURPOSE"                                  # manual run: operator chose
+          elif [[ "$today" < "$WINDOW_START" || "$today" > "$WINDOW_END" ]]; then
+            purpose=dev                                                # outside the approved window
+          else
+            purpose=assessed
+          fi
+          echo "PURPOSE=$purpose" >> "$GITHUB_ENV"
+          echo "Tashkent date $today, approved window $WINDOW_START..$WINDOW_END -> purpose=$purpose"
+
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:

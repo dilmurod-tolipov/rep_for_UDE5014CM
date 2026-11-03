@@ -85,5 +85,8 @@ def parse(html: str, page_url: str) -> PageResult:
             availability=AVAILABILITY.get(availability, "unknown"),
             external_id=None,
             site_category=product.get("category"),
+            variant_label=None,
+            # The Product block's description is the shop's own statement of what is in the bouquet.
+            composition_text=(product.get("description") or None),
         ))
     return PageResult(items, None)

@@ -25,7 +25,7 @@ import json
 import re
 import unicodedata
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -53,6 +53,7 @@ class Rules:
     sections: list[dict]
     split: dict[str, str]
     flower_lexicon: dict[str, list[str]]
+    price_unit: dict = field(default_factory=dict)   # see priceintel/analysis/features.py
     source_file: str = ""
     sha256: str = ""
 
@@ -103,6 +104,8 @@ def load_rules(path: Path | str) -> Rules:
         raise RulesError(f"categories must declare {UNCLASSIFIED!r} for listings no rule matched")
     return Rules(data["rules_version"], data.get("effective_from", ""), categories,
                  data["exclusions"], data["sections"], split, data["flower_lexicon"],
+                 price_unit={k: v for k, v in data.get("price_unit", {}).items()
+                             if not k.startswith("_")},
                  source_file=Path(path).name,
                  sha256=hashlib.sha256(text.encode("utf-8")).hexdigest())
 

@@ -52,15 +52,20 @@ def parse(html: str, page_url: str) -> PageResult:
             availability = "in_stock"
         else:
             availability = "unknown"
+        composition = card.select_one(".hide-bl")
         items.append(RawItem(
             url=urljoin(page_url, link["href"]) if link else None,
             title=link.get_text(" ", strip=True) if link else None,
             price_text=_uzs(card.select_one(".price")),
             old_price_text=_uzs(card.select_one(".price-old")),
+            # The card prints UZS, USD and RUB; `_uzs` reads the span the shop labels UZS and the
+            # label is stored, so the choice can be audited. Nothing is ever converted (ADR-008).
             currency="UZS" if card.select_one('.price .pay_arr[data-pay="UZS"]') else None,
             availability=availability,
             external_id=card.get("data-id"),
             site_category=card.get("data-cat"),
+            variant_label=None,   # the catalogue card shows one price; sizes are separate products
+            composition_text=composition.get_text(" ", strip=True) if composition else None,
         ))
     # Pagination: "/catalog/page/2/" style links, if the theme renders them.
     nxt = soup.select_one("a.next.page-numbers, a.next")

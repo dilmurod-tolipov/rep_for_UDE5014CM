@@ -16,10 +16,19 @@ What the importer does, and why:
 * **Records provenance.** Each import row keeps the file name, its SHA-256, the export date and the
   consent note. Importing the same file twice is refused by the UNIQUE constraint on the hash;
   re-importing an updated export adds only the posts that are new, because ``post_url`` is unique.
-* **Groups reposts.** The Module Leader's point 2: "a different message ID does not necessarily
-  represent an independent product". Posts with the same normalised title and the same price within
-  ``REPOST_WINDOW_DAYS`` days share an ``offer_group_id`` and count as one offer, dated by its first
-  publication.
+* **Groups reposts across the whole window.** The Module Leader's clarification of 2026-11-03:
+  "An identifiable offer should not become a new independent item solely because its price changes or
+  14 days pass." Identity is therefore the **normalised title**, checked against every offer already
+  imported, with no time limit and no price condition:
+
+  - same title, same price -> ``exact``: plainly the same offer reposted;
+  - same title, different price -> ``uncertain``: the same offer at a new price, or a different
+    bouquet reusing a caption. It joins the same group, is flagged, and a robustness check re-runs
+    the comparison with uncertain groups excluded;
+  - no earlier match -> ``unique``.
+
+  A distinct offer is summarised by the **median** of the prices it was posted at, is dated by its
+  first publication, and counts once however often it reappears.
 * **Classifies with the committed rules**, so a reference offer and a competitor product are put in
   the same category by exactly the same file.
 
@@ -30,7 +39,6 @@ import csv
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from pathlib import Path
 
 from priceintel.analysis.categories import Rules, classify, normalise, register_rules
@@ -38,7 +46,8 @@ from priceintel.collect.validate import Rejection
 from priceintel.db import transaction
 from priceintel.secret.extract import clean_caption, extract_price, title_of
 
-REPOST_WINDOW_DAYS = 14
+# Identity is title-based and has no time limit (ADR-008). A title that differs by more than
+# punctuation or case is a different offer; nothing is matched by price alone.
 CHANNEL_URL = "https://t.me/secret_flowersuz"
 
 
@@ -133,22 +142,18 @@ def parse_csv(path: Path) -> tuple[list[ParsedOffer], list[str], int]:
     return offers, skipped, read
 
 
-def _group_key(offer: ParsedOffer) -> tuple[str, int]:
-    return normalise(offer.title).strip(), offer.price_uzs
-
-
-def _repost_of(conn, offer: ParsedOffer) -> int | None:
-    """The offer_group_id of an earlier post with the same title and price inside the window."""
-    since = (datetime.fromisoformat(offer.published_at.rstrip("Z"))
-             - timedelta(days=REPOST_WINDOW_DAYS)).isoformat()
+def _repost_of(conn, offer: ParsedOffer) -> tuple[int | None, str]:
+    """(offer_group_id, confidence) for an earlier post of the same offer, searched over the whole
+    import rather than a 14-day window. A price change does not create a new offer; it makes the
+    match ``uncertain`` so it can be excluded in a robustness check."""
+    title = normalise(offer.title).strip()
     for row in conn.execute(
-            "SELECT offer_id, offer_group_id, title FROM reference_offers"
-            " WHERE price_uzs = ? AND published_at >= ? AND published_at <= ?"
-            " ORDER BY published_at DESC",
-            (offer.price_uzs, f"{since}Z", offer.published_at)):
-        if normalise(row["title"]).strip() == normalise(offer.title).strip():
-            return row["offer_group_id"]
-    return None
+            "SELECT offer_group_id, title, price_uzs FROM reference_offers"
+            " ORDER BY published_at ASC, offer_id ASC"):
+        if normalise(row["title"]).strip() == title:
+            return row["offer_group_id"], ("exact" if row["price_uzs"] == offer.price_uzs
+                                           else "uncertain")
+    return None, "unique"
 
 
 def import_offers(conn, path: Path | str, *, exported_at: str, consent_note: str,
@@ -181,16 +186,22 @@ def import_offers(conn, path: Path | str, *, exported_at: str, consent_note: str
             if rules is not None:
                 category = classify(offer.title, None, None, rules).category
                 rules_version = rules.version
-            group = _repost_of(conn, offer)
+            group, confidence = _repost_of(conn, offer)
             offer_id = conn.execute(
                 "INSERT INTO reference_offers (import_id, post_id, post_url, published_at, title,"
-                " price_uzs, raw_price_text, offer_group_id, category, rules_version)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, 0), ?, ?) RETURNING offer_id",
+                " price_uzs, raw_price_text, offer_group_id, category, rules_version,"
+                " match_confidence) VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, 0), ?, ?, ?)"
+                " RETURNING offer_id",
                 (import_id, offer.post_id, offer.post_url, offer.published_at, offer.title,
-                 offer.price_uzs, offer.raw_price_text, group, category, rules_version)).fetchone()[0]
+                 offer.price_uzs, offer.raw_price_text, group, category, rules_version,
+                 confidence)).fetchone()[0]
             if group is None:   # first post of its group: the group is the offer itself
                 conn.execute("UPDATE reference_offers SET offer_group_id = ? WHERE offer_id = ?",
                              (offer_id, offer_id))
+            if confidence == "uncertain":
+                summary.skipped.append(
+                    f"post {offer.post_id}: same caption as an earlier offer at a different price "
+                    f"({offer.price_uzs:,} UZS) - grouped, flagged uncertain")
             summary.rows_stored += 1
         summary.rows_skipped = len(summary.skipped)
         conn.execute("UPDATE reference_imports SET rows_read = ?, rows_stored = ?, rows_skipped = ?"

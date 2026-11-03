@@ -1,7 +1,8 @@
 # Analysis plan (final, for approval)
 
-Version 1.0, 2026-10-29. Answers the Module Leader's points of 26/10/2026. Categories are fixed by
-`config/category_rules.v1.json` (rules 1.1.0, tag `category-rules-v1.1.0`) **before** any analysis.
+Version 2.0, 2026-11-03, after the **approval decision of 3 November 2026** and its four
+clarifications (ADR-008). Categories and price-unit rules are fixed by
+`config/category_rules.v1.json` (rules 1.2.2) **before** any analysis.
 
 ## 1. Primary data and reference data
 
@@ -17,63 +18,63 @@ Four operator groups are collected, one domain each: `PROBUKET`, `UZFLORA`, `LOV
 `KAMILAS`. Mirrors are registered and never crawled, so they cannot inflate any count
 (`docs/compliance/source_groups.md`, migration 004, `tests/test_source_groups.py`).
 
-## 2. Sampling plan
+## 2. Sampling plan (approved)
 
-- **Window:** 28 days, starting the first Monday after the approval date. Secret's export is taken
-  once, after the window closes, and covers it.
-- **Cadence:** 08:00 and 20:00 Asia/Tashkent = **56 scheduled runs**. Target at least 50 completed
-  runs. A *completed* run attempts every active group's catalogue pages and ends with a recorded
-  status; a *successful* run has at least 80% of requested pages returning HTTP 200 and parsing;
-  success rate = successful / scheduled, missed runs counting as failures (target 95%).
-- **Units.** One competitor product = one distinct listing (`UNIQUE (shop_id, url)`), its window
-  observations collapsed to one regular price (the median). One Secret offer = one distinct
-  `offer_group_id`, dated by first publication; reposts (same normalised title and price within 14
-  days) count once. Repeated observations are never counted as new products.
-- **Minimum evidence for a displayed comparison:** at least **10 distinct Secret offers** in the
-  category **and** at least **10 distinct products from that operator group** in the same category.
-  Otherwise the cell reads "insufficient evidence" with both counts. This replaces the earlier
-  "20 products across 3 groups", which could still leave an individual comparison with very few items.
-- **Too few Secret offers.** Checked at Day 21 from the counts only. Categories whose Secret count is
-  below 10 are merged by the count-only rule (the three bouquet categories first), before any price is
-  looked at, and the merge is logged with the counts that triggered it. If a category is still below
-  10 it is reported as insufficient evidence; the window is extended to Day 42 only if the timetable
-  allows.
+| | |
+|---|---|
+| Collection window | **9 November – 6 December 2026** (28 days), set by the Module Leader |
+| Cadence | 08:00 and 20:00 Asia/Tashkent = **56 scheduled runs** |
+| Success criterion | a successful run fetches and parses at least 80% of requested pages; the target is **at least 54 of the 56 scheduled runs (95%)**, with missed runs counted as failures |
+| Product target | at least 300 distinct competitor products |
+| Secret's offers | one export by the owner after the window closes (ADR-007) |
+| Extension | none. A 42-day window would end on 20 December, after the 14 December deadline |
 
-### Table 1 - distinct competitor products per category and operator group
+The workflow derives the purpose from the date, so nothing collected outside the window can become
+assessed data.
 
-Measured in the development crawl of **2026-10-29** (runs 3-6, `purpose = dev`, rules 1.1.0;
-`python -m priceintel category-report --purpose dev`). These are the figures the plan is based on, not
-a forecast.
+### Units, and what counts once
 
-| Category | KAMILAS | LOVEFLOWERS_NET | PROBUKET | UZFLORA | Total |
-|---|---|---|---|---|---|
-| roses_mono | 0 | 121 | 19 | 3 | 143 |
-| mixed_bouquets | 0 | 1 | 0 | 0 | 1 |
-| bouquets_unspecified | 8 | 63 | 35 | 94 | 200 |
-| **bouquets, merged** | **8** | **185** | **54** | **97** | **344** |
-| boxes_baskets | 0 | 136 | 5 | 0 | 141 |
-| potted_plants | 0 | 8 | 1 | 8 | 17 |
-| edible_sets | 0 | 4 | 0 | 12 | 16 |
-| out_of_scope (excluded, counted) | 1 | 16 | 0 | 22 | 39 |
-| unclassified (excluded, counted) | 5 | 5 | 4 | 15 | 29 |
-| **All distinct products** | **14** | **354** | **64** | **154** | **586** |
+- **A competitor product** is one distinct listing. Its summary is the **median of its observations
+  in the window**, so a product seen 56 times contributes exactly as much as one seen once.
+- **A Secret offer** is one distinct caption, dated by first publication, summarised by the median of
+  the prices it was posted at. A repost is the same offer however long the gap and whatever the
+  price; a price change makes the match `uncertain`, not a new offer (ADR-008).
+- **Per-stem listings are not assortment prices.** A listing priced by the stem is excluded from
+  category medians and reported separately.
 
-A single pass already exceeds the 300-product target. Notes that follow from the table:
+### Table 1 — competitor products, three counts
 
-- `KAMILAS` publishes about 29 products and a price for only 7 of them (the others say the bouquet is
-  "a reference for a future arrangement"); the rest are quarantined as `missing_price`. It will
-  usually fall below the 10-product minimum, so most comparisons against it will read "insufficient
-  evidence". It is kept because the operator is independent and the robustness checks use it.
-- `boxes_baskets` has enough products in `LOVEFLOWERS_NET` only; `potted_plants` and `edible_sets`
-  have fewer than 10 everywhere.
+Measured in the development crawl of **2026-10-29** (runs 3–6, `purpose = dev`, rules 1.2.2;
+`python -m priceintel category-report --purpose dev`). "Usable" means eligible **and** priced for a
+whole item or a stated bundle.
 
-### Table 2 - distinct Secret offers per category
+| Operator group | Collected | Eligible | **Usable** |
+|---|---|---|---|
+| KAMILAS | 14 | 8 | **8** |
+| LOVEFLOWERS_NET | 354 | 333 | **223** |
+| PROBUKET | 64 | 60 | **60** |
+| UZFLORA | 154 | 117 | **114** |
+| **Total** | **586** | **518** | **405** |
 
-Estimated from the 123 channel posts observed during pre-approval development (4-17 October 2026,
-`purpose = dev`, route since withdrawn - ADR-007), classified by rules 1.1.0, identical title and
-price collapsed: **119 distinct offers in 14 days**, so about **240 per 28 days**.
+Usable products per category and group:
 
-| Category | 14 days observed | 28-day estimate |
+| Category | KAMILAS | LOVEFLOWERS_NET | PROBUKET | UZFLORA |
+|---|---|---|---|---|
+| roses_mono | 0 | 11 | 19 | 0 |
+| mixed_bouquets | 0 | 1 | 0 | 0 |
+| bouquets_unspecified | 8 | 63 | 35 | 94 |
+| **bouquets, merged** | **8** | **75** | **54** | **94** |
+| boxes_baskets | 0 | 136 | 5 | 0 |
+| potted_plants | 0 | 8 | 1 | 8 |
+| edible_sets | 0 | 4 | 0 | 12 |
+
+The per-stem rule changes the headline: `roses_mono` for LOVEFLOWERS_NET falls from 121 listings to
+**11** once single stems are removed, because most of that section is sold by the stem. The merged
+bouquet category remains the only one with enough on the competitor side everywhere except KAMILAS.
+
+### Table 2 — Secret's offers: observed and projected
+
+| | Observed, 14 days (4–17 Oct 2026, `dev`) | Projected, 28 days |
 |---|---|---|
 | roses_mono | 25 | ~50 |
 | mixed_bouquets | 3 | ~6 |
@@ -82,21 +83,33 @@ price collapsed: **119 distinct offers in 14 days**, so about **240 per 28 days*
 | boxes_baskets | 0 | 0 |
 | potted_plants | 0 | 0 |
 | edible_sets | 0 | 0 |
-| unclassified (caption says nothing classifiable) | 64 | ~128 |
+| unclassified (excluded from every comparison) | 64 | ~128 |
+| **All distinct offers** | **119** | **~238** |
 
-**Consequence, stated plainly:** only the merged bouquet category is expected to have 10 or more
-Secret offers. So the plan expects to display bouquet comparisons against `LOVEFLOWERS_NET`,
-`PROBUKET` and `UZFLORA`, and to report everything else as insufficient evidence. About half of
-Secret's captions say nothing that identifies a product type; those offers are counted and excluded,
-not guessed at.
+The observed column is a measurement; the projected column is a projection from it and is labelled as
+one everywhere it appears. Unclassified offers are counted and excluded, never assigned to a
+category.
+
+### Minimum evidence, and what happens when it is not met
+
+A comparison is displayed only with **at least 10 distinct Secret offers and at least 10 usable
+products from that operator group** in the same category. Otherwise the cell reads "insufficient
+evidence" with both counts. If a category falls short, the three bouquet categories merge by a
+count-only rule, before any price is examined, with the counts that triggered the merge recorded.
+There is no window extension; a category that is still short is reported as insufficient evidence.
+
+On these figures, the expected displayed comparisons are the merged bouquet category against
+LOVEFLOWERS_NET, PROBUKET and UZFLORA, with KAMILAS short of 10 usable products.
 
 ## 3. Comparison, percentage and bootstrap
 
 - **Estimand.** For each category *c* and operator group *g*:
   `D = 100 × (median(Secret price in c) / median(group g price in c) − 1)`, reported with the median
   difference in UZS. A difference in log prices is **never** reported as a percentage.
-- **Prices.** Regular advertised prices (the old price where a sale is shown); current sale prices are
-  a sensitivity check. Conditional promotions (codes, bundles, free-delivery conditions) are flags and
+- **Price selection.** Only a price the shop publishes in UZS; the project never converts a currency
+  (ADR-008), the currency label is stored on every observation, and a database trigger refuses
+  anything else. Regular advertised prices (the old price where a sale is shown); current sale prices
+  are a sensitivity check. Conditional promotions (codes, bundles, free-delivery conditions) are flags and
   excluded from the price. Delivery fees and free-delivery thresholds are recorded per shop with a
   date and reported descriptively, never added to a price. Listings that show only a starting price
   (`is_from_price`) are excluded from the main comparison and included in a sensitivity check.
@@ -107,10 +120,13 @@ not guessed at.
   businesses: with four groups it would say nothing about the wider market.
 - **Temporal uncertainty.** A 28-day window gives four weekly blocks, too few for a week-block
   bootstrap, so weekly medians are reported descriptively with that limitation stated.
-- **Pooling.** Only displayed comparisons enter the pooled summary, as the unweighted mean of the
-  per-group percentages, so the largest catalogue does not dominate.
-- **Interpretation.** Results describe the price ranges of the selected assortments in the selected
-  window. They do not show that equivalent bouquets are over- or under-priced, and they do not justify
+- **Pooling and weighting.** Per-group comparisons are the primary output. Only displayed
+  comparisons enter the pooled summary, as the **unweighted mean of the per-group percentages**, so
+  LOVEFLOWERS_NET (223 usable products) does not outweigh KAMILAS (8). The weighting is stated beside
+  every pooled figure.
+- **Interpretation.** Results are comparisons of the **observed assortments** of the sampled shops in
+  the selected window. Bootstrap intervals describe uncertainty within the four sampled operator
+  groups and the 28-day window; they are not intervals for the Tashkent market. They do not show that equivalent bouquets are over- or under-priced, and they do not justify
   a particular price change. Differences may reflect bouquet size, composition or presentation.
 
 ## 4. Models
@@ -135,6 +151,8 @@ Competitor scraper data only, from `priceintel/analysis/model_data.py`.
 3. First half vs second half of the window.
 4. With and without listings that show only a starting price.
 5. Category rules: re-run with the generic sweetness words removed from `edible_sets` (ADR-006).
+6. Exclude reference offers whose repost match is `uncertain` (ADR-008).
+7. Exclude listings whose price unit was `inferred` rather than stated by the shop.
 
 ## 6. LO evidence map
 

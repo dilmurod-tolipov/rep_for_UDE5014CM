@@ -99,6 +99,13 @@ publishes and reads the schema.org Product block on each product page).
 One domain per operator group is collected; mirrors are registered and never crawled
 (`docs/compliance/source_groups.md`).
 
+## Approved collection window
+
+Approved by the Module Leader on **3 November 2026**. Assessed collection runs from **9 November to
+6 December 2026**, twice a day at 08:00 and 20:00 Asia/Tashkent (56 runs; at least 54 must succeed).
+The scheduled workflow works the purpose out from the date, so a run outside the window is `dev` and
+cannot become assessed data. Submission deadline: **14 December 2026**.
+
 ## Analysis categories
 
 Categories are defined by a versioned rules file that is committed and tagged **before** any analysis
@@ -111,6 +118,11 @@ promotion slugs (`aktsii-*`, `topsale`) and occasion slugs (`8-marta`) are delib
 python -m priceintel classify --shop uzflora      # assign categories from config/category_rules.v1.json
 python -m priceintel category-report --purpose dev  # Table 1: distinct listings per category and operator
 ```
+
+`classify` also builds `listing_features`: what one price buys (`per_item`, `per_bundle` with the
+stated stem count, or `per_stem`), any stated size, and the flower types named in the text. Per-stem
+listings are excluded from category medians - loveflowers sells single stems at 18,000 UZS in the
+same section as 2,500,000 UZS bundles - and are reported separately.
 
 Each assignment records the rules version, the SHA-256 of the rules file, which rule fired and on what
 evidence (`listing_categories`). Re-running `classify` is idempotent; a new `rules_version` adds a new

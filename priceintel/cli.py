@@ -255,6 +255,8 @@ def cmd_classify(args) -> int:
     try:
         rules = load_rules(args.rules)
         counts = classify_listings(conn, rules, shop_codes=args.shop or None)
+        from priceintel.analysis.features import build_features
+        units = build_features(conn, rules, shop_codes=args.shop or None)
     except RulesError as e:
         print(f"error: {e}")
         return 1
@@ -265,6 +267,11 @@ def cmd_classify(args) -> int:
             print(f"  {code:22} {counts[code]:>5}")
     excluded = counts.get("out_of_scope", 0) + counts.get("unclassified", 0)
     print(f"  (excluded from analysis: {excluded} = out_of_scope + unclassified)")
+    print("what one price buys:")
+    for unit in ("per_item", "per_bundle", "per_stem"):
+        if units.get(unit):
+            print(f"  {unit:22} {units[unit]:>5}")
+    print(f"  (per_stem listings are reported separately, never pooled into a category median)")
     return 0
 
 

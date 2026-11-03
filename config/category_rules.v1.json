@@ -1,6 +1,6 @@
 {
-  "rules_version": "1.1.0",
-  "effective_from": "2026-10-29",
+  "rules_version": "1.2.2",
+  "effective_from": "2026-11-03",
   "_comment": [
     "Analysis categories for the price-position comparison (ADR-006).",
     "Price-INDEPENDENT by construction: the only inputs are the product title, the URL path and the",
@@ -15,7 +15,10 @@
     "This file is versioned and tagged before any analysis run; changes get a new rules_version.",
     "1.1.0: S05 also matches the words 'букет' / 'композиция' in a title. Secret's channel captions are marketing lines with no section slug ('Прекрасные букеты для любимой'), so without this rule most of its offers were unclassified. These are product-type words, not price, promotion or occasion words, so the price-independence of the rules is unchanged.",
     "1.1.0: the lexicon also lists instrumental/plural forms ('с тюльпанами и пионами'), which the channel captions use constantly; whole-word matching means each form must be listed explicitly.",
-    "1.1.0: section lists also hold the plain Russian section names ('Букеты', 'Растения'), because kamilas.uz publishes its category as schema.org text rather than as a URL slug."
+    "1.1.0: section lists also hold the plain Russian section names ('Букеты', 'Растения'), because kamilas.uz publishes its category as schema.org text rather than as a URL slug.",
+    "1.2.0: adds the price_unit block, so the analysis can tell a per-stem price from a whole arrangement. Nothing in the category rules themselves changed.",
+    "1.2.1: per_stem_phrases ('за шт' and friends). 1.2.0 had been applied to the development database, and register_rules refuses to re-use a version whose file has changed, so the version was bumped rather than edited - which is the behaviour that rule exists for.",
+    "1.2.2: per_item_categories, after the feature tests caught a potted orchid being read as a single stem."
   ],
   "fields_used": [
     "title",
@@ -498,6 +501,68 @@
       "статица",
       "статице",
       "statice"
+    ]
+  },
+  "price_unit": {
+    "_comment": [
+      "How to tell what one price buys, from text only (ADR-008, Module Leader 2026-11-03 point 3).",
+      "quantity_patterns find a stated number of stems: '101 шт', 'розы — 15 шт', 'из 25 роз'.",
+      "per_stem_phrases are checked first: a listing that says '(за шт)' is priced by the stem even when the title also carries a number, and the evidence is 'stated' rather than 'inferred'.",
+      "A listing with a stated quantity is per_bundle (evidence: stated).",
+      "Otherwise, a listing in one of single_flower_sections, or whose title is a bare flower name",
+      "with no bouquet/box/basket/plant word, is per_stem (evidence: inferred) - this is how",
+      "loveflowers' 18,000 UZS gerbera is kept out of the same median as a 2,500,000 UZS bundle.",
+      "Everything else is per_item: one arrangement sold as one thing.",
+      "No price is ever an input to this decision.",
+      "per_item_categories are never priced by the stem: a potted orchid, a box, a basket and a berry set are each one thing. Without this, 'Орхидея фаленопсис' looked like a single cut flower because it is a short title naming one plant."
+    ],
+    "quantity_patterns": [
+      "(\\d{1,4})\\s*(?:шт|штук|штуки|pcs)",
+      "(\\d{1,4})\\s*(?:роз|розы|роза|тюльпан|тюльпанов|тюльпана|пион|пионов|хризантем|гербер|лили[йи]|гвоздик|альстромери[йи])",
+      "из\\s+(\\d{1,4})\\s"
+    ],
+    "size_patterns": [
+      "(\\d{2,3})\\s*см"
+    ],
+    "single_flower_sections": [
+      "tsvety-raznye",
+      "czvety-raznye",
+      "pojtuchno",
+      "poshtuchno"
+    ],
+    "arrangement_words": [
+      "букет",
+      "букеты",
+      "букета",
+      "композиция",
+      "композиции",
+      "корзина",
+      "корзине",
+      "коробка",
+      "коробке",
+      "в коробке",
+      "набор",
+      "bouquet",
+      "box",
+      "basket",
+      "в горшке",
+      "горшок"
+    ],
+    "per_stem_phrases": [
+      "за шт",
+      "за штуку",
+      "за 1 шт",
+      "цена за шт",
+      "поштучно",
+      "за 1 цветок",
+      "за стебель",
+      "per stem"
+    ],
+    "per_item_categories": [
+      "potted_plants",
+      "boxes_baskets",
+      "edible_sets",
+      "out_of_scope"
     ]
   }
 }

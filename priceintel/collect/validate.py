@@ -1,7 +1,22 @@
 """Validation of parsed product records before they are stored.
 
 A record either becomes a ``ValidItem`` (stored as a price observation) or a ``Rejection``
-(stored in ``rejected_records`` with the rule that failed). Nothing is silently dropped."""
+(stored in ``rejected_records`` with the rule that failed). Nothing is silently dropped.
+
+**The price-selection rule (ADR-008), applied here and in every parser:**
+
+1. Only a price the shop itself publishes in UZS is stored. The project performs **no currency
+   conversion at all**, so no exchange rate and no rate date can enter a comparison.
+2. Where a shop shows several currencies on one card (pro-buket shows UZS, USD and RUB), the parser
+   reads the element the shop labels UZS; where a shop switches currency by request (uzflora serves
+   USD outside Uzbekistan), the collector asks for UZS explicitly.
+3. A record whose currency label is anything else is rejected as ``currency_not_uzs`` and kept in
+   quarantine, where it is counted - it is never converted and never silently dropped.
+4. The currency label that was read is stored on the observation, so the rule can be audited after
+   the fact rather than trusted.
+5. A price shown as a starting point or a range ("от 22 000") is marked ``is_from_price`` and is
+   excluded from the main comparison, because it is not the price of one identified product.
+"""
 import re
 from dataclasses import dataclass
 from urllib.parse import urlsplit, urlunsplit
@@ -23,6 +38,8 @@ class RawItem:
     availability: str = "unknown"
     external_id: str | None = None
     site_category: str | None = None
+    variant_label: str | None = None      # which option this price belongs to, if the card has any
+    composition_text: str | None = None   # what the shop says is in it, verbatim
 
 
 @dataclass(frozen=True)
@@ -36,6 +53,9 @@ class ValidItem:
     external_id: str | None
     site_category: str | None
     raw_price_text: str
+    currency_shown: str | None            # the currency label the shop printed; never converted
+    variant_label: str | None
+    composition_text: str | None
 
 
 @dataclass(frozen=True)
@@ -99,4 +119,6 @@ def validate(item: RawItem, shop_host: str) -> ValidItem | Rejection:
         old = parsed_old[0]
     availability = item.availability if item.availability in ("in_stock", "out_of_stock") else "unknown"
     return ValidItem(normalise_url(item.url), title, price, old, is_from, availability,
-                     item.external_id, item.site_category, item.price_text.strip())
+                     item.external_id, item.site_category, item.price_text.strip(),
+                     (item.currency or "").strip() or None, item.variant_label,
+                     item.composition_text)

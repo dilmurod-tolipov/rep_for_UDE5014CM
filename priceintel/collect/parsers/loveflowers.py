@@ -61,6 +61,8 @@ def parse(html: str, page_url: str) -> PageResult:
             availability="unknown",          # the card does not state stock; the product page does
             external_id=cart.get("data-product_id") if cart else None,
             site_category=section.group(1) if section else None,
+            variant_label=None,          # one price per card on the section pages
+            composition_text=None,       # the cards state no composition; the titles carry it
         ))
     nxt = soup.select_one("a.next.page-numbers")
     return PageResult(items, urljoin(page_url, nxt["href"]) if nxt and nxt.get("href") else None)
