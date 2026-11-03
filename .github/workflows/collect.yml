@@ -23,7 +23,7 @@ on:
         default: dev
 
 permissions:
-  contents: read
+  contents: write        # to commit the assessed data snapshot
   actions: read          # to download the previous run's database artifact
 
 concurrency:
@@ -64,16 +64,20 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
 
-      - name: Restore databases from the previous successful run
+      - name: Restore databases from the newest stored artifact
         run: |
           mkdir -p data
-          prev=$(gh run list --workflow collect.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          # Ask for the newest UNEXPIRED collector-db artifact rather than for the newest successful
+          # run: a run can succeed and its artifact be gone (expired after 90 days, or deleted), and
+          # that is a fresh start, not a failure. A download that fails when the artifact IS there
+          # must still stop the run, because continuing would silently start an empty database.
+          prev=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100"                    --jq '[.artifacts[] | select(.name == "collector-db" and .expired == false)]
+                         | sort_by(.created_at) | last | .workflow_run.id // empty')
           if [ -n "$prev" ]; then
-            # If a previous run exists, its data MUST be restored; never continue from an empty database.
-            gh run download "$prev" --name collector-db --dir data || { echo "::error::could not restore databases from run $prev"; exit 1; }
-            echo "restored from run $prev"
+            gh run download "$prev" --name collector-db --dir data               || { echo "::error::artifact of run $prev exists but could not be downloaded"; exit 1; }
+            echo "restored databases from run $prev"
           else
-            echo "no previous successful run: starting new databases"
+            echo "no stored database artifact: starting new databases"
           fi
           ls -la data
 
@@ -104,6 +108,26 @@ jobs:
           path: backup/*.db
           retention-days: 90
           if-no-files-found: error
+
+      # Artifacts expire after 90 days and can be deleted; the assessed data must survive both, and
+      # the brief requires a snapshot of the collected data inside the assessed commit. So every
+      # assessed run writes the snapshot and commits it if anything changed.
+      - name: Commit the assessed data snapshot
+        if: env.PURPOSE == 'assessed'
+        run: |
+          python -m priceintel classify
+          python -m priceintel quality --purpose assessed || true
+          python -m priceintel snapshot --purpose assessed --label window
+          git config user.name  "collector (GitHub Actions)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/snapshots/assessed-window
+          if git diff --cached --quiet; then
+            echo "snapshot unchanged"
+          else
+            git commit -m "Assessed data snapshot $(TZ=Asia/Tashkent date +%F' '%H:%M) (automated)"
+            git pull --rebase --autostash origin main
+            git push origin HEAD:main
+          fi
 
       - name: Summary
         run: python -m priceintel runs --limit 4
