@@ -1,0 +1,28 @@
+fetch_id,run_id,shop_id,url,requested_at,attempt,robots_allowed,http_status,elapsed_ms,bytes,content_sha256,parse_ok,items_found,error
+316,12,5,https://kamilas.uz/robots.txt,2026-11-08T19:15:42Z,1,1,,1196,,,,,"SSLError: HTTPSConnectionPool(host='kamilas.uz', port=443): Max retries exceeded with url: /robots.txt (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)')))"
+317,12,5,https://kamilas.uz/robots.txt,2026-11-08T19:15:54Z,2,1,,347,,,,,"SSLError: HTTPSConnectionPool(host='kamilas.uz', port=443): Max retries exceeded with url: /robots.txt (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)')))"
+318,12,5,https://kamilas.uz/robots.txt,2026-11-08T19:16:24Z,3,1,,347,,,,,"SSLError: HTTPSConnectionPool(host='kamilas.uz', port=443): Max retries exceeded with url: /robots.txt (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)')))"
+319,12,5,https://kamilas.uz/sitemap-index.xml,2026-11-08T19:16:24Z,1,0,,,,,,,skipped: disallowed by robots.txt
+320,12,4,https://loveflowers.uz/robots.txt,2026-11-08T19:16:24Z,1,1,,31154,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+321,12,4,https://loveflowers.uz/robots.txt,2026-11-08T19:17:06Z,2,1,,31722,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+322,12,4,https://loveflowers.uz/robots.txt,2026-11-08T19:18:07Z,3,1,,30410,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+323,12,4,https://loveflowers.uz/tcat/bukety/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+324,12,4,https://loveflowers.uz/tcat/rozy/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+325,12,4,https://loveflowers.uz/tcat/tyulpany/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+326,12,4,https://loveflowers.uz/tcat/tsvety-v-korobke/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+327,12,4,https://loveflowers.uz/tcat/korziny-s-tsvetami/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+328,12,4,https://loveflowers.uz/tcat/tsvety-raznye/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+329,12,4,https://loveflowers.uz/tcat/podarki/,2026-11-08T19:18:38Z,1,0,,,,,,,skipped: disallowed by robots.txt
+330,12,2,https://pro-buket.uz/robots.txt,2026-11-08T19:18:38Z,1,1,200,1882,599,15816cc62dc2a49ded05f724af157ae63e625e20eef7c85ddc1f5e0d076c1f8e,,,
+331,12,2,https://pro-buket.uz/catalog/,2026-11-08T19:18:43Z,1,1,200,593,526256,464eee0eb75fa3220eb41bea6e5a906e9ecb33c2dd5b1070dfc2a536fbc90a06,1,64,
+332,12,3,https://uzflora.com/robots.txt,2026-11-08T19:18:44Z,1,1,200,1608,317,ef1cf0a6ea60661c3b590e1efafc224d2fe14611f55f86114321230fa6537b05,,,
+333,12,3,https://uzflora.com/shop/?currency=UZS,2026-11-08T19:18:49Z,1,1,200,1859,114598,132de2416cbb9007854e68d1f56715048462e4f061684908929805a02cc6a6eb,1,16,
+334,12,3,https://uzflora.com/shop/page/2/?currency=UZS,2026-11-08T19:18:54Z,1,1,200,1470,116656,186357b4c406c680c80eacd838dfe4ce7b7aad25e736b65293d9408dfea8b391,1,16,
+335,12,3,https://uzflora.com/shop/page/3/?currency=UZS,2026-11-08T19:18:59Z,1,1,200,1625,116822,44bc3140f52511d785747d59db7938da3128bdb569982c88f4cc1ab43a4745ef,1,16,
+336,12,3,https://uzflora.com/shop/page/4/?currency=UZS,2026-11-08T19:19:04Z,1,1,200,1493,118714,1b651a946c347a7f829f0cd63dafddddc357a6be00ef25f84263ee113aeb0d7a,1,16,
+337,12,3,https://uzflora.com/shop/page/5/?currency=UZS,2026-11-08T19:19:09Z,1,1,200,1415,117013,bedab24b1edc5b23a71f96840206893aed14b84df29053c7b582d30dfaa70fcd,1,16,
+338,12,3,https://uzflora.com/shop/page/6/?currency=UZS,2026-11-08T19:19:14Z,1,1,200,1405,116985,14917df9ebe69a88013ab4e0fa9b9e58e12a8d0773cdb51e53c0a22eb70b47dd,1,16,
+339,12,3,https://uzflora.com/shop/page/7/?currency=UZS,2026-11-08T19:19:19Z,1,1,200,1506,118446,944318aa336026bd7163bd2f7371c3f5584af99ab659327db2cfebb370259692,1,16,
+340,12,3,https://uzflora.com/shop/page/8/?currency=UZS,2026-11-08T19:19:24Z,1,1,200,1293,116672,b395e27ad44dec4dfd45e65a60b25c9bc0bf766d250fc3511dd063ee665f3b80,1,16,
+341,12,3,https://uzflora.com/shop/page/9/?currency=UZS,2026-11-08T19:19:29Z,1,1,200,3125,117179,767889bb6f0c983d2099e9cdfd6dcd0b082a560153b60e8d609fa0625adb2473,1,16,
+342,12,3,https://uzflora.com/shop/page/10/?currency=UZS,2026-11-08T19:19:34Z,1,1,200,1129,97963,fcf4f64b21fcbc7c6b79eb113b45192272390866613978feca5cb9163ad4fd4e,1,10,
