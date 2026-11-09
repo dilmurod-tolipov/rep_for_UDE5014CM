@@ -1,219 +1,226 @@
 listing_id,rules_version,category,rule_id,evidence,flower_types,classified_at
-362,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-08T19:19:37Z
-363,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-364,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-365,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-366,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-367,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-368,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-08T19:19:37Z
-369,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-370,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-371,1.2.2,boxes_baskets,S01,title~коробке,rose,2026-11-08T19:19:37Z
-372,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-08T19:19:37Z
-373,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-374,1.2.2,roses_mono,S05,title~букет,rose,2026-11-08T19:19:37Z
-375,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-376,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-377,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-378,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-379,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-380,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-381,1.2.2,roses_mono,S04,site_category=piony,,2026-11-08T19:19:37Z
-382,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-383,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-384,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-385,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-386,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-387,1.2.2,roses_mono,S04,site_category=hrizantemy,,2026-11-08T19:19:37Z
-388,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-389,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-390,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-391,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-392,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-393,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-394,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-395,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-396,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-08T19:19:37Z
-397,1.2.2,roses_mono,S06,title names flower type(s): tulip,tulip,2026-11-08T19:19:37Z
-398,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-399,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-400,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-401,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-402,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-403,1.2.2,roses_mono,S04,site_category=tyulpany,tulip,2026-11-08T19:19:37Z
-404,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-08T19:19:37Z
-405,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-406,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-08T19:19:37Z
-407,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-408,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-409,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-410,1.2.2,roses_mono,S04,site_category=hrizantemy,,2026-11-08T19:19:37Z
-411,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-412,1.2.2,potted_plants,S02,site_category=orhidei,,2026-11-08T19:19:37Z
-413,1.2.2,roses_mono,S04,site_category=piony,peony,2026-11-08T19:19:37Z
-414,1.2.2,roses_mono,S04,site_category=gerbery,,2026-11-08T19:19:37Z
-415,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-416,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-417,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-08T19:19:37Z
-418,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-419,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-420,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-421,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-422,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-08T19:19:37Z
-423,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-424,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-08T19:19:37Z
-425,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-08T19:19:37Z
-426,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-427,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-428,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-429,1.2.2,edible_sets,S03,title~milka,,2026-11-08T19:19:37Z
-430,1.2.2,potted_plants,S02,site_category=rasteniya,orchid,2026-11-08T19:19:37Z
-431,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-432,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-433,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-08T19:19:37Z
-434,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-435,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-08T19:19:37Z
-436,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-437,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-438,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-439,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-440,1.2.2,roses_mono,S05,site_category=bukety,rose,2026-11-08T19:19:37Z
-441,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-442,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-443,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-444,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-08T19:19:37Z
-445,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-446,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-447,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-448,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-449,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-450,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-451,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-452,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-453,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-454,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-455,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-456,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-457,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-458,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-459,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-460,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-461,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-462,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-463,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-464,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-465,1.2.2,out_of_scope,X01,title~шары,,2026-11-08T19:19:37Z
-466,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-467,1.2.2,potted_plants,S02,site_category=rasteniya,hydrangea,2026-11-08T19:19:37Z
-468,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-469,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-470,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-471,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-472,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-473,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-474,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-08T19:19:37Z
-475,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-476,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-477,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-478,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-479,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-480,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-481,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-482,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-483,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-484,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-485,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-486,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-487,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-488,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-489,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-490,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-491,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-492,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-493,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-494,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-495,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-496,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-497,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-498,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-499,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-500,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-501,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-502,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-503,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-504,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-505,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-506,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-507,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-508,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-509,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-510,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-511,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-512,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-513,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-514,1.2.2,potted_plants,S02,site_category=rasteniya,orchid,2026-11-08T19:19:37Z
-515,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-08T19:19:37Z
-516,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-517,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-518,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-519,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-520,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-521,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-522,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-523,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-524,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-525,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-526,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-527,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-528,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-529,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-530,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-531,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-532,1.2.2,roses_mono,S05,site_category=bukety,hydrangea,2026-11-08T19:19:37Z
-533,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-534,1.2.2,roses_mono,S05,site_category=bukety,rose,2026-11-08T19:19:37Z
-535,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-536,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-537,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-538,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-539,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-540,1.2.2,edible_sets,S03,title~сладкая,,2026-11-08T19:19:37Z
-541,1.2.2,edible_sets,S03,title~сладкая,,2026-11-08T19:19:37Z
-542,1.2.2,edible_sets,S03,title~сладкая,,2026-11-08T19:19:37Z
-543,1.2.2,edible_sets,S03,title~сладкий,,2026-11-08T19:19:37Z
-544,1.2.2,edible_sets,S03,title~сладкий,,2026-11-08T19:19:37Z
-545,1.2.2,edible_sets,S03,title~сладкое,,2026-11-08T19:19:37Z
-546,1.2.2,edible_sets,S03,title~сладкое,,2026-11-08T19:19:37Z
-547,1.2.2,edible_sets,S03,title~сладкое,,2026-11-08T19:19:37Z
-548,1.2.2,edible_sets,S03,title~сладкое,,2026-11-08T19:19:37Z
-549,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-550,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-551,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-552,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-08T19:19:37Z
-553,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-554,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-555,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-556,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-557,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-558,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-559,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-560,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-561,1.2.2,unclassified,none,no rule matched,,2026-11-08T19:19:37Z
-562,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-563,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-564,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-565,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-566,1.2.2,edible_sets,S03,title~фруктовые,,2026-11-08T19:19:37Z
-567,1.2.2,edible_sets,S03,title~фруктовый,,2026-11-08T19:19:37Z
-568,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-569,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-570,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-08T19:19:37Z
-571,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-572,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-573,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-574,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-575,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-576,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-08T19:19:37Z
-577,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-578,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
-579,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-08T19:19:37Z
+1,1.2.2,bouquets_unspecified,S05,site_category=букеты,,2026-11-09T10:47:15Z
+2,1.2.2,bouquets_unspecified,S05,site_category=букеты,,2026-11-09T10:47:15Z
+3,1.2.2,bouquets_unspecified,S05,site_category=букеты,,2026-11-09T10:47:15Z
+4,1.2.2,bouquets_unspecified,S05,site_category=букеты,,2026-11-09T10:47:15Z
+5,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+6,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+7,1.2.2,out_of_scope,X02,title~ваза,,2026-11-09T10:47:15Z
+362,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-09T10:47:15Z
+363,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+364,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+365,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+366,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+367,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+368,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-09T10:47:15Z
+369,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+370,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+371,1.2.2,boxes_baskets,S01,title~коробке,rose,2026-11-09T10:47:15Z
+372,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-09T10:47:15Z
+373,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+374,1.2.2,roses_mono,S05,title~букет,rose,2026-11-09T10:47:15Z
+375,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+376,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+377,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+378,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+379,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+380,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+381,1.2.2,roses_mono,S04,site_category=piony,,2026-11-09T10:47:15Z
+382,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+383,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+384,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+385,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+386,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+387,1.2.2,roses_mono,S04,site_category=hrizantemy,,2026-11-09T10:47:15Z
+388,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+389,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+390,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+391,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+392,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+393,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+394,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+395,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+396,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-09T10:47:15Z
+397,1.2.2,roses_mono,S06,title names flower type(s): tulip,tulip,2026-11-09T10:47:15Z
+398,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+399,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+400,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+401,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+402,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+403,1.2.2,roses_mono,S04,site_category=tyulpany,tulip,2026-11-09T10:47:15Z
+404,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-09T10:47:15Z
+405,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+406,1.2.2,roses_mono,S04,site_category=rozy,rose,2026-11-09T10:47:15Z
+407,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+408,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+409,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+410,1.2.2,roses_mono,S04,site_category=hrizantemy,,2026-11-09T10:47:15Z
+411,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+412,1.2.2,potted_plants,S02,site_category=orhidei,,2026-11-09T10:47:15Z
+413,1.2.2,roses_mono,S04,site_category=piony,peony,2026-11-09T10:47:15Z
+414,1.2.2,roses_mono,S04,site_category=gerbery,,2026-11-09T10:47:15Z
+415,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+416,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+417,1.2.2,boxes_baskets,S01,title~в коробке,rose,2026-11-09T10:47:15Z
+418,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+419,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+420,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+421,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+422,1.2.2,bouquets_unspecified,S05,title~композиция,,2026-11-09T10:47:15Z
+423,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+424,1.2.2,bouquets_unspecified,S05,title~букет,,2026-11-09T10:47:15Z
+425,1.2.2,roses_mono,S04,site_category=rozy,,2026-11-09T10:47:15Z
+426,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+427,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+428,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+429,1.2.2,edible_sets,S03,title~milka,,2026-11-09T10:47:15Z
+430,1.2.2,potted_plants,S02,site_category=rasteniya,orchid,2026-11-09T10:47:15Z
+431,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+432,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+433,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-09T10:47:15Z
+434,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+435,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-09T10:47:15Z
+436,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+437,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+438,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+439,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+440,1.2.2,roses_mono,S05,site_category=bukety,rose,2026-11-09T10:47:15Z
+441,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+442,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+443,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+444,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-09T10:47:15Z
+445,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+446,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+447,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+448,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+449,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+450,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+451,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+452,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+453,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+454,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+455,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+456,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+457,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+458,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+459,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+460,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+461,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+462,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+463,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+464,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+465,1.2.2,out_of_scope,X01,title~шары,,2026-11-09T10:47:15Z
+466,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+467,1.2.2,potted_plants,S02,site_category=rasteniya,hydrangea,2026-11-09T10:47:15Z
+468,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+469,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+470,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+471,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+472,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+473,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+474,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-09T10:47:15Z
+475,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+476,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+477,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+478,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+479,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+480,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+481,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+482,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+483,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+484,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+485,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+486,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+487,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+488,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+489,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+490,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+491,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+492,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+493,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+494,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+495,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+496,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+497,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+498,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+499,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+500,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+501,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+502,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+503,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+504,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+505,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+506,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+507,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+508,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+509,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+510,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+511,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+512,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+513,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+514,1.2.2,potted_plants,S02,site_category=rasteniya,orchid,2026-11-09T10:47:15Z
+515,1.2.2,out_of_scope,X01,site_category=vozdushnye-shary,,2026-11-09T10:47:15Z
+516,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+517,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+518,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+519,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+520,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+521,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+522,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+523,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+524,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+525,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+526,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+527,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+528,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+529,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+530,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+531,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+532,1.2.2,roses_mono,S05,site_category=bukety,hydrangea,2026-11-09T10:47:15Z
+533,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+534,1.2.2,roses_mono,S05,site_category=bukety,rose,2026-11-09T10:47:15Z
+535,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+536,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+537,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+538,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+539,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+540,1.2.2,edible_sets,S03,title~сладкая,,2026-11-09T10:47:15Z
+541,1.2.2,edible_sets,S03,title~сладкая,,2026-11-09T10:47:15Z
+542,1.2.2,edible_sets,S03,title~сладкая,,2026-11-09T10:47:15Z
+543,1.2.2,edible_sets,S03,title~сладкий,,2026-11-09T10:47:15Z
+544,1.2.2,edible_sets,S03,title~сладкий,,2026-11-09T10:47:15Z
+545,1.2.2,edible_sets,S03,title~сладкое,,2026-11-09T10:47:15Z
+546,1.2.2,edible_sets,S03,title~сладкое,,2026-11-09T10:47:15Z
+547,1.2.2,edible_sets,S03,title~сладкое,,2026-11-09T10:47:15Z
+548,1.2.2,edible_sets,S03,title~сладкое,,2026-11-09T10:47:15Z
+549,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+550,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+551,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+552,1.2.2,potted_plants,S02,site_category=rasteniya,,2026-11-09T10:47:15Z
+553,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+554,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+555,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+556,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+557,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+558,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+559,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+560,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+561,1.2.2,unclassified,none,no rule matched,,2026-11-09T10:47:15Z
+562,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+563,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+564,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+565,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+566,1.2.2,edible_sets,S03,title~фруктовые,,2026-11-09T10:47:15Z
+567,1.2.2,edible_sets,S03,title~фруктовый,,2026-11-09T10:47:15Z
+568,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+569,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+570,1.2.2,bouquets_unspecified,S05,site_category=czvetochnye-kompoziczii,,2026-11-09T10:47:15Z
+571,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+572,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+573,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+574,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+575,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+576,1.2.2,out_of_scope,X02,site_category=k-buketu,,2026-11-09T10:47:15Z
+577,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+578,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z
+579,1.2.2,bouquets_unspecified,S05,site_category=bukety,,2026-11-09T10:47:15Z

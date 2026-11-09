@@ -1,10 +1,10 @@
 check_run_id,run_at,purpose,check_name,scope,measured,threshold,unit,status,detail
-1,2026-11-08T19:19:37Z,assessed,products_collected,all,218.0,300.0,count,fail,"distinct competitor products, mirrors excluded by design"
-2,2026-11-08T19:19:37Z,assessed,runs_completed,all,1.0,50.0,count,fail,
-3,2026-11-08T19:19:37Z,assessed,run_success_rate,all,100.0,95.0,percent,pass,1 of 1 runs
-4,2026-11-08T19:19:37Z,assessed,quarantine_rate,all,0.0,5.0,percent,pass,0 of 218 parsed records
-5,2026-11-08T19:19:37Z,assessed,unclassified_rate,all,11.2,25.0,percent,pass,65 of 579 products excluded by the rules
-6,2026-11-08T19:19:37Z,assessed,price_outlier_rate,all,0.9,2.0,percent,pass,"2 products above 10x their category median; counted, not removed - the robustness checks handle them"
-7,2026-11-08T19:19:37Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-08T19:19:34Z
-8,2026-11-08T19:19:37Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
-9,2026-11-08T19:19:37Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
+1,2026-11-09T10:47:15Z,assessed,products_collected,all,225.0,300.0,count,fail,"distinct competitor products, mirrors excluded by design"
+2,2026-11-09T10:47:15Z,assessed,runs_completed,all,2.0,50.0,count,fail,
+3,2026-11-09T10:47:15Z,assessed,run_success_rate,all,100.0,95.0,percent,pass,2 of 2 runs
+4,2026-11-09T10:47:15Z,assessed,quarantine_rate,all,4.7,5.0,percent,pass,22 of 465 parsed records; most common rule: missing_price (22)
+5,2026-11-09T10:47:15Z,assessed,unclassified_rate,all,11.2,25.0,percent,pass,65 of 579 products excluded by the rules
+6,2026-11-09T10:47:15Z,assessed,price_outlier_rate,all,0.9,2.0,percent,pass,"2 products above 10x their category median; counted, not removed - the robustness checks handle them"
+7,2026-11-09T10:47:15Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-09T10:47:11Z
+8,2026-11-09T10:47:15Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
+9,2026-11-09T10:47:15Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
