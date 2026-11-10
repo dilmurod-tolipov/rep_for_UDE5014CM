@@ -1,7 +1,7 @@
 # Data snapshot - assessed data (window)
 
-- Taken at: 2026-11-09T23:45:17Z
-- Collected by commit: `100c06975498c7fd7b077f374eba60f13170a958` (working tree modified)
+- Taken at: 2026-11-10T10:44:41Z
+- Collected by commit: `f47c902f178615dcdb3cc75f45e3d611936e3789` (working tree modified)
 - Purpose filter: `assessed` - no run of any other purpose is included
 - Secret reference offers included: no
 
@@ -12,10 +12,10 @@ size and content hash, and every price observation points at the fetch it came f
 | File | Rows | SHA-256 |
 |---|---|---|
 | `shops.csv` | 10 | `e97d3e4bdd178c5dc1dbb4aecfb6a5fc587b3f7dcf773e8ed7d43c571a179fc3` |
-| `scrape_runs.csv` | 3 | `99fbe8966d4784a0bfabded8a3149b13327876c276792bea72d6330ec4825d33` |
-| `fetch_log.csv` | 137 | `7c77aab6ad774754711c9aa54617eb9796a71e1e42251d7556db7442a58f9215` |
-| `listings.csv` | 225 | `1639b715c942601713c739f5c680b03e5fa2ebbf29c2ae36912526aa4691a40e` |
-| `price_observations.csv` | 668 | `72a569c365330e8b52b780b4ad103b5cc8a357a789e73c019f254d466e257251` |
-| `listing_categories.csv` | 225 | `b073853705464a163a945190ca70939e13b34a28d0647be508c10a99bae452ea` |
-| `rejected_records.csv` | 44 | `2680137282ef28a428ae7a1a85c8fe517f2b087b4486ac49f6cdf45acb384e30` |
-| `data_quality_checks.csv` | 9 | `5286ac552eee3783fc84e616dedd48214cb46085f73a37aa7c290895e15329f6` |
+| `scrape_runs.csv` | 4 | `4c2056fb93db9c9b85a71d794f3292fcbc706b18aa69413ecbe545410ea37149` |
+| `fetch_log.csv` | 192 | `cf4feec168bb0a4c3dcea221e1b84f9a9e45e27800a7455927a552315dd9f9d4` |
+| `listings.csv` | 225 | `cd11b78a062cf3ba926d8a94e5aa3e29d1adbd9dc147b15dc5b85fa13fb732be` |
+| `price_observations.csv` | 893 | `205d9e61d84f135383cd5a48a4077a699dd67f8d0db6b37f538a7a8965fa6200` |
+| `listing_categories.csv` | 225 | `1aa95b6148e526aa36530539c745de23777ad5c75b8d8e5b97a6609b45bde467` |
+| `rejected_records.csv` | 66 | `a76296566801c85df734cbead548ea4c549c55aaff1f0a9608de82d91d9ef766` |
+| `data_quality_checks.csv` | 9 | `b1bf4832c83309ed2fa2c843cbe47f6fa9ec5fcf85ef5d4c390e7cf9c5cc7a94` |

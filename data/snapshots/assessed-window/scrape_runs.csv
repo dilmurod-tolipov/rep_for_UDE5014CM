@@ -2,3 +2,4 @@ run_id,kind,purpose,triggered_by,started_at,finished_at,status,git_commit,git_di
 12,competitor_scrape,assessed,scheduled,2026-11-08T19:15:42Z,2026-11-08T19:19:35Z,success,1cd776dccf36874c03a1b1302659cbaa27cdefe6,0,0.1.0,runnervm7aw5e,11,11,218,0,
 13,competitor_scrape,assessed,scheduled,2026-11-09T10:41:26Z,2026-11-09T10:47:13Z,success,69a08b70d0c358b620d1fa9af0def01585e51d05,0,0.1.0,runnervm7aw5e,42,42,225,22,
 14,competitor_scrape,assessed,scheduled,2026-11-09T23:39:27Z,2026-11-09T23:45:15Z,success,100c06975498c7fd7b077f374eba60f13170a958,0,0.1.0,runnervm7aw5e,42,42,225,22,
+15,competitor_scrape,assessed,scheduled,2026-11-10T10:38:49Z,2026-11-10T10:44:39Z,success,f47c902f178615dcdb3cc75f45e3d611936e3789,0,0.1.0,runnervm7aw5e,42,42,225,22,
