@@ -246,3 +246,58 @@ fetch_id,run_id,shop_id,url,requested_at,attempt,robots_allowed,http_status,elap
 560,16,3,https://uzflora.com/shop/page/8/?currency=UZS,2026-11-10T21:13:14Z,1,1,200,1282,116672,a56f70b2804ca4bbd5897b6cbe231158f40e8b83ccc4b77c1b07a7f83560c2c9,1,16,
 561,16,3,https://uzflora.com/shop/page/9/?currency=UZS,2026-11-10T21:13:19Z,1,1,200,1351,117179,7e2d7531d5e03d12c794325c076e8f7598a03fcbba12091ccc0ee412755472a5,1,16,
 562,16,3,https://uzflora.com/shop/page/10/?currency=UZS,2026-11-10T21:13:24Z,1,1,200,2346,97963,495332d2a43bf9e825f3a9023dfb30347013b07cc800da21b45c4e3e7d1a36c2,1,10,
+563,17,5,https://kamilas.uz/robots.txt,2026-11-11T10:06:03Z,1,1,200,900,87,780725fb9e911333e38b33d615af86b676c23894c364a0280bcf840830db3343,,,
+564,17,5,https://kamilas.uz/sitemap-index.xml,2026-11-11T10:06:08Z,1,1,200,192,181,a4203510c3654637abf994037aef95db0ae30228df94150d4e3ecb02e0e12cc0,1,0,
+565,17,5,https://kamilas.uz/sitemap-0.xml,2026-11-11T10:06:13Z,1,1,200,192,8412,8979e035575582e749aa37b7a75543326def36a4074c91ed558aaec268994473,1,0,
+566,17,5,https://kamilas.uz/product/buket-abrikosovyj-etyud/,2026-11-11T10:06:18Z,1,1,200,192,23558,ed9374e82545a627026661f4cdd585ed51262818fe15ca6960f0b042a0bb5403,1,1,
+567,17,5,https://kamilas.uz/product/buket-akvarelnyj-miks/,2026-11-11T10:06:23Z,1,1,200,191,23534,3a65592c92b48dd88a59eebdf8072507492c7c825491a5a7867b3751124cfa47,1,1,
+568,17,5,https://kamilas.uz/product/buket-aloe-priznanie/,2026-11-11T10:06:28Z,1,1,200,192,23780,46e94196c21dd82489d1c37887be36b9ba3b626a1b5f705c7005ca423f0a5ffb,1,1,
+569,17,5,https://kamilas.uz/product/buket-barhatnaya-malina/,2026-11-11T10:06:33Z,1,1,200,193,24047,040e42098faa1490c2b50044f88bd3df6596e763c152c49796d8d5d960f2a1bc,1,1,
+570,17,5,https://kamilas.uz/product/buket-belaya-klassika/,2026-11-11T10:06:38Z,1,1,200,192,23496,36ffeb9dd33c9fef00b5f9661cd735e0c0c17d86f06f757634f8c3e2011e070b,1,1,
+571,17,5,https://kamilas.uz/product/buket-francuzskij-sad/,2026-11-11T10:06:43Z,1,1,200,191,23320,d32db0a99f87292e4efc61cc48b6a970293e94570d397a977677596604980240,1,1,
+572,17,5,https://kamilas.uz/product/buket-korallovyj-impressionizm/,2026-11-11T10:06:48Z,1,1,200,192,24031,7cad2740e0daac45c41b30a947fcb876f5291ba2010ac3c150afd66ad5e792ff,1,1,
+573,17,5,https://kamilas.uz/product/buket-korallovyj-sad/,2026-11-11T10:06:53Z,1,1,200,192,23324,5d70afcba4e56c5d32c318676420bb66fb89d1fd5f88cf66ee032d13d2bbedeb,1,1,
+574,17,5,https://kamilas.uz/product/buket-kremovaya-simfoniya/,2026-11-11T10:06:58Z,1,1,200,193,23539,24e53e049ec40c98a904485f290ec2bd8d68545cec7c2b7f76b7385e3668ff1f,1,1,
+575,17,5,https://kamilas.uz/product/buket-lavandovyj-shepot/,2026-11-11T10:07:03Z,1,1,200,194,23551,c890da71c57b9a0ab55d734fb2111839c1365df5f5bde8075bb334494c18d75c,1,1,
+576,17,5,https://kamilas.uz/product/buket-lazurnyj-bereg/,2026-11-11T10:07:08Z,1,1,200,192,23771,758a251d3423832b3baabd01da305248a0333d614a4f7c303d6a7f19afe99872,1,1,
+577,17,5,https://kamilas.uz/product/buket-letnij-polden/,2026-11-11T10:07:13Z,1,1,200,192,23353,9a9f869cdc629ccc14d74721ef201a8eb4b9a9a56a0434893d8766aa425deb47,1,1,
+578,17,5,https://kamilas.uz/product/buket-molochnaya-akvarel/,2026-11-11T10:07:18Z,1,1,200,193,23487,5be7039539ad2e729b2f3ca41b436180b9e6c8fbdb77e43e909a048983c628ed,1,1,
+579,17,5,https://kamilas.uz/product/buket-nezhnaya-geometriya/,2026-11-11T10:07:23Z,1,1,200,193,23335,f87042200b777faf53fc3d274acd11b6692fc215e75b1aad633bba5ede48d2d2,1,1,
+580,17,5,https://kamilas.uz/product/buket-oblako-nezhnosti/,2026-11-11T10:07:28Z,1,1,200,192,23348,3ddaf6e80658eb3571cdb983e38ec70f2c20dafe8ebf09af2a66b6d5bd0561fa,1,1,
+581,17,5,https://kamilas.uz/product/buket-persikovyj-akcent/,2026-11-11T10:07:33Z,1,1,200,192,23625,f59091f70e4ed0673227ef7369d91386b4bb4c8b4626e0dbf970764fe0eda6d3,1,1,
+582,17,5,https://kamilas.uz/product/buket-pudrovaya-nezhnost/,2026-11-11T10:07:38Z,1,1,200,192,23479,f1736a878427d4b2e51ad6b2928395ba853246b41d716b1dd65441c62303e3f0,1,1,
+583,17,5,https://kamilas.uz/product/buket-pudrovoe-nastroenie/,2026-11-11T10:07:43Z,1,1,200,192,23939,98759846a33a21b28f18e82845c4892b6e802c42ca00a22fa36e4172ad026812,1,1,
+584,17,5,https://kamilas.uz/product/buket-rozovyj-rassvet/,2026-11-11T10:07:48Z,1,1,200,192,23302,4ed4e920d745cbf50e704d586ce7dab960ca4eccb0f863e4a158e61cc4990e17,1,1,
+585,17,5,https://kamilas.uz/product/buket-rubinovoe-nastroenie/,2026-11-11T10:07:53Z,1,1,200,191,23679,ecae547f5fbfb28d3fb354249dbff6837b1d4d051119c5fe5301f89de08a734b,1,1,
+586,17,5,https://kamilas.uz/product/buket-sad-posle-dozhdya/,2026-11-11T10:07:58Z,1,1,200,192,23189,093dc48283e80bab45ad7db92dd19d7b2c5f449891d396d241c218a528e2337f,1,1,
+587,17,5,https://kamilas.uz/product/buket-siyanie-lyubvi/,2026-11-11T10:08:03Z,1,1,200,194,23498,5154146500dba667db34a4f52d00f118823ebb38581207a713a36f554719d875,1,1,
+588,17,5,https://kamilas.uz/product/buket-slivochnyj-buket/,2026-11-11T10:08:08Z,1,1,200,193,23532,675dc48be6175fe160a88b90003d7d60236da6526165370f622342b69a6cbd28,1,1,
+589,17,5,https://kamilas.uz/product/buket-tihaya-glubina/,2026-11-11T10:08:13Z,1,1,200,193,23493,41333012d9e3aeefff9c64ff6036748cf446c31481323612f068544ff917aec6,1,1,
+590,17,5,https://kamilas.uz/product/buket-utrennij-vozduh/,2026-11-11T10:08:18Z,1,1,200,193,23136,bdf697ed6b37a059eda1aa8ece73d86622e81c94efd7d6e98f8a71f77d923613,1,1,
+591,17,5,https://kamilas.uz/product/buket-vinnaya-roza/,2026-11-11T10:08:23Z,1,1,200,194,23391,f9ccd30c5f95b75c402655684c4f42f3846fb27fcda56c8e17c03423502b5ed6,1,1,
+592,17,5,https://kamilas.uz/product/otkrytka-moej-dochenke/,2026-11-11T10:08:28Z,1,1,200,193,22550,ad03b6d3f18a2153a21b258fb1e5f8e2fb07d168f7c3e5696457006859aebeb8,1,1,
+593,17,5,https://kamilas.uz/product/otkrytka-prichina-ulybki/,2026-11-11T10:08:33Z,1,1,200,192,23177,6e3a7104272596209c0f2172f5b03fc2a771f1ebb342d35ac64a8ac792d3076f,1,1,
+594,17,5,https://kamilas.uz/product/vaza-steklyannaya-minimal/,2026-11-11T10:08:38Z,1,1,200,192,23042,1a763ab5ea2a754fdc63468544d3b7a64a4c015335138b1e01f08d89d63001c9,1,1,
+595,17,4,https://loveflowers.uz/robots.txt,2026-11-11T10:08:38Z,1,1,,31067,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+596,17,4,https://loveflowers.uz/robots.txt,2026-11-11T10:09:19Z,2,1,,30821,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+597,17,4,https://loveflowers.uz/robots.txt,2026-11-11T10:10:20Z,3,1,,30854,,,,,"ReadTimeout: HTTPSConnectionPool(host='loveflowers.uz', port=443): Read timed out. (read timeout=30)"
+598,17,4,https://loveflowers.uz/tcat/bukety/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+599,17,4,https://loveflowers.uz/tcat/rozy/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+600,17,4,https://loveflowers.uz/tcat/tyulpany/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+601,17,4,https://loveflowers.uz/tcat/tsvety-v-korobke/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+602,17,4,https://loveflowers.uz/tcat/korziny-s-tsvetami/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+603,17,4,https://loveflowers.uz/tcat/tsvety-raznye/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+604,17,4,https://loveflowers.uz/tcat/podarki/,2026-11-11T10:10:50Z,1,0,,,,,,,skipped: disallowed by robots.txt
+605,17,2,https://pro-buket.uz/robots.txt,2026-11-11T10:10:50Z,1,1,200,1123,599,15816cc62dc2a49ded05f724af157ae63e625e20eef7c85ddc1f5e0d076c1f8e,,,
+606,17,2,https://pro-buket.uz/catalog/,2026-11-11T10:10:55Z,1,1,200,1416,526256,c5c7b1052913dd34b7e49351ea6396176f702b84cbc3a3b6bf2af8492ea25843,1,64,
+607,17,3,https://uzflora.com/robots.txt,2026-11-11T10:10:57Z,1,1,200,1562,317,ef1cf0a6ea60661c3b590e1efafc224d2fe14611f55f86114321230fa6537b05,,,
+608,17,3,https://uzflora.com/shop/?currency=UZS,2026-11-11T10:11:02Z,1,1,200,2237,114598,271681d0d4e78f833358b15f0836bf9c0847a25f433fb7d5ae6fe20112595873,1,16,
+609,17,3,https://uzflora.com/shop/page/2/?currency=UZS,2026-11-11T10:11:07Z,1,1,200,1459,116656,cee77c13a2101ee10dd0410d7bf3da2b30918bb6377b92faf8a4eb3ae44c95cf,1,16,
+610,17,3,https://uzflora.com/shop/page/3/?currency=UZS,2026-11-11T10:11:12Z,1,1,200,1469,116822,2b07975247d90ed960e06daa2ccd2eb491c46e925605004b3155806677ed1f2b,1,16,
+611,17,3,https://uzflora.com/shop/page/4/?currency=UZS,2026-11-11T10:11:17Z,1,1,200,1528,118714,a35d9b21e5a8ca25a2734936d423cd9e8a0ae7ac6c14a7fd6495518b34e86cc4,1,16,
+612,17,3,https://uzflora.com/shop/page/5/?currency=UZS,2026-11-11T10:11:22Z,1,1,200,1475,117013,5097564f2b71fd1379702c0af7692adb93218c8706c46e8ccd0777837fd6022e,1,16,
+613,17,3,https://uzflora.com/shop/page/6/?currency=UZS,2026-11-11T10:11:27Z,1,1,200,1491,116985,341362f7a5726823dfb7bffceb637eeddce32e8dc636a38dfdd5041ca25f4640,1,16,
+614,17,3,https://uzflora.com/shop/page/7/?currency=UZS,2026-11-11T10:11:32Z,1,1,200,1834,118446,98577a3b0866809de1a7477806ef527eed0a3703a65871268842178cc59d95db,1,16,
+615,17,3,https://uzflora.com/shop/page/8/?currency=UZS,2026-11-11T10:11:37Z,1,1,200,8025,116672,110abe50e431c5f2601d577a54443733df2a1399633c57cd4d53c82a3126bed2,1,16,
+616,17,3,https://uzflora.com/shop/page/9/?currency=UZS,2026-11-11T10:11:45Z,1,1,200,1378,117179,085c6a245dbc434520db8af93fe3b4cecf75f657858e87713aaebfed112ce74f,1,16,
+617,17,3,https://uzflora.com/shop/page/10/?currency=UZS,2026-11-11T10:11:50Z,1,1,200,1150,97963,b5d4cab9d98cfb1164f8ab9baa7f0cebbca227b0ed5d8573639c415a2881b4f9,1,10,
