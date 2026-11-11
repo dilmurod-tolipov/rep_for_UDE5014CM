@@ -5,3 +5,4 @@ run_id,kind,purpose,triggered_by,started_at,finished_at,status,git_commit,git_di
 15,competitor_scrape,assessed,scheduled,2026-11-10T10:38:49Z,2026-11-10T10:44:39Z,success,f47c902f178615dcdb3cc75f45e3d611936e3789,0,0.1.0,runnervm7aw5e,42,42,225,22,
 16,competitor_scrape,assessed,scheduled,2026-11-10T21:07:38Z,2026-11-10T21:13:26Z,success,94a2bd824504bef80234f36d21ab05ece7c6bfd4,0,0.1.0,runnervm7aw5e,42,42,225,22,
 17,competitor_scrape,assessed,scheduled,2026-11-11T10:06:03Z,2026-11-11T10:11:51Z,success,0d21991323ffea2794affd4c48a4ef0a5a34f1b5,0,0.1.0,runnervm7aw5e,42,42,225,22,
+18,competitor_scrape,assessed,scheduled,2026-11-11T21:50:17Z,2026-11-11T21:54:33Z,success,766e49c9ff01f2c5afd3bd9b1f31ef3638610790,0,0.1.0,runnervm7aw5e,49,49,579,22,
