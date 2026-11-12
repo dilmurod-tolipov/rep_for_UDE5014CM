@@ -7,7 +7,7 @@
 | Repository | https://github.com/dilmurod-tolipov/rep_for_UDE5014CM |
 | Assessed branch | `main` |
 | Tag | `cp2` |
-| Full commit hash | `3beb8463f5b55ffcd242dd76fd0658e8829c1599` |
+| Full commit hash | `96bf0c84442092086f3a19c2e3868f02e6ec525f` |
 | State reached | 2026-11-13 (Teaching Week 8), five days into the approved collection window |
 | Submission route | No checkpoint form is published on the LMS; the Module Leader confirmed in writing (26 October 2026) that checkpoint records are submitted with the final report. |
 
