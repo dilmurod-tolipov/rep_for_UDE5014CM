@@ -65,13 +65,19 @@ class Fetcher:
                 self.sleep(remaining)
         self._last_request[host] = self.clock()
 
-    def get(self, url: str, min_delay_s: float) -> list[FetchAttempt]:
-        """Fetch ``url``; retry network errors, 429 and 5xx. Returns all attempts, last one final."""
+    def get(self, url: str, min_delay_s: float, *, max_attempts: int | None = None,
+            backoff_s: tuple[float, ...] | None = None) -> list[FetchAttempt]:
+        """Fetch ``url``; retry network errors, 429 and 5xx. Returns all attempts, last one final.
+
+        ``max_attempts`` and ``backoff_s`` override the defaults for one call: robots.txt is retried
+        harder than a page, because failing to read it costs the whole shop for that run."""
         host = urlsplit(url).hostname or ""
+        tries = max_attempts or self.max_attempts
+        waits = backoff_s or self.backoff_s
         attempts: list[FetchAttempt] = []
-        for n in range(1, self.max_attempts + 1):
+        for n in range(1, tries + 1):
             if n > 1:
-                self.sleep(self.backoff_s[min(n - 2, len(self.backoff_s) - 1)])
+                self.sleep(waits[min(n - 2, len(waits) - 1)])
             self._wait_for_host(host, min_delay_s)
             requested_at, t0 = self.now(), self.clock()
             try:

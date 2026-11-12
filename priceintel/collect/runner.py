@@ -19,6 +19,12 @@ from priceintel.gitinfo import git_state
 
 SUCCESS_THRESHOLD = 0.8
 MAX_PAGES_PER_SHOP = 60
+# robots.txt gates a whole shop: if it cannot be read, that operator group contributes nothing to the
+# run. It is therefore retried harder than an ordinary page (loveflowers.uz took more than 30 s to
+# answer on five runs in November 2026, and the group was dropped from each of them).
+ROBOTS_ATTEMPTS = 5
+ROBOTS_BACKOFF_S = (10, 30, 60, 120)
+ROBOTS_TIMEOUT_S = 60
 
 
 class CollectError(RuntimeError):
@@ -35,6 +41,8 @@ class RunSummary:
     duplicates_skipped: int = 0
     records_rejected: int = 0
     robots_skipped: int = 0
+    shops_expected: int = 0
+    shops_collected: int = 0
     errors: list[str] = field(default_factory=list)
 
 
@@ -70,7 +78,13 @@ def _log_robots_refusal(conn, run_id, shop_id, url, now) -> None:
 
 def _load_robots(conn, run_id, shop, fetcher: Fetcher) -> RobotsRules:
     url = shop["base_url"].rstrip("/") + "/robots.txt"
-    attempts = fetcher.get(url, shop["crawl_delay_s"])
+    previous_timeout = fetcher.timeout_s
+    fetcher.timeout_s = max(previous_timeout, ROBOTS_TIMEOUT_S)
+    try:
+        attempts = fetcher.get(url, shop["crawl_delay_s"], max_attempts=ROBOTS_ATTEMPTS,
+                               backoff_s=ROBOTS_BACKOFF_S)
+    finally:
+        fetcher.timeout_s = previous_timeout
     final = attempts[-1]
     with transaction(conn):
         _log_attempts(conn, run_id, shop["shop_id"], attempts)
@@ -200,18 +214,28 @@ def collect(conn: sqlite3.Connection, shop_codes: list[str], purpose: str = "dev
         " scraper_version, runner_host) VALUES ('competitor_scrape', ?, ?, ?, ?, ?, ?, ?)",
         (purpose, triggered_by, utc_now(), commit, int(dirty), __version__, platform.node() or "unknown"),
     ).lastrowid
-    summary = RunSummary(run_id)
+    summary = RunSummary(run_id, shops_expected=len(shops))
     fatal = None
     try:
         for shop in shops:
+            before = summary.observations_saved + summary.duplicates_skipped
             _collect_shop(conn, run_id, shop, fetcher, summary, max_pages)
+            if summary.observations_saved + summary.duplicates_skipped > before:
+                summary.shops_collected += 1
+            else:
+                summary.errors.append(
+                    f"{shop['code']}: no records collected in this run")
     except Exception as e:
         fatal = f"{type(e).__name__}: {e}"
         summary.errors.append(fatal)
     finally:
+        # A run is successful only when it both fetched its pages and reached every active operator
+        # group. A group whose robots.txt did not answer is skipped rather than crawled, and a run
+        # that silently lost a group must not be counted towards the approved success rate.
+        reached_every_group = summary.shops_collected == summary.shops_expected
         if fatal or summary.pages_requested == 0:
             summary.status = "failed"
-        elif summary.pages_ok / summary.pages_requested >= SUCCESS_THRESHOLD:
+        elif summary.pages_ok / summary.pages_requested >= SUCCESS_THRESHOLD and reached_every_group:
             summary.status = "success"
         elif summary.pages_ok > 0:
             summary.status = "partial"
@@ -219,9 +243,10 @@ def collect(conn: sqlite3.Connection, shop_codes: list[str], purpose: str = "dev
             summary.status = "failed"
         conn.execute(
             "UPDATE scrape_runs SET finished_at = ?, status = ?, pages_requested = ?, pages_ok = ?,"
-            " observations_saved = ?, records_rejected = ?, error_message = ? WHERE run_id = ?",
+            " observations_saved = ?, records_rejected = ?, shops_expected = ?,"
+            " shops_collected = ?, error_message = ? WHERE run_id = ?",
             (utc_now(), summary.status, summary.pages_requested, summary.pages_ok,
-             summary.observations_saved, summary.records_rejected,
-             "; ".join(summary.errors)[:2000] or None, run_id),
+             summary.observations_saved, summary.records_rejected, summary.shops_expected,
+             summary.shops_collected, "; ".join(summary.errors)[:2000] or None, run_id),
         )
     return summary

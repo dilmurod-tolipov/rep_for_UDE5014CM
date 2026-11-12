@@ -13,7 +13,11 @@ name: collect
 
 on:
   schedule:
-    - cron: "0 3,15 * * *"   # 08:00 and 20:00 Asia/Tashkent (UTC+5), as approved
+    # 08:00 and 20:00 Asia/Tashkent (UTC+5), as approved. The minutes are deliberately off the
+    # hour: GitHub queues scheduled runs and :00 is the busiest minute of all. Runs have still
+    # started several hours late in practice, so the analysis uses each run's own recorded
+    # started_at, never the nominal time (see docs/analysis_plan.md).
+    - cron: "17 3,15 * * *"
   workflow_dispatch:
     inputs:
       purpose:
