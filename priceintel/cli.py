@@ -62,6 +62,38 @@ def cmd_reference_report(args) -> int:
     return 0
 
 
+def cmd_pipeline(args) -> int:
+    """Rebuild the analysis dataset from the collected observations."""
+    from priceintel.analysis.categories import load_rules
+    from priceintel.analysis.pipeline import build_dataset, dataset_summary
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    rules_version = args.rules_version or load_rules(args.rules).version
+    try:
+        run_id, counts = build_dataset(conn, purpose=args.purpose, window_start=args.window_start,
+                                       window_end=args.window_end, rules_version=rules_version)
+    except ValueError as e:
+        print(f"error: {e}")
+        return 1
+    print(f"pipeline run {run_id} [{args.purpose}] window {args.window_start}..{args.window_end}"
+          f" rules {rules_version}")
+    print("  observations read          {:>7,}".format(counts.observations_in))
+    print("  - starting prices dropped  {:>7,}".format(counts.observations_from_price))
+    print("  = observations used        {:>7,}".format(counts.observations_used))
+    print("  products summarised        {:>7,}".format(counts.products_in))
+    print("  - no analysis category     {:>7,}".format(counts.products_no_category))
+    print("  - priced per stem          {:>7,}".format(counts.products_per_stem))
+    print("  = products included        {:>7,}".format(counts.products_included))
+    print("  outliers flagged (kept)    {:>7,}".format(counts.products_outliers_flagged))
+    print()
+    print(f"{'category':22}{'group':18}{'products':>9}{'outliers':>9}{'min UZS':>12}{'max UZS':>12}")
+    for row in dataset_summary(conn, run_id):
+        print(f"{row['category']:22}{row['operator_group']:18}{row['n_products']:>9}"
+              f"{row['outliers']:>9}{row['min_price_uzs']:>12,}{row['max_price_uzs']:>12,}")
+    return 0
+
+
 def cmd_query(args) -> int:
     """Run one of the stakeholder queries in sql/queries/, or list them."""
     from priceintel.queries import QueryError, available, format_table, question_of, run
@@ -368,6 +400,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--since", help="first publication date to include (YYYY-MM-DD)")
     s.add_argument("--until", help="last publication date to include (YYYY-MM-DD)")
     s.set_defaults(func=cmd_reference_report)
+
+    s = sub.add_parser("pipeline", help="rebuild the analysis dataset (cleaning, transformation,"
+                                       " features, splits)")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--rules-version")
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--window-start", default=config.APPROVED_WINDOW_START)
+    s.add_argument("--window-end", default=config.APPROVED_WINDOW_END)
+    s.set_defaults(func=cmd_pipeline)
 
     s = sub.add_parser("query", help="run a stakeholder query from sql/queries/")
     s.add_argument("name", nargs="?", help="query name, e.g. price_position_by_category")

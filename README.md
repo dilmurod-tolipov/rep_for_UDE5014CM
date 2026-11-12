@@ -147,6 +147,40 @@ actually holds: `?purpose=banana` returns 400 and lists the real options rather 
 something else. The dashboard only ever reads; the cross-database integrity check runs on every load
 of the overview page and is shown there.
 
+## The analysis pipeline
+
+```bash
+python -m priceintel pipeline --purpose assessed      # cleaning, transformation, features, splits
+```
+
+One command rebuilds everything the analysis reads, and records how it was built. The cleaning
+decisions are explicit and each is counted in `pipeline_runs`, so the arithmetic in the report adds
+up:
+
+| Decision | Why |
+|---|---|
+| Starting prices ("от 550 000") are not used as prices | they are not the price of one identified product. The product is **kept** with `exclusion_reason = 'starting_price_only'` and its lower bound, because loveflowers publishes one on 230 of its 354 cards and dropping them silently would remove most of the largest competitor |
+| Per-stem listings are excluded from category medians | 18,000 UZS for one gerbera is not an assortment price |
+| Products with no analysis category are excluded | and counted, never guessed into a category |
+| Outliers are flagged, not removed | by median absolute deviation within a category **and one operator group**; the robustness check re-runs without them |
+| Missing values are never imputed | a missing stem count stays NULL |
+| One product, one value | the median of its observations in the window, so twice-daily snapshots cannot weight a product more heavily |
+
+Splits are written once per build: grouped folds (every observation of a listing in one fold),
+leave-one-operator-group-out, and a chronological hold-out.
+
+## Reproducing from saved data
+
+```bash
+python tools/load_snapshot.py data/snapshots/assessed-window --db data/replay.db
+python -m priceintel pipeline --db data/replay.db --purpose assessed
+```
+
+A committed snapshot is enough on its own: it carries the collected data, the runs that produced it,
+the category vocabulary, the rules file's version and SHA-256, and the analysis dataset. The replay
+loads it with foreign keys enforced and the pipeline re-runs on it, which is what "reproduce the
+analysis from its saved data" means in practice.
+
 ## Stakeholder queries, data quality and snapshots
 
 ```bash

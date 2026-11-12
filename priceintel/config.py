@@ -15,6 +15,11 @@ SHOPS_FILE = CONFIG_DIR / "shops.json"
 # Versioned, price-independent category rules (ADR-006); tagged before any analysis run.
 CATEGORY_RULES_FILE = CONFIG_DIR / "category_rules.v1.json"
 
+# The collection window the Module Leader approved on 2026-11-03. One definition, used by the
+# pipeline, the documentation and the scheduled workflow, so they cannot drift apart.
+APPROVED_WINDOW_START = "2026-11-09"
+APPROVED_WINDOW_END = "2026-12-06"
+
 SECRET_DB = DATA_DIR / "secret_shop.db"
 SECRET_MIGRATIONS = SQL_DIR / "secret_shop"
 SECRET_SOURCES_FILE = CONFIG_DIR / "secret_sources.json"

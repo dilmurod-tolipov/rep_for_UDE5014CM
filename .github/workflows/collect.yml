@@ -121,6 +121,7 @@ jobs:
         run: |
           python -m priceintel classify
           python -m priceintel quality --purpose assessed || true
+          python -m priceintel pipeline --purpose assessed || true
           python -m priceintel snapshot --purpose assessed --label window
           git config user.name  "collector (GitHub Actions)"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

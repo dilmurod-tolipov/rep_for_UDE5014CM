@@ -10,7 +10,11 @@ migrations and change every run), so a snapshot exports the evidence as CSV plus
 * ``listings.csv``, ``price_observations.csv`` - the primary data itself.
 * ``rejected_records.csv``, ``data_quality_checks.csv`` - what was refused and how healthy the data
   was when the snapshot was taken.
-* ``listing_categories.csv`` - the category assigned to each listing, with the rules version.
+* ``analysis_categories.csv``, ``category_rule_sets.csv``, ``listing_categories.csv``,
+  ``listing_features.csv`` - the category vocabulary, the rules file that was in force (version and
+  SHA-256), the category of each listing and what one price buys.
+* ``pipeline_runs.csv``, ``analysis_products.csv``, ``dataset_splits.csv`` - the analysis dataset and
+  how it was built, so the figures in the report can be recomputed from the snapshot alone.
 * ``reference_offers.csv`` - Secret's reference offers, **only** when ``include_reference`` is set,
   because the real export is shared with the assessors rather than published.
 * ``MANIFEST.md`` - row counts, the SHA-256 of every file, the git commit, and the purpose filter.
@@ -26,14 +30,28 @@ from pathlib import Path
 from priceintel.gitinfo import git_state
 
 PROVENANCE_TABLES = ("shops", "scrape_runs", "fetch_log")
-DATA_TABLES = ("listings", "price_observations", "listing_categories", "rejected_records",
-               "data_quality_checks")
+# The snapshot has to be self-contained: `tools/load_snapshot.py` rebuilds a working database from
+# it, and that fails if the category vocabulary and the rules-file provenance are missing, because
+# every category assignment points at them. Found on 2026-11-13 by actually replaying a snapshot.
+DATA_TABLES = ("analysis_categories", "category_rule_sets", "listings", "price_observations",
+               "listing_categories", "listing_features", "rejected_records",
+               "data_quality_checks", "pipeline_runs", "analysis_products", "dataset_splits")
 REFERENCE_TABLES = ("reference_imports", "reference_offers")
 
 # Only runs of the chosen purpose are exported, so a development snapshot can never be mistaken for
 # assessed data. These say how to filter each table by purpose.
 PURPOSE_FILTER = {
-    "scrape_runs": "SELECT * FROM scrape_runs WHERE purpose = :purpose ORDER BY run_id",
+    # Every run of the chosen purpose, PLUS any run referenced by an exported listing as the run
+    # that first saw it. A listing first seen during development keeps that provenance, so the
+    # referenced run must travel with the snapshot or it cannot be loaded back (found on 2026-11-13
+    # by replaying one). Each run carries its own purpose, so development rows stay visible as such.
+    "scrape_runs": ("SELECT * FROM scrape_runs WHERE purpose = :purpose"
+                    " OR run_id IN (SELECT l.first_seen_run_id FROM listings l"
+                    "               WHERE l.listing_id IN (SELECT o.listing_id"
+                    "                                      FROM price_observations o"
+                    "                                      JOIN scrape_runs r ON r.run_id = o.run_id"
+                    "                                      WHERE r.purpose = :purpose))"
+                    " ORDER BY run_id"),
     "fetch_log": ("SELECT * FROM fetch_log WHERE run_id IN"
                   " (SELECT run_id FROM scrape_runs WHERE purpose = :purpose) ORDER BY fetch_id"),
     "price_observations": ("SELECT * FROM price_observations WHERE run_id IN"
