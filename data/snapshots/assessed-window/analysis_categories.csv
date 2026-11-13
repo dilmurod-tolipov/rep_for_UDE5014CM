@@ -1,0 +1,9 @@
+code,name
+roses_mono,Roses and mono-bouquets (one named flower type)
+mixed_bouquets,Mixed bouquets (two or more named flower types)
+bouquets_unspecified,Bouquets whose composition is not stated in the listing or post
+boxes_baskets,Flowers in boxes and baskets
+potted_plants,Potted / houseplants
+edible_sets,"Edible and berry sets (strawberries in chocolate, sweets, fruit)"
+out_of_scope,"Explicitly excluded: not a flower, plant or edible product"
+unclassified,No rule matched; excluded from analysis and reported as a count
