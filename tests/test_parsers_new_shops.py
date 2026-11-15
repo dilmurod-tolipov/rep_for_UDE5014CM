@@ -49,7 +49,40 @@ def test_probuket_keeps_the_old_price_and_the_shops_section():
 # loveflowers.uz: WooCommerce cards, "from" prices, pagination
 # ---------------------------------------------------------------------------
 
-def test_loveflowers_reads_cards_and_follows_pagination():
+def test_loveflowers_reads_the_redesigned_layout():
+    """The theme was redesigned around 2026-11-13, four days into the assessed window: div.tovar
+    became article.tovar, h2 became h3, and the catalogue is now paginated. The group contributed
+    nothing to five runs before this was noticed."""
+    result = loveflowers.parse(fixture("loveflowers_section_2026_11.html"),
+                               "https://loveflowers.uz/tcat/bukety/")
+    assert len(result.items) == 3
+    assert result.next_url == "https://loveflowers.uz/tcat/bukety/page/2/"
+    for item in result.items:
+        assert item.title and item.url.startswith("https://loveflowers.uz/product/")
+        assert item.site_category == "bukety"
+        assert isinstance(validate(item, "loveflowers.uz"), ValidItem), item
+    assert any(i.composition_text for i in result.items), (
+        "the new design states the composition, which the stem-count feature reads")
+    assert any(i.external_id for i in result.items)
+
+
+def test_loveflowers_discounted_card_reads_the_current_price_not_the_old_one():
+    """A discounted card renders <del>690 000</del> <span class=from>от</span>
+    <span class=amount>550 000</span>. Reading the whole box took 690,000 as the current price, so
+    the old price was 'not above' it and every discounted card was quarantined."""
+    result = loveflowers.parse(fixture("loveflowers_section_2026_11.html"),
+                               "https://loveflowers.uz/tcat/bukety/")
+    discounted = [i for i in result.items if i.old_price_text]
+    assert discounted, "the fixture must contain a discounted card"
+    for item in discounted:
+        checked = validate(item, "loveflowers.uz")
+        assert isinstance(checked, ValidItem), checked
+        assert checked.old_price_uzs > checked.price_uzs
+        assert checked.is_from_price, "the shop still advertises it as a starting price"
+
+
+def test_loveflowers_still_reads_the_old_layout():
+    """The data already collected came from the old markup; its fixture must keep parsing."""
     result = loveflowers.parse(fixture("loveflowers_shop_real.html"), "https://loveflowers.uz/shop/")
     assert len(result.items) == 3
     assert result.next_url == "https://loveflowers.uz/shop/page/2/"

@@ -11,6 +11,10 @@ status. They are deliberately about *fitness for the planned analysis*, not abou
 * ``unclassified_rate`` - products no category rule matched: they are excluded from the analysis, so
   a high rate narrows what can be said.
 * ``freshness_days`` - the age of the newest observation, so a silently dead scheduler is visible.
+* ``group_freshness_days`` - the same, **per operator group**. The overall figure cannot catch a
+  single source going quiet: when loveflowers.uz redesigned its theme on 13 November 2026 its parser
+  returned nothing for five runs while the other three groups kept the overall freshness green. One
+  row per group, so a missing source fails its own check.
 * ``price_outlier_rate`` - prices more than 10x the category median; not removed here, only counted,
   because the robustness checks examine them deliberately.
 * ``duplicate_observations`` - must be 0: the UNIQUE (listing_id, run_id) constraint should make a
@@ -160,6 +164,21 @@ def run_checks(conn, *, purpose: str = "assessed", rules_version: str | None = N
     results.append(CheckResult("freshness_days", "all", age, MAX_FRESHNESS_DAYS, "days",
                                _status(age, MAX_FRESHNESS_DAYS, higher_is_better=False),
                                f"newest observation: {newest or 'none'}"))
+
+    for group, newest_at in conn.execute("""
+            SELECT s.operator_group,
+                   (SELECT MAX(o.observed_at) FROM price_observations o
+                    JOIN listings l ON l.listing_id = o.listing_id
+                    JOIN scrape_runs r ON r.run_id = o.run_id
+                    WHERE l.shop_id = s.shop_id AND r.purpose = ?) AS newest_at
+            FROM shops s WHERE s.is_active = 1 AND s.is_own_shop = 0
+            ORDER BY s.operator_group""", (purpose,)):
+        group_age = _scalar(conn, "SELECT ROUND(julianday('now') - julianday(?), 2)",
+                            (newest_at,)) if newest_at else 999.0
+        results.append(CheckResult(
+            "group_freshness_days", group, group_age, MAX_FRESHNESS_DAYS, "days",
+            _status(group_age, MAX_FRESHNESS_DAYS, higher_is_better=False),
+            f"newest observation from this group: {newest_at or 'none in this dataset'}"))
 
     duplicates = _scalar(conn, """
         SELECT COUNT(*) FROM (SELECT listing_id, run_id FROM price_observations
