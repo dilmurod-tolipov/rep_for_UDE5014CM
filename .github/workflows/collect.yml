@@ -88,7 +88,10 @@ jobs:
       - run: python -m priceintel init-db
 
       - name: Collect competitor prices (all four operator groups)
-        run: python -m priceintel collect --all --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
+        # The page cap is per shop. loveflowers.uz paginates its sections since the November
+        # redesign (19 pages in the bouquet section alone), so the cap must be high enough to walk
+        # the whole catalogue in every run - otherwise each run sees a different slice of it.
+        run: python -m priceintel collect --all --max-pages 150 --purpose "$PURPOSE" --trigger "$TRIGGER" || echo "::warning::competitor run did not succeed (status is recorded in scrape_runs)"
 
       # Secret's own prices are NOT collected here any more.
       # Reading the public Telegram channel (collect-secret) was disabled after Telegram's Content
@@ -120,7 +123,10 @@ jobs:
         if: env.PURPOSE == 'assessed'
         run: |
           python -m priceintel classify
-          python -m priceintel quality --purpose assessed || true
+          # A failing quality check is annotated on the run instead of being swallowed: this is
+          # how a source that goes quiet becomes visible on the day it happens, rather than three
+          # days later by reading the run table (13-15 November 2026).
+          python -m priceintel quality --purpose assessed ||             echo "::error::data-quality checks failed - see the step output (a group may have stopped collecting)"
           python -m priceintel pipeline --purpose assessed || true
           python -m priceintel snapshot --purpose assessed --label window
           git config user.name  "collector (GitHub Actions)"
