@@ -1,7 +1,7 @@
 # Data snapshot - assessed data (window)
 
-- Taken at: 2026-11-16T11:44:02Z
-- Collected by commit: `ad43740ae365944a44f2f31d742af3c25b31a221` (working tree modified)
+- Taken at: 2026-11-16T23:57:30Z
+- Collected by commit: `17b28ff0802a77f6d1ff352186083cb4b6033d02` (working tree modified)
 - Purpose filter: `assessed` - no run of any other purpose is included
 - Secret reference offers included: no
 
@@ -12,16 +12,16 @@ size and content hash, and every price observation points at the fetch it came f
 | File | Rows | SHA-256 |
 |---|---|---|
 | `shops.csv` | 10 | `e97d3e4bdd178c5dc1dbb4aecfb6a5fc587b3f7dcf773e8ed7d43c571a179fc3` |
-| `scrape_runs.csv` | 17 | `f225d9e074bd27c85bc22e0d05a41b87558ab076bb333cc5a4d55e92fb701ea7` |
-| `fetch_log.csv` | 909 | `44af1844df05145e4439041c78a638ba60a01afed82fde67ef8ec513517625ea` |
+| `scrape_runs.csv` | 18 | `478d8db5adf4a2a1fb1c92299a8a33ef6b8ba5552a8a28bfffb4c427db9beffe` |
+| `fetch_log.csv` | 1,039 | `fd208501b8185ffb766a4c1b780daa4dd4d17417373ba9dd4c6ffe6cf4f224e1` |
 | `analysis_categories.csv` | 8 | `0d35dec014e7134a9d70bc7b444106806c7592433642adf84d4c6db83e556215` |
 | `category_rule_sets.csv` | 1 | `524cafa8a120a2ed6a488390f2c7698d8d6f21f4a94824a3efeed14a3cfa7bdb` |
-| `listings.csv` | 2,571 | `0c86927e4ed89c2c22cfdd84f7f6aee6da7348f360e7f88a3af0836ebc53e71f` |
-| `price_observations.csv` | 7,619 | `770f0b0ce1f96fa0d5b4e7d980e17d9b6b5ada31d0b5a080f38897af01678ed6` |
-| `listing_categories.csv` | 2,571 | `7fe6f31ba6614a16041da81ff7877876b1f87b14e84706328d2604df0ca6b08e` |
-| `listing_features.csv` | 2,571 | `6472a4ba7325d875cdfc984388d28fb7ee635264810038b51a79b36c50ed06a0` |
-| `rejected_records.csv` | 310 | `aa162527fd4c5e507db496d3b8c339308a41dbe18d9d86136a2260ff227f28b9` |
-| `data_quality_checks.csv` | 13 | `749c25c8f098cc31108ccea06904470563bdb315be646d235e14cdc7d9b4d549` |
-| `pipeline_runs.csv` | 1 | `d3117ee32723f53bfbce52ec608230a71b505cd9965564361370f8c7e3f7249a` |
-| `analysis_products.csv` | 2,571 | `5ca7023f872f64e5d673a19a61d879c83d5a6bca99341d3ff180979af7518703` |
+| `listings.csv` | 2,571 | `9a8c079c4c9fadaf8005145af894a4db35250048fa5af45ac363ffe60ed2a8d0` |
+| `price_observations.csv` | 9,868 | `a233f0c411a1d381e730f076f4e54278671749044c075682b4bc4aa56c04975b` |
+| `listing_categories.csv` | 2,571 | `67003b19a0cf0cd28cafc2a3a0debc9374472b8c77abd82754c03f5d442fa868` |
+| `listing_features.csv` | 2,571 | `75a423b8c6c43122a0d526ccc159ee60a18d6ee04e3117dbf93fdf12752c9e9d` |
+| `rejected_records.csv` | 334 | `f72e7a17ec883b117142d6a2b828d09df2f90a11aa8521654b54f7cb2f440b25` |
+| `data_quality_checks.csv` | 13 | `4bb3d82a15df4101b3972c6402f3571908b1ab490485abe19e6d8e3799c693b0` |
+| `pipeline_runs.csv` | 1 | `8bd35726e35b9fb120042cad1aa5e02cb6e33a788ecc5cd2f51e0db16736ac0a` |
+| `analysis_products.csv` | 2,571 | `5c5f831c0aa3ac3e0ea2b27d8cf98c67b16c5687d4bea62b78302d79b5048251` |
 | `dataset_splits.csv` | 7,580 | `e47453a37fd759cde90d969a4f0c17390931d65b15cd10169d7b7fb9e907fcfe` |
