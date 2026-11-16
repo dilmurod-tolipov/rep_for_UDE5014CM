@@ -7,8 +7,9 @@
 | Repository | https://github.com/dilmurod-tolipov/rep_for_UDE5014CM |
 | Assessed branch | `main` |
 | Tag | `cp2` |
-| Full commit hash | `96bf0c84442092086f3a19c2e3868f02e6ec525f` |
+| Full commit hash | `35ba26068f1a61331d9fcd8f387037b02c4db638` |
 | State reached | 2026-11-13 (Teaching Week 8), five days into the approved collection window |
+| Tag corrected | On 2026-11-16 the `cp2` tag was moved from `96bf0c8` to this commit, 13 November, and the move is recorded here rather than left silent. The brief's Checkpoint 2 component includes **cleaning**; `96bf0c8` had the collection, validation, quality checks, queries and monitoring but not the cleaning stage, which arrived two commits later the same day. Checkpoint 3 was then built on that pipeline, so the earlier tag did not hold together as a stage. The tag moved **forward**, to the first state where the stage is genuinely complete — it does not claim anything was finished earlier than it was. |
 | Submission route | No checkpoint form is published on the LMS; the Module Leader confirmed in writing (26 October 2026) that checkpoint records are submitted with the final report. |
 
 ## Independently executable component
@@ -27,6 +28,12 @@ Continued genuine acquisition, with the data-management side the brief asks for 
 - **Data quality.** Nine recorded checks (`python -m priceintel quality`) stored in
   `data_quality_checks` with thresholds and status.
 - **Stakeholder queries.** Five documented SQL files (`python -m priceintel query --list`).
+- **Cleaning and transformation.** `python -m priceintel pipeline` turns stored observations into
+  the analysis dataset with every decision recorded and counted in `pipeline_runs`: starting prices
+  are not used as prices but the products are kept as lower bounds, per-stem listings are excluded
+  from category medians, products with no category are excluded, outliers are flagged rather than
+  removed, missing values are never imputed, and each product contributes one median however often
+  it was observed.
 - **Monitoring output.** The dashboard's overview and data-quality pages, and `v_run_coverage`.
 
 ## Value statement
@@ -58,11 +65,12 @@ As of the snapshot of 2026-11-12 (`data/snapshots/assessed-window/`):
 | **Purpose** | Prove that collection continues reliably, that invalid, duplicate and edge-case input is handled, and that quality and queries produce reproducible output |
 | **Start command** | `python -m priceintel init-db` |
 | **Run** | `python -m priceintel collect --all --purpose dev` (twice, to show idempotence) |
+| **Clean** | `python -m priceintel pipeline --purpose assessed` |
 | **Quality** | `python -m priceintel quality --purpose assessed` |
 | **Queries** | `python -m priceintel query 02_category_coverage --purpose assessed` |
 | **Test command** | `python -m pytest -q` |
 | **Acceptance criteria** | second run adds no duplicate observations; every refused record appears in `rejected_records` with a rule; all nine quality checks produce a measured value, a threshold and a status; each of the five queries runs and returns its documented columns; at least five cumulative tests pass (the brief's minimum for this stage) |
-| **Actual result** | **195 tests pass**. Second run adds 0 duplicate observations. 154 records quarantined, all with rule `missing_price`. Quality on assessed data reports `products_collected` 579 against a 300 target, `duplicate_observations` 0 and `orphan_observations` 0. All five queries run; coverage shows LOVEFLOWERS_NET 354, UZFLORA 154, PROBUKET 64, KAMILAS 7 products. |
+| **Actual result** | **215 tests pass** at this commit. Second run adds 0 duplicate observations. 154 records quarantined, all with rule `missing_price`. Quality on assessed data reports `products_collected` 579 against a 300 target, `duplicate_observations` 0 and `orphan_observations` 0. All five queries run; coverage shows LOVEFLOWERS_NET 354, UZFLORA 154, PROBUKET 64, KAMILAS 7 products. |
 
 ## Substantive change since Checkpoint 1
 
@@ -71,6 +79,7 @@ As of the snapshot of 2026-11-12 (`data/snapshots/assessed-window/`):
 | Five stakeholder queries with a parameterised runner | — | `0200a0a` | 12 tests on a fixture with hand-computed medians |
 | Nine recorded data-quality checks (migration 007) | — | `0200a0a` | 8 tests, including that a breached threshold is reported as a breach |
 | Committed CSV data snapshots with manifest and SHA-256 | — | `0200a0a`, `a6d5249` | the assessed snapshot, rewritten twice a day by the workflow |
+| Cleaning and transformation pipeline, and replayable snapshots | — | `35ba260` | 20 tests; running it on the assessed data corrected two of its own decisions, and replaying a snapshot showed the snapshot was not self-contained |
 | Dashboard over both databases, six pages and a JSON API | — | `95c20e7` | 23 tests, one of which starts the server and fetches a page |
 | Approval recorded; the four clarifications implemented | ADR-008 | `ecac792` | migrations 008–010, 19 tests |
 | **Defect: a run that lost an operator group reported success** | ADR-008 §1, this record | `88b75d2` | migration 011 and 8 tests; the failing case is reproduced in `tests/test_run_coverage.py` |
@@ -97,7 +106,7 @@ hidden, in `docs/analysis_plan.md` and in the final report.
   each run's own `started_at` is what the analysis uses.
 - Secret's reference offers are not imported yet: the owner's export is taken once, after the window
   closes on 6 December (ADR-007).
-- No analysis yet — that is Checkpoint 3.
+- No analysis yet — that is Checkpoint 3, which builds directly on the cleaning stage above.
 
 ## AI assistance in this period
 
