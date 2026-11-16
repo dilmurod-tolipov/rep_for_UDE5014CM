@@ -7,7 +7,7 @@
 | Repository | https://github.com/dilmurod-tolipov/rep_for_UDE5014CM |
 | Assessed branch | `main` |
 | Tag | `cp3` |
-| Full commit hash | *(recorded in `docs/evidence-register.md` by the commit after the tag — a commit cannot contain its own hash)* |
+| Full commit hash | `82b5f29b6e986fb3b32900f9dc4c0d8d1fed326d` |
 | State reached | 2026-11-16 (Teaching Week 9), day 8 of the approved collection window |
 | Submission route | No checkpoint form is published on the LMS; the Module Leader confirmed in writing (26 October 2026) that checkpoint records are submitted with the final report. |
 
