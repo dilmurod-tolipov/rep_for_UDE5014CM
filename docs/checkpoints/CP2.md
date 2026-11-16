@@ -107,6 +107,12 @@ hidden, in `docs/analysis_plan.md` and in the final report.
 - Secret's reference offers are not imported yet: the owner's export is taken once, after the window
   closes on 6 December (ADR-007).
 - No analysis yet — that is Checkpoint 3, which builds directly on the cleaning stage above.
+- `tools/load_snapshot.py` exists at this commit, but the data snapshot committed *in* it was
+  written by the workflow earlier the same day, before the snapshot became self-contained, so
+  replaying that particular snapshot stops at a foreign key. The tool and the fix are both in this
+  commit; from the next workflow run onwards the committed snapshot replays with foreign keys
+  enforced, which is verified at `cp3`. The component's own test specification above does not
+  depend on it: it collects, cleans and queries from a fresh database.
 
 ## AI assistance in this period
 
