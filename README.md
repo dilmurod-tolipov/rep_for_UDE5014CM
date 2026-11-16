@@ -169,6 +169,25 @@ up:
 Splits are written once per build: grouped folds (every observation of a listing in one fold),
 leave-one-operator-group-out, and a chronological hold-out.
 
+## The analysis
+
+```bash
+python -m priceintel analyse --purpose assessed        # figures, tests, comparison, models, checks
+python -m priceintel analyse --skip-robustness         # quicker, for a look during collection
+```
+
+It writes six labelled SVG figures to `docs/analysis/figures/`, stores every hypothesis test with its
+assumptions and effect size, stores the comparison with percentile bootstrap intervals (B = 5,000,
+whole products resampled, one Secret draw reused across a category's groups), evaluates a
+category-median baseline against ridge and a decision tree with grouped cross-validation by listing,
+and runs eight robustness checks. Everything is recorded in the database, so a figure in the report
+traces to the build that produced it.
+
+Statistical choices and why: rank-based and resampling methods throughout, because prices are
+strongly right-skewed and group sizes differ by an order of magnitude; Holm correction across
+categories; effect sizes beside every p-value; intervals described as covering the four sampled
+groups and the collection window, never the Tashkent market.
+
 ## Reproducing from saved data
 
 ```bash

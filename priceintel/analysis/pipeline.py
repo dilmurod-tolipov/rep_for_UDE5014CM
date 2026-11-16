@@ -189,7 +189,18 @@ def _flag_outliers(products: dict[int, Product]) -> set[int]:
         if len(prices) < MIN_FOR_OUTLIER_RULE:
             continue    # too few products in this shop's category to say what is unusual for it
         median = statistics.median(prices)
-        mad = statistics.median([abs(price - median) for price in prices]) or 1
+        mad = statistics.median([abs(price - median) for price in prices])
+        if not mad:
+            # More than half the products share one price (a shop that charges 45,000 for every
+            # plant). MAD is then 0 and every other price would be "infinitely" far from the
+            # median, so the rule falls back to the interquartile range, and gives up when that is
+            # zero too: a column of identical prices has no outliers to find.
+            ordered = sorted(prices)
+            q1 = ordered[len(ordered) // 4]
+            q3 = ordered[(3 * len(ordered)) // 4]
+            mad = (q3 - q1) / 1.349      # the IQR of a normal distribution is 1.349 MADs
+            if not mad:
+                continue
         for p in group:
             if abs(p.regular_price - median) > OUTLIER_MAD_MULTIPLIER * mad:
                 outliers.add(p.listing_id)

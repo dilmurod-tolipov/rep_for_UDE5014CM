@@ -62,6 +62,84 @@ def cmd_reference_report(args) -> int:
     return 0
 
 
+def cmd_analyse(args) -> int:
+    """Run the whole analysis on the newest dataset: figures, tests, comparison, models, robustness."""
+    from priceintel.analysis import comparison, eda, hypothesis, models, robustness
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    row = conn.execute(
+        "SELECT pipeline_run_id, purpose, window_start, window_end, products_included"
+        " FROM pipeline_runs WHERE purpose = ? ORDER BY pipeline_run_id DESC LIMIT 1",
+        (args.purpose,)).fetchone()
+    if row is None:
+        print(f"error: no {args.purpose} dataset; run `python -m priceintel pipeline` first")
+        return 1
+    run_id = row["pipeline_run_id"]
+    print(f"analysis of pipeline run {run_id} [{row['purpose']}], window {row['window_start']}"
+          f"..{row['window_end']}, {row['products_included']} usable products\n")
+
+    figures = eda.write_figures(conn, run_id, args.figures)
+    print(f"exploratory figures ({len(figures)}):")
+    for path in figures:
+        print(f"  {path}")
+
+    print("\nsummary by category and operator group:")
+    print(f"{'category':22}{'group':18}{'n':>5}{'median UZS':>13}{'IQR UZS':>12}{'outliers':>9}")
+    for r in eda.summary_statistics(conn, run_id):
+        print(f"{r['category']:22}{r['operator_group']:18}{r['n_products']:>5}"
+              f"{r['median_uzs']:>13,}{r['iqr_uzs']:>12,}{r['outliers']:>9}")
+
+    prices = comparison.competitor_prices(conn, run_id)
+    tests = hypothesis.groups_differ_within_category(prices)
+    for category in sorted({c for c, _ in prices}):
+        tests.extend(hypothesis.pairwise_within_category(prices, category))
+    secret = comparison.secret_prices(conn)
+    for (category, group), group_prices in sorted(prices.items()):
+        tests.append(hypothesis.secret_versus_group(secret.get(category, []), group_prices,
+                                                    category, group))
+    hypothesis.store(conn, run_id, tests)
+    print(f"\nhypothesis tests ({len(tests)} stored):")
+    for t in tests:
+        if t.method == "kruskal_wallis":
+            p_text = "n/a" if t.p_value is None else f"p={t.p_value:.4f} (Holm {t.p_adjusted:.4f})"
+            print(f"  {t.scope:24} {p_text:28} {t.conclusion[:70]}")
+
+    results = comparison.run_comparison(conn, run_id, min_items=args.min_items,
+                                        replicates=args.replicates)
+    displayed = [r for r in results if r.evidence == "displayed"]
+    print(f"\nprice-position comparison: {len(displayed)} displayed of {len(results)}"
+          f" (bootstrap B={args.replicates:,})")
+    if not displayed:
+        print("  every comparison is insufficient evidence: Secret's offers arrive with the owner's"
+              " export after the window closes (ADR-007)")
+
+    model_results = models.evaluate(conn, run_id)
+    models.store(conn, run_id, model_results)
+    print(f"\nmodels ({len(model_results)}), grouped cross-validation by listing:")
+    table = {(r["model_name"], r["metric"]): r["value"]
+             for r in models.comparison_table(conn, run_id) if r["scope"] == "all"}
+    print(f"{'model':28}{'MAE UZS':>14}{'MdAPE %':>11}")
+    for name in ("category_median_baseline", "ridge", "decision_tree"):
+        if (name, "mae_uzs") in table:
+            print(f"{name:28}{table[(name, 'mae_uzs')]:>14,.0f}{table[(name, 'mdape_pct')]:>11.1f}")
+    baseline = table.get(("category_median_baseline", "mae_uzs"))
+    if baseline:
+        better = [n for n in ("ridge", "decision_tree")
+                  if table.get((n, "mae_uzs"), float("inf")) < baseline]
+        print(f"  {'improves on the baseline: ' + ', '.join(better) if better else 'the baseline is not beaten'}")
+
+    if not args.skip_robustness:
+        checks = robustness.run_all(conn, run_id, window_start=row["window_start"],
+                                    window_end=row["window_end"])
+        print(f"\nrobustness checks ({len(checks)}):")
+        for c in checks:
+            shift = "" if c.median_shift_pct is None else f"  medians move {c.median_shift_pct:.1f}%"
+            print(f"  {c.variant:22} {c.description:48}{shift}")
+            print(f"    {c.note}")
+    return 0
+
+
 def cmd_pipeline(args) -> int:
     """Rebuild the analysis dataset from the collected observations."""
     from priceintel.analysis.categories import load_rules
@@ -400,6 +478,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--since", help="first publication date to include (YYYY-MM-DD)")
     s.add_argument("--until", help="last publication date to include (YYYY-MM-DD)")
     s.set_defaults(func=cmd_reference_report)
+
+    s = sub.add_parser("analyse", help="EDA figures, hypothesis tests, comparison, models,"
+                                      " robustness")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--figures", default="docs/analysis/figures")
+    s.add_argument("--min-items", type=int, default=10)
+    s.add_argument("--replicates", type=int, default=5000, help="bootstrap replicates (plan: 5,000)")
+    s.add_argument("--skip-robustness", action="store_true")
+    s.set_defaults(func=cmd_analyse)
 
     s = sub.add_parser("pipeline", help="rebuild the analysis dataset (cleaning, transformation,"
                                        " features, splits)")
