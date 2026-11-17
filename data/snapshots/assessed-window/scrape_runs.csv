@@ -18,3 +18,4 @@ run_id,kind,purpose,triggered_by,started_at,finished_at,status,git_commit,git_di
 27,competitor_scrape,assessed,scheduled,2026-11-16T11:32:02Z,2026-11-16T11:43:59Z,success,ad43740ae365944a44f2f31d742af3c25b31a221,0,0.1.0,ip-10-0-129-66,126,126,2249,24,,4,4
 28,competitor_scrape,assessed,scheduled,2026-11-16T23:45:30Z,2026-11-16T23:57:27Z,success,17b28ff0802a77f6d1ff352186083cb4b6033d02,0,0.1.0,runnervm8axu0,126,126,2249,24,,4,4
 29,competitor_scrape,assessed,scheduled,2026-11-17T11:58:53Z,2026-11-17T12:10:50Z,success,df74eecc019817810209b4c8d417ec2e39538bbc,0,0.1.0,runnervmccnms,126,126,2249,24,,4,4
+30,competitor_scrape,assessed,scheduled,2026-11-17T22:56:41Z,2026-11-17T23:09:20Z,success,d44bd7c9a8ca2430a070a379acc8cb8e510c24ef,0,0.1.0,ip-10-0-130-90,126,126,2249,24,,4,4
