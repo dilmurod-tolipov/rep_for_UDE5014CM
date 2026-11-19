@@ -1,2 +1,2 @@
 pipeline_run_id,pipeline_version,purpose,window_start,window_end,rules_version,git_commit,git_dirty,built_at,observations_in,observations_from_price,observations_used,products_in,products_no_category,products_per_stem,products_starting_price_only,products_outliers_flagged,products_included
-1,1.0.0,assessed,2026-11-09,2026-12-06,1.2.2,bf1a2293113d963ff20965cdb3feca1ebba7c515,1,2026-11-18T22:49:38Z,18646,8570,10076,2571,119,298,1396,47,758
+1,1.0.0,assessed,2026-11-09,2026-12-06,1.2.2,1991ead8245082779a163774f56d7a39c0dbbf96,1,2026-11-19T11:59:36Z,20895,9764,11131,2571,119,298,1396,47,758
