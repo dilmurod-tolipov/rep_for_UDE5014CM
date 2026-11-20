@@ -7,8 +7,9 @@
 | Repository | https://github.com/dilmurod-tolipov/rep_for_UDE5014CM |
 | Assessed branch | `main` |
 | Tag | `cp4` |
-| Full commit hash | `8bf7fb19431229efb6e4eb047f2010aeae460fa1` |
+| Full commit hash | `7341057c4e00410c5504c1ff9962b1c582057186` |
 | State reached | 2026-11-20 (Teaching Week 10), day 12 of the approved collection window |
+| Note on the commit | The implementation landed in the commit above under the message "Record the cp4 commit hash in the checkpoint evidence", which does not describe it. A failed shell step broke the chain that should have committed the work under its own message, so everything was swept into the next commit, and the tag was briefly on an automated snapshot commit instead. The tag was corrected to this commit the same day. The history is not rewritten: what happened is recorded here rather than tidied away. |
 | Submission route | No checkpoint form is published on the LMS; the Module Leader confirmed in writing (26 October 2026) that checkpoint records are submitted with the final report. |
 
 ## The end-to-end release
