@@ -105,9 +105,13 @@ failed: 478 of 23,840 parsed records (2.0%), 462 because the shop advertised no 
 **Database design.** Two SQLite databases are used. `market_intel` holds the collection entities
 (`shops` → `listings` → `price_observations`, with `scrape_runs`, `fetch_log`, `rejected_records` and
 `data_quality_checks` recording how each row came to exist) and eight analysis tables from
-`listing_features` to `model_metrics`; `secret_shop` holds Secret's catalogue and reference offers,
-linked only by a product match and checked for orphans in the tests. Every table is `STRICT`, so
-SQLite's permissive typing cannot silently store a string in a price column.
+`listing_features` to `model_metrics`; `secret_shop` holds Secret's catalogue. SQLite cannot enforce
+a foreign key between two files, so the link between them — one shared category vocabulary, plus the
+rule that no own-shop or reference row may enter the primary data — is checked in code by the
+pipeline, by every dashboard page load, by `check-integrity` and by the tests
+(`priceintel/integrity.py`). The per-product `product_matches` table in the proposal is **not built**;
+comparison is by category, which is what the approved analysis plan v2.0 tests. Every table is
+`STRICT`, so SQLite's permissive typing cannot silently store a string in a price column.
 Integrity is enforced by the schema rather than application code: foreign keys on every relationship
 (the self-referencing `offer_group_id` is `DEFERRABLE INITIALLY DEFERRED` so a group's first member
 can be inserted), `CHECK` constraints on price range and currency, a partial unique index permitting
