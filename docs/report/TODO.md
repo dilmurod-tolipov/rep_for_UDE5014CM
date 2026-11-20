@@ -16,9 +16,11 @@ The draft is `docs/report/final-report.md`. Everything in it is computed from as
 
 ## Non-blocking, before submission
 
-- **Word budget.** Sections 1–6 are ~3,980 words against "approximately 3,500". Section 3 will grow
-  when the Secret comparisons land, so one trim pass is needed; Sections 2 and 6 are the most
-  compressible. Tables and headings are included in that count.
+- **Word budget.** Sections 1–6 are **3,691** words (tables and headings included) against
+  "approximately 3,500": 445 / 786 / 846 / 509 / 564 / 541 against the brief's guidance of
+  400 / 750 / 900 / 500 / 550 / 400. Section 3 has room to grow when the Secret comparisons land;
+  Section 6 is the one over guidance, and its AI declaration is worth 1 of that section's 2 marks, so
+  cut the conclusion or the development story there rather than the declaration.
 - **Figures.** Decide which of the six SVGs in `docs/analysis/figures/` go into the PDF. The brief
   requires clearly labelled visualisations in Section 3 and penalises unanalysed screenshots, so each
   one included must be referred to in the text.
