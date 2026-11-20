@@ -62,6 +62,84 @@ def cmd_reference_report(args) -> int:
     return 0
 
 
+def cmd_refresh(args) -> int:
+    """Collect, classify, clean and analyse: a new record all the way to the decision output.
+
+    This is the end-to-end path the system is for. Each stage is the same code the individual
+    commands run - `refresh` only sequences them and stops at the first stage that fails, so a
+    half-updated dashboard is never shown as if it were current."""
+    from priceintel.analysis import comparison, eda, hypothesis, models
+    from priceintel.analysis.categories import load_rules
+    from priceintel.analysis.features import build_features
+    from priceintel.analysis.categories import classify_listings
+    from priceintel.analysis.pipeline import build_dataset
+    from priceintel.collect.runner import CollectError, collect
+
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    rules = load_rules(args.rules)
+
+    if args.collect:
+        codes = [r["code"] for r in conn.execute(
+            "SELECT code FROM shops WHERE is_active = 1 AND is_own_shop = 0 ORDER BY code")]
+        try:
+            summary = collect(conn, codes, purpose=args.purpose, triggered_by="manual",
+                              max_pages=args.max_pages)
+        except CollectError as e:
+            print(f"error: {e}")
+            return 1
+        print(f"1/5 collect     run {summary.run_id} {summary.status}: "
+              f"{summary.observations_saved} observations, "
+              f"{summary.shops_collected}/{summary.shops_expected} groups")
+        if summary.status == "failed":
+            print("      collection failed; nothing downstream is rebuilt")
+            return 2
+    else:
+        print("1/5 collect     skipped (--no-collect): using the records already stored")
+
+    counts = classify_listings(conn, rules)
+    units = build_features(conn, rules)
+    print(f"2/5 classify    {sum(counts.values())} listings, "
+          f"{units.get('per_item', 0)} per item / {units.get('per_bundle', 0)} per bundle / "
+          f"{units.get('per_stem', 0)} per stem")
+
+    try:
+        run_id, stages = build_dataset(conn, purpose=args.purpose, rules_version=rules.version,
+                                       window_start=args.window_start, window_end=args.window_end)
+    except ValueError as e:
+        print(f"error: {e}")
+        return 1
+    print(f"3/5 pipeline    build {run_id}: {stages.products_included} usable products "
+          f"of {stages.products_in}")
+
+    tests = hypothesis.groups_differ_within_category(
+        comparison.competitor_prices(conn, run_id))
+    hypothesis.store(conn, run_id, tests)
+    results = comparison.run_comparison(conn, run_id, replicates=args.replicates)
+    displayed = sum(1 for r in results if r.evidence == "displayed")
+    print(f"4/5 analyse     {len(tests)} tests, {len(results)} comparisons ({displayed} displayed)")
+
+    model_results = models.evaluate(conn, run_id)
+    models.store(conn, run_id, model_results)
+    figures = eda.write_figures(conn, run_id, args.figures)
+    print(f"5/5 models      {len(model_results)} models scored, {len(figures)} figures written")
+
+    from priceintel.web.data import decision_table
+    ranked = [r for r in decision_table(conn, run_id) if r["evidence"] == "displayed"]
+    decision = ranked[0] if ranked else None
+    if decision:
+        print(f"\ndecision output: look at {decision['category']} first - the dearest group's "
+              f"median is {decision['spread_pct']:.0f}% above the cheapest, across "
+              f"{decision['groups_compared']} groups with at least 10 usable products each "
+              f"({decision['groups']})")
+    else:
+        print("\ndecision output: no category yet has two groups with at least 10 usable "
+              "products; the dashboard's decision page shows why")
+    print(f"the dashboard now serves this build: python -m priceintel dashboard")
+    return 0
+
+
 def cmd_analyse(args) -> int:
     """Run the whole analysis on the newest dataset: figures, tests, comparison, models, robustness."""
     from priceintel.analysis import comparison, eda, hypothesis, models, robustness
@@ -478,6 +556,19 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--since", help="first publication date to include (YYYY-MM-DD)")
     s.add_argument("--until", help="last publication date to include (YYYY-MM-DD)")
     s.set_defaults(func=cmd_reference_report)
+
+    s = sub.add_parser("refresh", help="collect, classify, clean and analyse in one command")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
+    s.add_argument("--purpose", choices=["dev", "assessed", "test"], default="assessed")
+    s.add_argument("--window-start", default=config.APPROVED_WINDOW_START)
+    s.add_argument("--window-end", default=config.APPROVED_WINDOW_END)
+    s.add_argument("--figures", default="docs/analysis/figures")
+    s.add_argument("--replicates", type=int, default=5000)
+    s.add_argument("--max-pages", type=int, default=150)
+    s.add_argument("--no-collect", dest="collect", action="store_false",
+                   help="rebuild from the records already stored, without fetching")
+    s.set_defaults(func=cmd_refresh, collect=True)
 
     s = sub.add_parser("analyse", help="EDA figures, hypothesis tests, comparison, models,"
                                       " robustness")

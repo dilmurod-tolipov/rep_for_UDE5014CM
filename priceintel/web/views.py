@@ -19,6 +19,12 @@ from priceintel.web.data import (
     Databases,
     Selection,
     categories,
+    comparison_rows,
+    decision_table,
+    hypothesis_rows,
+    latest_analysis,
+    model_rows,
+    robustness_variants,
     daily_collection,
     headline,
     integrity,
@@ -30,7 +36,8 @@ from priceintel.web.data import (
     secret_shop_state,
 )
 
-PAGES = (("/", "Overview"), ("/price-position", "Price position"), ("/coverage", "Coverage"),
+PAGES = (("/", "Overview"), ("/decision", "What to look at"), ("/price-position", "Price position"),
+         ("/analysis", "Analysis"), ("/models", "Models"), ("/coverage", "Coverage"),
          ("/changes", "Price changes"), ("/market", "Market and discounts"),
          ("/quality", "Data quality"))
 
@@ -380,7 +387,172 @@ def page_quality(db: Databases, sel: Selection) -> Response:
 # Routing
 # ---------------------------------------------------------------------------
 
-HANDLERS = {"/": page_overview, "/price-position": page_price_position, "/coverage": page_coverage,
+
+
+def _no_analysis(path: str, title: str, sel: Selection, db: Databases) -> Response:
+    """What an analysis page says before the pipeline has run: how to build it, not a blank page."""
+    return _page(path, title, "No analysis has been built for this data yet",
+                 f'{_controls(path, db, sel)}'
+                 '<p class="note">Run the pipeline and the analysis:</p>'
+                 '<div class="panel"><code>python -m priceintel pipeline --purpose '
+                 f'{escape(sel.purpose)}</code><br>'
+                 '<code>python -m priceintel analyse --purpose '
+                 f'{escape(sel.purpose)}</code></div>')
+
+
+def page_decision(db: Databases, sel: Selection) -> Response:
+    """The decision-support output: the page the owner actually acts on."""
+    build = latest_analysis(db.market, sel)
+    if build is None:
+        return _no_analysis("/decision", "What to look at", sel, db)
+    rows = decision_table(db.market, build["pipeline_run_id"], min_items=sel.min_items)
+    shown = [r for r in rows if r["evidence"] == "displayed"]
+    chart = charts.bar_chart(
+        [r["category"] for r in shown], [float(r["spread_pct"]) for r in shown],
+        title="How far apart the sampled shops are, by category",
+        value_label="% between the dearest and cheapest group median")
+    comparisons = comparison_rows(db.market, build["pipeline_run_id"])
+    displayed = [c for c in comparisons if c["evidence"] == "displayed"]
+
+    body = [_controls("/decision", db, sel, with_min_items=True)]
+    if shown:
+        top = shown[0]
+        body.append(
+            f'<div class="panel"><p><strong>Where to look first: '
+            f'{escape(top["category"])}.</strong> Across {top["groups_compared"]} operator groups '
+            f'and {top["products"]:,} products, the dearest group\'s median is '
+            f'<strong>{top["spread_pct"]:.0f}%</strong> above the cheapest '
+            f'({top["cheapest_uzs"]:,} to {top["dearest_uzs"]:,} UZS). A category where competitors '
+            f'disagree this much is where a price position is worth checking; one where they agree '
+            f'closely offers little room to argue about.</p></div>')
+    body.append(f'<div class="panel">{chart}</div>')
+    if not shown:
+        body.append('<p class="error">No category has two operator groups with enough usable '
+                    'products to compare. The table below shows why.</p>')
+    body.append(_table(["category", "groups", "products", "cheapest_uzs", "dearest_uzs",
+                        "spread_pct", "evidence"],
+                       [(r["category"], r["groups"] or "-", r["products"] or 0,
+                         r["cheapest_uzs"], r["dearest_uzs"], r["spread_pct"], r["evidence"])
+                        for r in rows], highlight="evidence"))
+    body.append(f'<p class="note">Only groups with at least {sel.min_items} usable products are '
+                f'compared, the same minimum every displayed comparison uses. Without it the '
+                f'ranking is set by whichever category happens to hold one expensive product.</p>')
+    body.append(
+        f'<p class="note">Secret\'s own position: '
+        + (f'{len(displayed)} comparison(s) displayed.' if displayed else
+           'not yet available. Secret\'s offers are imported once from the owner\'s export after '
+           'the collection window closes, so every Secret comparison currently reads insufficient '
+           'evidence. The figures above compare the sampled competitors with each other.')
+        + ' Differences describe the observed assortments of these shops in this window; they do not '
+          'show that equivalent bouquets are priced differently.</p>')
+    return _page("/decision", "What to look at",
+                 "Which categories warrant a closer look, and why", "".join(body))
+
+
+def page_analysis(db: Databases, sel: Selection) -> Response:
+    build = latest_analysis(db.market, sel)
+    if build is None:
+        return _no_analysis("/analysis", "Analysis", sel, db)
+    run_id = build["pipeline_run_id"]
+    tests = hypothesis_rows(db.market, run_id)
+    group_tests = [t for t in tests if t["method"] == "kruskal_wallis"]
+    pairwise = [t for t in tests if t["method"] == "permutation_median_difference"]
+    comparisons = comparison_rows(db.market, run_id)
+    variants = robustness_variants(db.market, run_id)
+
+    stages = (f'<div class="panel"><p class="note">Dataset built '
+              f'{escape(build["built_at"])} from window {escape(build["window_start"])} to '
+              f'{escape(build["window_end"])} under category rules '
+              f'{escape(build["rules_version"])}.</p>'
+              f'<table><tbody>'
+              f'<tr><td>observations read</td><td class="num">{build["observations_in"]:,}</td></tr>'
+              f'<tr><td>starting prices, not used as prices</td>'
+              f'<td class="num">{build["observations_from_price"]:,}</td></tr>'
+              f'<tr><td>products summarised</td><td class="num">{build["products_in"]:,}</td></tr>'
+              f'<tr><td>excluded: no analysis category</td>'
+              f'<td class="num">{build["products_no_category"]:,}</td></tr>'
+              f'<tr><td>excluded: priced per stem</td>'
+              f'<td class="num">{build["products_per_stem"]:,}</td></tr>'
+              f'<tr><td>excluded: only a starting price</td>'
+              f'<td class="num">{build["products_starting_price_only"]:,}</td></tr>'
+              f'<tr><td><strong>usable products</strong></td>'
+              f'<td class="num"><strong>{build["products_included"]:,}</strong></td></tr>'
+              f'<tr><td>outliers flagged (kept)</td>'
+              f'<td class="num">{build["products_outliers_flagged"]:,}</td></tr>'
+              f'</tbody></table></div>')
+
+    def test_table(rows, caption):
+        if not rows:
+            return f'<p class="note">{escape(caption)}: none recorded.</p>'
+        columns = ["scope", "statistic", "p_value", "p_adjusted", "effect_name", "effect_size",
+                   "n_observations"]
+        values = [(r["scope"],
+                   None if r["statistic"] is None else round(r["statistic"], 3),
+                   None if r["p_value"] is None else round(r["p_value"], 5),
+                   None if r["p_adjusted"] is None else round(r["p_adjusted"], 5),
+                   r["effect_name"], None if r["effect_size"] is None else round(r["effect_size"], 3),
+                   r["n_observations"]) for r in rows]
+        return f'<h2>{escape(caption)}</h2>' + _table(columns, values)
+
+    conclusions = "".join(
+        f'<li><strong>{escape(t["scope"])}</strong>: {escape(t["conclusion"])}<br>'
+        f'<span class="note">assumptions checked: {escape(t["assumptions"])}</span></li>'
+        for t in group_tests)
+
+    body = (f'{_controls("/analysis", db, sel)}{stages}'
+            f'{test_table(group_tests, "Do the operator groups price a category alike?")}'
+            f'<div class="panel"><ul>{conclusions}</ul></div>'
+            f'{test_table(pairwise[:12], "Pairwise comparisons (permutation tests, Holm corrected)")}'
+            f'<h2>Price position against Secret</h2>'
+            + _table(["category", "operator_group", "n_products", "n_secret_offers",
+                      "difference_pct", "ci_low_pct", "ci_high_pct", "evidence"],
+                     [(c["category"], c["operator_group"], c["n_products"], c["n_secret_offers"],
+                       None if c["difference_pct"] is None else round(c["difference_pct"], 1),
+                       None if c["ci_low_pct"] is None else round(c["ci_low_pct"], 1),
+                       None if c["ci_high_pct"] is None else round(c["ci_high_pct"], 1),
+                       c["evidence"]) for c in comparisons], highlight="evidence")
+            + f'<h2>Robustness checks</h2>'
+            + _table(["variant", "categories", "rows_stored", "displayed"],
+                     [(v["variant"], v["categories"], v["rows_stored"], v["displayed"])
+                      for v in variants])
+            + '<p class="note">Intervals are 95% percentile bootstrap intervals over resampled '
+              'products. They describe the four sampled operator groups and this collection window, '
+              'not the Tashkent market.</p>')
+    return _page("/analysis", "Analysis",
+                 "The hypothesis tests, the comparison and the robustness checks", body)
+
+
+def page_models(db: Databases, sel: Selection) -> Response:
+    build = latest_analysis(db.market, sel)
+    if build is None:
+        return _no_analysis("/models", "Models", sel, db)
+    rows = model_rows(db.market, build["pipeline_run_id"])
+    if not rows:
+        return _no_analysis("/models", "Models", sel, db)
+    overall = {(r["model_name"], r["metric"]): r["value"] for r in rows if r["scope"] == "all"}
+    names = sorted({r["model_name"] for r in rows})
+    chart = charts.bar_chart(
+        names, [overall.get((n, "mae_uzs"), 0.0) for n in names],
+        title="Mean absolute error by model (lower is better)", value_label="UZS")
+    baseline = overall.get(("category_median_baseline", "mae_uzs"))
+    better = [n for n in names if n != "category_median_baseline"
+              and overall.get((n, "mae_uzs"), float("inf")) < (baseline or float("inf"))]
+    verdict = (f"{', '.join(better)} improve on the category-median baseline."
+               if better else "No model improves on the category-median baseline, which is a valid "
+                              "result and is reported as one.")
+    by_scope = [(r["scope"], r["model_name"], r["metric"], round(r["value"], 1)) for r in rows]
+    body = (f'{_controls("/models", db, sel)}'
+            f'<div class="panel">{chart}<p class="note">{escape(verdict)} Models are trained on '
+            f'competitor data only and scored under grouped cross-validation, so every observation '
+            f'of one listing stays in a single fold and no model is scored on a product it trained '
+            f'on. Secret\'s reference offers never enter training, tuning or evaluation.</p></div>'
+            + _table(["scope", "model_name", "metric", "value"], by_scope))
+    return _page("/models", "Models",
+                 "A category-median baseline against ridge and a decision tree", body)
+
+
+HANDLERS = {"/": page_overview, "/decision": page_decision, "/price-position": page_price_position,
+            "/analysis": page_analysis, "/models": page_models, "/coverage": page_coverage,
             "/changes": page_changes, "/market": page_market, "/quality": page_quality}
 
 

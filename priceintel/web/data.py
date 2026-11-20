@@ -200,3 +200,99 @@ def integrity(databases: Databases) -> list[str]:
         return ["secret_shop database not found: cross-database check not run"]
     from priceintel.integrity import cross_db_orphans
     return cross_db_orphans(databases.market, databases.secret)
+
+
+# ---------------------------------------------------------------------------
+# The analysis: what the pipeline and `analyse` produced (Checkpoint 4)
+# ---------------------------------------------------------------------------
+
+def latest_analysis(conn, selection: Selection) -> dict | None:
+    """The newest dataset build for this purpose, with the stage counts that produced it."""
+    row = conn.execute(
+        "SELECT * FROM pipeline_runs WHERE purpose = ? ORDER BY pipeline_run_id DESC LIMIT 1",
+        (selection.purpose,)).fetchone()
+    return dict(row) if row else None
+
+
+def comparison_rows(conn, pipeline_run_id: int, variant: str = "main") -> list[dict]:
+    return [dict(r) for r in conn.execute(
+        "SELECT * FROM comparison_results WHERE pipeline_run_id = ? AND variant = ?"
+        " ORDER BY category, operator_group", (pipeline_run_id, variant))]
+
+
+def hypothesis_rows(conn, pipeline_run_id: int) -> list[dict]:
+    return [dict(r) for r in conn.execute(
+        "SELECT * FROM hypothesis_tests WHERE pipeline_run_id = ?"
+        " ORDER BY method, scope", (pipeline_run_id,))]
+
+
+def model_rows(conn, pipeline_run_id: int) -> list[dict]:
+    """Pooled metrics per model and scope (fold -1 is the figure over all folds)."""
+    return [dict(r) for r in conn.execute("""
+        SELECT r.model_name, r.split_kind, m.scope, m.metric, m.value
+        FROM model_runs r JOIN model_metrics m ON m.model_run_id = r.model_run_id
+        WHERE r.pipeline_run_id = ? AND m.fold = -1
+        ORDER BY m.scope, r.model_name, m.metric""", (pipeline_run_id,))]
+
+
+def robustness_variants(conn, pipeline_run_id: int) -> list[dict]:
+    """How many comparisons each robustness variant could display, beside the main run."""
+    return [dict(r) for r in conn.execute("""
+        SELECT variant,
+               COUNT(*)                                        AS rows_stored,
+               SUM(evidence = 'displayed')                     AS displayed,
+               COUNT(DISTINCT category)                        AS categories
+        FROM comparison_results WHERE pipeline_run_id = ?
+        GROUP BY variant ORDER BY (variant = 'main') DESC, variant""", (pipeline_run_id,))]
+
+
+def decision_table(conn, pipeline_run_id: int, min_items: int = 10) -> list[dict]:
+    """The decision-support output: where the sampled shops disagree most about price.
+
+    Only groups with at least ``min_items`` usable products take part, the same minimum the approved
+    plan applies to every displayed comparison. Without it the ranking is set by whichever category
+    happens to contain one expensive product: the first version of this table sent the owner to
+    potted plants on a 3,948% spread, which was one PROBUKET plant at 1.8M UZS against loveflowers'
+    45,000.
+
+    Categories that cannot clear the minimum are returned too, marked ``insufficient_evidence``, so
+    they are visibly absent rather than silently missing.
+    """
+    rows = conn.execute("""
+        WITH ranked AS (
+            SELECT category, operator_group, regular_price_uzs,
+                   ROW_NUMBER() OVER (PARTITION BY category, operator_group
+                                      ORDER BY regular_price_uzs) rn,
+                   COUNT(*)     OVER (PARTITION BY category, operator_group) n
+            FROM analysis_products WHERE pipeline_run_id = :run AND included = 1),
+        medians AS (
+            SELECT category, operator_group, AVG(regular_price_uzs) AS median_price, MAX(n) AS n
+            FROM ranked WHERE rn IN ((n + 1) / 2, (n + 2) / 2)
+            GROUP BY category, operator_group),
+        eligible AS (SELECT * FROM medians WHERE n >= :min_items)
+        SELECT m.category,
+               (SELECT COUNT(*) FROM eligible e WHERE e.category = m.category) AS groups_compared,
+               (SELECT GROUP_CONCAT(e.operator_group, ', ') FROM eligible e
+                WHERE e.category = m.category)                                 AS groups,
+               (SELECT SUM(e.n) FROM eligible e WHERE e.category = m.category) AS products,
+               (SELECT CAST(MIN(e.median_price) AS INTEGER) FROM eligible e
+                WHERE e.category = m.category)                                 AS cheapest_uzs,
+               (SELECT CAST(MAX(e.median_price) AS INTEGER) FROM eligible e
+                WHERE e.category = m.category)                                 AS dearest_uzs,
+               COUNT(*)                                                        AS groups_present
+        FROM medians m GROUP BY m.category""", {"run": pipeline_run_id,
+                                                "min_items": min_items}).fetchall()
+    out = []
+    for r in rows:
+        row = dict(r)
+        if (row["groups_compared"] or 0) >= 2 and row["cheapest_uzs"]:
+            row["spread_pct"] = round(100.0 * (row["dearest_uzs"] / row["cheapest_uzs"] - 1), 1)
+            row["evidence"] = "displayed"
+        else:
+            row["spread_pct"] = None
+            row["evidence"] = "insufficient_evidence"
+            row["note"] = (f"needs two groups with {min_items} usable products; "
+                           f"{row['groups_compared'] or 0} of {row['groups_present']} qualify")
+        out.append(row)
+    out.sort(key=lambda r: (r["evidence"] != "displayed", -(r["spread_pct"] or 0)))
+    return out

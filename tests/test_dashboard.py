@@ -52,10 +52,18 @@ def get(db, path, **params):
 
 @pytest.mark.parametrize("path, label", PAGES)
 def test_every_page_renders(db, path, label):
+    """Every page answers, names itself and is a complete document. The analysis pages are in this
+    fixture's database without an analysis built, so they must say so plainly rather than break -
+    that is what a marker sees on a fresh checkout before running the pipeline."""
     response = get(db, path, purpose="test")
     assert response.status == 200
-    assert label in response.body and "<svg" in response.body or path == "/quality"
-    assert response.body.startswith("<!doctype html>")
+    assert label in response.body
+    assert response.body.startswith("<!doctype html>") and response.body.rstrip().endswith("</html>")
+    if path in ("/decision", "/analysis", "/models"):
+        assert "No analysis has been built" in response.body
+        assert "python -m priceintel pipeline" in response.body, "tell the reader how to build it"
+    elif path != "/quality":
+        assert "<svg" in response.body
 
 
 def test_pages_show_the_selected_data_only(db):

@@ -169,6 +169,17 @@ up:
 Splits are written once per build: grouped folds (every observation of a listing in one fold),
 leave-one-operator-group-out, and a chronological hold-out.
 
+## End to end
+
+```bash
+python -m priceintel refresh      # collect -> classify -> clean -> analyse -> decision
+python -m priceintel dashboard    # read it
+```
+
+`refresh` runs the whole chain in order and stops at the first stage that fails, so the dashboard is
+never half-updated. It ends by printing the decision: which category to look at first, and why. Add
+`--no-collect` to rebuild everything from the records already stored.
+
 ## The analysis
 
 ```bash
