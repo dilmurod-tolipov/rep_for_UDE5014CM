@@ -13,10 +13,11 @@ Secret's admin system.
 | Stage | Tag | State |
 |---|---|---|
 | Pre-approval demo (reused, not assessed) | `baseline-demo` | done |
-| CP1 collection MVP (Week 7) | `cp1` | in progress |
-| CP2 reliable collection and data quality (Week 8) | `cp2` | planned |
-| CP3 statistical analysis (Week 9) | `cp3` | planned |
-| CP4 integrated system and dashboard (Week 10) | `cp4` | planned |
+| CP1 collection MVP (Week 7) | `cp1` | done - `1cd776dccf36874c03a1b1302659cbaa27cdefe6` |
+| CP2 reliable collection and data quality (Week 8) | `cp2` | done - `35ba26068f1a61331d9fcd8f387037b02c4db638` |
+| CP3 statistical analysis (Week 9) | `cp3` | done - `82b5f29b6e986fb3b32900f9dc4c0d8d1fed326d` |
+| CP4 integrated system and dashboard (Week 10) | `cp4` | done - `7341057c4e00410c5504c1ff9962b1c582057186` |
+| Final report (due 14 December) | - | draft in `docs/report/` ([what it still needs](docs/report/TODO.md)) |
 
 ## Repository layout
 
