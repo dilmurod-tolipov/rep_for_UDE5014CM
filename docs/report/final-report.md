@@ -89,14 +89,13 @@ a real pricing decision.
 
 **Collection method and provenance.** The collector (`priceintel/collect/`) is written from scratch
 in Python 3.13 over the standard library plus `requests` and `BeautifulSoup`. For each operator group
-it reads `robots.txt` first, through a hand-written parser rather than `urllib.robotparser`, because
-the standard parser ignores `*` wildcards and would have mis-read three of the four sites; it then
-requests only allowed catalogue paths, with a per-host crawl delay of 5–6 s and an identifying user
-agent. GitHub Actions runs it twice a day and derives the run's `purpose` from the date, so assessed
+it reads `robots.txt` first, through a hand-written parser rather than `urllib.robotparser`, which
+ignores `*` wildcards and would have mis-read three of the four sites; it then requests only allowed
+paths, with a per-host crawl delay of 5–6 s and an identifying user agent. GitHub Actions runs it twice a day and derives the run's `purpose` from the date, so assessed
 and development data cannot be confused by hand (ADR-005). Every HTTP attempt is written to
-`fetch_log` with its status, byte size, duration and SHA-256 content hash; every price observation
-points at the fetch that produced it, the run, and the run's git commit plus a dirty flag, and a
-`CHECK` constraint refuses an assessed run from modified code. In the window 9–19 November the system
+`fetch_log` with its status, size, duration and SHA-256 content hash; every observation points at
+the fetch that produced it, the run, and the run's git commit plus a dirty flag, and a `CHECK`
+constraint refuses an assessed run from modified code. In the window 9–19 November the system
 made **1,820 logged requests (1,755 returning HTTP 200)** across **22 assessed runs**, storing
 **23,144 in-window observations of 2,571 distinct products** against an approved target of 300.
 Records failing validation are not discarded but written to `rejected_records` with the rule that
@@ -105,12 +104,14 @@ failed: 478 of 23,840 parsed records (2.0%), 462 because the shop advertised no 
 **Database design.** Two SQLite databases are used. `market_intel` holds the collection entities
 (`shops` → `listings` → `price_observations`, with `scrape_runs`, `fetch_log`, `rejected_records` and
 `data_quality_checks` recording how each row came to exist) and eight analysis tables from
-`listing_features` to `model_metrics`; `secret_shop` holds Secret's catalogue. SQLite cannot enforce
-a foreign key between two files, so the link between them — one shared category vocabulary, plus the
-rule that no own-shop or reference row may enter the primary data — is checked in code by the
-pipeline, by every dashboard page load, by `check-integrity` and by the tests
-(`priceintel/integrity.py`). The per-product `product_matches` table in the proposal is **not built**;
-comparison is by category, which is what the approved analysis plan v2.0 tests. Every table is
+`listing_features` to `model_metrics`, plus dated `shop_delivery_terms`; `secret_shop` holds
+Secret's catalogue and its operational core (`clients`, `addresses`, `orders`, `order_items`,
+`payments`, `admin_users`). SQLite cannot enforce a foreign key between two files, so the link
+between them — one shared category vocabulary, plus the rule that no own-shop, reference or
+synthetic row may enter the primary data — is checked in code by the pipeline, by every dashboard
+page load, by `check-integrity` and by the tests (`priceintel/integrity.py`). The per-product
+`product_matches` table in the proposal is **not built**: comparison is by category, which is what
+the approved analysis plan v2.0 tests, so it would be unused scaffolding (ADR-009). Every table is
 `STRICT`, so SQLite's permissive typing cannot silently store a string in a price column.
 Integrity is enforced by the schema rather than application code: foreign keys on every relationship
 (the self-referencing `offer_group_id` is `DEFERRABLE INITIALLY DEFERRED` so a group's first member
@@ -118,7 +119,11 @@ can be inserted), `CHECK` constraints on price range and currency, a partial uni
 only one active canonical domain per operator group, and `UNIQUE (listing_id, run_id)`, which makes
 a re-run idempotent and duplicate observations structurally impossible. Schema changes are numbered
 migrations whose SHA-256 is stored on application, so editing an applied one stops `init-db`.
-Retrieval is through five named stakeholder queries in `sql/queries/` and a JSON API.
+Retrieval is through five named stakeholder queries in `sql/queries/` and a JSON API. Two parts of
+the schema hold no real rows, and are built so that cannot be faked: Secret records no orders
+digitally, so every operational row carries a `NOT NULL` `is_synthetic` flag that triggers propagate
+and the dashboard reports in its own column, and `shop_delivery_terms` ships empty because an
+invented fee would be fabricated evidence about a named business (ADR-009).
 
 **Cleaning, transformation and features.** `python -m priceintel pipeline` builds one analysis row
 per product from the stored observations and records every decision it makes
@@ -128,27 +133,25 @@ were flagged as outliers — leaving **758 usable products**. Three choices were
 real data. Starting prices are **kept and labelled**, not dropped: dropping them silently removed
 most of the largest operator group. Outliers are **flagged, never removed**, and judged within one
 category and one operator group, because judging them across all groups flagged all 19 of one shop's
-rose bouquets; the median absolute deviation falls back to IQR/1.349 when it is zero, after eight
-identically priced plants were flagged. Nothing is imputed. Feature engineering
-(`priceintel/analysis/features.py`) derives `price_unit` (per item, bundle or stem), `stem_count`,
-`size_cm` and flower types from the title and composition text, using a versioned,
-**price-independent** rules file whose SHA-256 is registered in the database; the loader rejects any
-rule key it does not recognise, which is how price is kept out of the feature deciding comparability.
-Leakage is prevented structurally: splits are grouped so every observation of a listing falls in one
-fold, the baseline and all preprocessing are fitted on training folds only, and reference offers are
-excluded from model matrices by a test that fails if one appears.
+rose bouquets; the median absolute deviation falls back to IQR/1.349 when it is zero. Nothing is
+imputed. Feature engineering (`priceintel/analysis/features.py`) derives `price_unit` (per item,
+bundle or stem), `stem_count`, `size_cm` and flower types from the title and composition text, using
+a versioned, **price-independent** rules file whose SHA-256 is registered in the database; the loader
+rejects any rule key it does not recognise, which is how price is kept out of the feature deciding
+comparability. Leakage is prevented structurally: splits are grouped so every observation of a
+listing falls in one fold, the baseline and all preprocessing are fitted on training folds only, and
+reference offers are excluded from model matrices by a test that fails if one appears.
 
 **Difficult conditions and corrections.** Three failures are on the record. Scheduled collection
-failed silently for eleven days in October because expired artifacts could not be distinguished from
-a failed download; found by auditing the Actions history and fixed in `1cd776d`. Five early assessed
-runs lost an entire operator group to `robots.txt` timeouts yet reported success, because the skipped
-shop's pages were never requested and so never counted; migration 011 records groups expected and
-reached, and 11 historical runs were re-marked `partial` (`88b75d2`). On 13 November the largest site
-redesigned its theme: pages returned 200, the parser found nothing, and every aggregate measure
-stayed green. The parser now reads both layouts and a **per-group** freshness check fails on the
-first run in which any source goes quiet (`60949a5`). The value created is a dated competitor price
-record that did not exist before, in which every number traces to the request, run and commit that
-produced it.
+failed silently for eleven days in October, because expired artifacts could not be distinguished
+from a failed download (`1cd776d`). Five early assessed runs lost an entire operator group to
+`robots.txt` timeouts yet reported success, because the skipped shop's pages were never requested
+and so never counted; migration 011 records groups expected and reached, and 11 runs were re-marked
+`partial` (`88b75d2`). On 13 November the largest site redesigned its theme: pages returned 200, the
+parser found nothing, and every aggregate measure stayed green — so the parser now reads both
+layouts and a **per-group** freshness check fails on the first run a source goes quiet (`60949a5`).
+The value created is a dated competitor price record that did not exist before, in which every
+number traces to the request, run and commit that produced it.
 
 ## Report Section 3: Statistical Analysis, Modelling, Evaluation, Results and Interpretation
 
@@ -234,7 +237,7 @@ with the evidence one click away on the Analysis and Models pages. The dashboard
 function, which is why most of it is testable without a running server, and where no analysis has
 been built it names the command to run instead of showing a blank page.
 
-**Testing.** **276 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
+**Testing.** **315 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
 parser, price validation, category rules and feature extraction; data-validation tests for invalid,
 boundary and failure cases (out-of-range prices, missing prices, a currency served in USD, a run
 refused from modified code, a shop that returns 200 with no products); and 14 end-to-end tests in
@@ -277,7 +280,8 @@ the report says `insufficient_evidence` rather than estimating it.
 obeyed before every crawl, with polite delays, an identifying user agent and a recorded compliance
 status per shop, and one site that disallows crawling is registered and never crawled. No personal
 data is collected: the data are product titles and prices, and no customer, courier or order record
-from Secret is used — the fixtures exercising those tables are synthetic and flagged `is_synthetic`. A
+from Secret is used, and a real client could not be stored without recorded consent while the only
+contact column is the last four digits of a phone number — data minimisation by schema, not policy. A
 prior design that scraped Secret's own public Telegram channel was withdrawn and the data deleted
 after the Module Leader questioned whether it was primary data; the replacement is a one-off export
 the owner supplies with written consent (ADR-007), and the audit that found the scheduler had kept
@@ -334,7 +338,7 @@ against the brief, to write the collector, migrations, category rules, feature e
 pipeline, statistics, dashboard and tests, and to draft documentation and emails for my review. I
 directed the design decisions, chose the hypothesis design, supplied the sources and consent
 arrangements, and sent all correspondence myself. AI output was verified, not accepted: by tests
-(276, several written to reproduce a defect before fixing it), by running the code against live
+(315, several written to reproduce a defect before fixing it), by running the code against live
 pages, and by mutation checks in which a deliberately broken rule was confirmed to fail tests. Errors
 caught that way are logged — a classifier reading a URL slug as a section, a potted orchid read as a
 single cut stem, an outlier rule that flagged all 19 of one shop's rose bouquets, and a permutation
@@ -401,7 +405,7 @@ measured once per operator group: products collected 2,571 (threshold 300) **pas
 pass; unclassified rate 4.6% (≤25%) pass; price-outlier rate 1.4% (≤2%, 35 products above ten times
 their category median — a wider rule than the pipeline's within-group MAD flag) pass; freshness 0.67
 days (≤1) pass; per-group freshness, four groups, all pass; duplicate observations 0 pass; orphan
-observations 0 pass. Overall status **fail**, driven by the two collection-volume criteria. Test suite: 276 passing tests; selected results in Section 4.
+observations 0 pass. Overall status **fail**, driven by the two collection-volume criteria. Test suite: 315 passing tests; selected results in Section 4.
 
 ## Appendix D — AI Use Declaration log references
 

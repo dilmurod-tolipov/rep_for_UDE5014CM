@@ -16,11 +16,12 @@ The draft is `docs/report/final-report.md`. Everything in it is computed from as
 
 ## Non-blocking, before submission
 
-- **Word budget.** Sections 1–6 are **3,691** words (tables and headings included) against
-  "approximately 3,500": 445 / 786 / 846 / 509 / 564 / 541 against the brief's guidance of
-  400 / 750 / 900 / 500 / 550 / 400. Section 3 has room to grow when the Secret comparisons land;
-  Section 6 is the one over guidance, and its AI declaration is worth 1 of that section's 2 marks, so
-  cut the conclusion or the development story there rather than the declaration.
+- **Word budget.** Sections 1-6 are **3830** words (tables and headings included) against
+  "approximately 3,500": 445 / 904 / 846 / 509 / 585 / 541 against the brief's guidance of
+  400 / 750 / 900 / 500 / 550 / 400. Section 2 is the one over, after ADR-009 added the
+  operational core and delivery terms; Section 3 has room to grow when the Secret comparisons
+  land. Cut Section 2's table-by-table detail and Section 6's conclusion before the AI
+  declaration, which is worth 1 of Section 6's 2 marks.
 - **Figures.** Decide which of the six SVGs in `docs/analysis/figures/` go into the PDF. The brief
   requires clearly labelled visualisations in Section 3 and penalises unanalysed screenshots, so each
   one included must be referred to in the text.
@@ -28,10 +29,14 @@ The draft is `docs/report/final-report.md`. Everything in it is computed from as
   commit so the four hashes and test counts match.
 - **PDF build.** First page must be the cover page. A missing or unclear mandatory cover-page field
   caps the report at 10/20; a missing or invalid repository URL or final commit hash is 0/100 overall.
-- **Still missing from the v2 proposal's promised schema**, and so a statement is owed in Section 5
-  if they stay unbuilt: `shop_delivery_terms`, `product_matches`, and the `secret_shop` operational
-  core (`clients`, `addresses`, `orders`, `order_items`, `payments`, `admin_users`) with
-  `is_synthetic` fixtures; also the ER diagram, the normalisation rationale, and a dated
-  backup/restore evidence run.
+- **Built after cp4 (ADR-009):** the `secret_shop` operational core with synthetic fixtures, and
+  dated `shop_delivery_terms`. Two things remain owed in the report: `shop_delivery_terms` is
+  still **empty** until each competitor's delivery page is read and recorded with
+  `record-delivery-terms`, and `product_matches` is deliberately not built (ADR-009 gives the
+  reason, and Section 2 says so).
+- **Still not built, and a statement is owed in Section 5 if they stay that way:** the ER
+  diagram and the normalisation rationale (neither is required by the brief, which asks for
+  entities, keys and constraints to be *explained*), and a dated backup/restore evidence run -
+  the commands and tests exist, the written evidence does not.
 - **Viva (40 marks).** Every method choice in `priceintel/analysis/hypothesis.py`, the cleaning
   decisions in `pipeline.py`, and every database constraint must be mine to explain and modify.

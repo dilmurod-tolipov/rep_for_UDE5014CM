@@ -183,15 +183,32 @@ def secret_shop_state(databases: Databases) -> dict:
     """What the operational database holds. Shown so the dashboard is visibly connected to both."""
     if databases.secret is None:
         return {"available": False}
-    tables = ("categories", "products", "product_price_history", "clients", "orders",
+    tables = ("categories", "products", "product_price_history", "clients", "addresses", "orders",
               "order_items", "payments", "admin_users")
-    counts = {}
+    counts: dict[str, int] = {}
+    # Secret's operational rows are synthetic fixtures (the owner keeps no digital records), so the
+    # page reports how many of each table's rows are declared synthetic. A count of invented orders
+    # shown without that column would read as real trade.
+    synthetic: dict[str, int] = {}
     for table in tables:
         exists = databases.secret.execute(
             "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (table,)).fetchone()
-        if exists:
-            counts[table] = databases.secret.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
-    return {"available": True, "counts": counts}
+        if not exists:
+            continue
+        counts[table] = databases.secret.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
+        columns = {r["name"] for r in databases.secret.execute(f'PRAGMA table_info("{table}")')}
+        if "is_synthetic" in columns:
+            synthetic[table] = databases.secret.execute(
+                f'SELECT COUNT(*) FROM "{table}" WHERE is_synthetic = 1').fetchone()[0]
+        elif table == "order_items":                      # inherits its order's declaration
+            synthetic[table] = databases.secret.execute(
+                "SELECT COUNT(*) FROM order_items i JOIN orders o ON o.order_id = i.order_id"
+                " WHERE o.is_synthetic = 1").fetchone()[0]
+        elif table == "product_price_history":
+            synthetic[table] = databases.secret.execute(
+                "SELECT COUNT(*) FROM product_price_history h JOIN products p"
+                " ON p.product_id = h.product_id WHERE p.is_synthetic = 1").fetchone()[0]
+    return {"available": True, "counts": counts, "synthetic": synthetic}
 
 
 def integrity(databases: Databases) -> list[str]:

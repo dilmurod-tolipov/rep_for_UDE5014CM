@@ -24,8 +24,9 @@ Secret's admin system.
 ```
 priceintel/      Python package: database layer and command line (python -m priceintel)
 sql/market_intel numbered schema migrations for the market database (001_core.sql, ...)
-sql/secret_shop  numbered schema migrations for Secret's own catalogue database
-config/          shops.json: shop registry with compliance status (ADR-001)
+sql/secret_shop  numbered schema migrations for Secret's catalogue and operational core
+config/          shops.json: shop registry with compliance status (ADR-001);
+                 secret_fixtures.json: Secret's synthetic operational data (ADR-009)
 tests/           automated tests; all test data is synthetic and stays in temp databases
 tools/recon/     dev-only reconnaissance scripts (not assessed collection)
 data/            local databases (git-ignored); committed snapshots go in data/snapshots/
@@ -118,6 +119,28 @@ promotion slugs (`aktsii-*`, `topsale`) and occasion slugs (`8-marta`) are delib
 ```bash
 python -m priceintel classify --shop uzflora      # assign categories from config/category_rules.v1.json
 python -m priceintel category-report --purpose dev  # Table 1: distinct listings per category and operator
+```
+
+## Secret's own tables, and other shops' delivery terms
+
+Secret records no orders digitally, so its operational tables (`clients`, `addresses`, `orders`,
+`order_items`, `payments`, `admin_users`) hold **declared synthetic fixtures** only. Every row has
+`is_synthetic = 1`, triggers refuse a row whose flag disagrees with its parent, a real order cannot
+contain a synthetic product, and the dashboard prints an "of which synthetic" column beside each
+count. None of it reaches the price analysis (ADR-009).
+
+```bash
+python -m priceintel fixtures                  # how many synthetic rows are loaded
+python -m priceintel fixtures --load           # load the demonstration data
+python -m priceintel fixtures --clear          # remove it (real rows are kept)
+```
+
+`shop_delivery_terms` records competitors' published delivery terms, dated, append-only, and is
+**never seeded**: an invented fee would be fabricated evidence about a real business. Readings are
+entered from each shop's own page, with the URL, the date read and the quoted sentence.
+
+```bash
+python -m priceintel record-delivery-terms probuket --observed-on 2026-11-21 --source-url https://pro-buket.uz/dostavka/ --raw-text "Доставка 30 000 сум" --recorded-by "D. Tolipov" --fee 30000
 ```
 
 `classify` also builds `listing_features`: what one price buys (`per_item`, `per_bundle` with the

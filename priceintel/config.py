@@ -23,3 +23,5 @@ APPROVED_WINDOW_END = "2026-12-06"
 SECRET_DB = DATA_DIR / "secret_shop.db"
 SECRET_MIGRATIONS = SQL_DIR / "secret_shop"
 SECRET_SOURCES_FILE = CONFIG_DIR / "secret_sources.json"
+# Synthetic operational data for Secret (clients, orders, payments). Declared, never analysed.
+SECRET_FIXTURES_FILE = CONFIG_DIR / "secret_fixtures.json"

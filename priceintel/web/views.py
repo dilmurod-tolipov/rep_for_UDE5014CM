@@ -262,8 +262,12 @@ def page_overview(db: Databases, sel: Selection) -> Response:
     cats, medians = median_price_by_group(db.market, sel)
     state = secret_shop_state(db)
     problems = integrity(db)
-    shop_rows = "".join(f"<tr><td>{escape(t)}</td><td class='num'>{n:,}</td></tr>"
-                        for t, n in state.get("counts", {}).items())
+    synthetic = state.get("synthetic", {})
+    shop_rows = "".join(
+        f"<tr><td>{escape(t)}</td><td class='num'>{n:,}</td>"
+        f"<td class='num'>{synthetic[t]:,}</td></tr>" if t in synthetic else
+        f"<tr><td>{escape(t)}</td><td class='num'>{n:,}</td><td class='num'>-</td></tr>"
+        for t, n in state.get("counts", {}).items())
     body = (f'{_controls("/", db, sel)}'
             f'<div class="cards">{cards}</div>'
             f'<p class="note">Newest observation: {escape(str(h["newest"] or "none yet"))}. '
@@ -276,10 +280,12 @@ def page_overview(db: Databases, sel: Selection) -> Response:
             f'<div class="panel">{charts.grouped_bars(cats, medians, title="Median regular price by category and operator group", value_label="UZS")}</div>'
             f'<h2>Both databases</h2>'
             f'<div class="panel"><p class="note">market_intel holds the collected market data; '
-            f'secret_shop holds the shop\'s own operational tables. The cross-database check below '
-            f'runs on every page load, because SQLite cannot enforce a foreign key between two '
-            f'files.</p>'
-            + (f'<table><thead><tr><th>secret_shop table</th><th class="num">rows</th></tr></thead>'
+            f'secret_shop holds the shop\'s own operational tables. Secret keeps no digital record '
+            f'of its orders, so every operational row here is a declared synthetic fixture and none '
+            f'of it reaches the price analysis. The cross-database check below runs on every page '
+            f'load, because SQLite cannot enforce a foreign key between two files.</p>'
+            + (f'<table><thead><tr><th>secret_shop table</th><th class="num">rows</th>'
+               f'<th class="num">of which synthetic</th></tr></thead>'
                f'<tbody>{shop_rows}</tbody></table>' if shop_rows else
                '<p class="note">secret_shop database not found.</p>')
             + ('<p class="note"><span class="pill pass">cross-database check OK</span></p>'

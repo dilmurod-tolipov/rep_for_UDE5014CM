@@ -338,6 +338,75 @@ def cmd_dashboard(args) -> int:
     return serve(args.db, secret, host=args.host, port=args.port)
 
 
+def cmd_fixtures(args) -> int:
+    """Load or remove Secret's synthetic operational data (clients, orders, payments, staff)."""
+    from priceintel.secret.fixtures import FixtureError, clear_fixtures, load_fixtures, synthetic_counts
+    conn = _open_existing(args.secret_db)
+    if conn is None:
+        return 1
+    try:
+        if args.clear:
+            removed = clear_fixtures(conn)
+            total = sum(removed.values())
+            print(f"removed {total} synthetic row(s)" if total else "nothing to remove")
+            for table, n in removed.items():
+                if n:
+                    print(f"  {table:24} {n}")
+            return 0
+        if args.load:
+            counts = load_fixtures(conn, args.file)
+            print(f"loaded synthetic demonstration data from {args.file}")
+            for table, n in counts.items():
+                print(f"  {table:24} {n}")
+            print("every row is is_synthetic = 1 and is excluded from the price analysis")
+            return 0
+        counts = synthetic_counts(conn)
+        total = sum(counts.values())
+        print(f"{args.secret_db}: {total} synthetic row(s)"
+              + ("" if total else " (use --load to add the demonstration data)"))
+        for table, n in counts.items():
+            print(f"  {table:24} {n}")
+        return 0
+    except FixtureError as e:
+        print(f"error: {e}")
+        return 1
+    finally:
+        conn.close()
+
+
+def cmd_record_delivery_terms(args) -> int:
+    """Record one shop's published delivery terms, as read from its own page on a given date."""
+    import sqlite3
+    conn = _open_existing(args.db)
+    if conn is None:
+        return 1
+    shop = conn.execute("SELECT shop_id, is_mirror FROM shops WHERE code = ?",
+                        (args.shop,)).fetchone()
+    if shop is None:
+        codes = [r[0] for r in conn.execute("SELECT code FROM shops ORDER BY code")]
+        print(f"error: unknown shop {args.shop!r}; known: {', '.join(codes)}")
+        return 1
+    try:
+        conn.execute(
+            "INSERT INTO shop_delivery_terms (shop_id, observed_on, source_url, delivery_fee_uzs,"
+            " free_delivery_threshold_uzs, same_day, zone_note, raw_text, recorded_by)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (shop["shop_id"], args.observed_on, args.source_url, args.fee, args.free_over,
+             None if args.same_day is None else int(args.same_day), args.zone_note, args.raw_text,
+             args.recorded_by))
+    except sqlite3.IntegrityError as e:
+        print(f"error: {e}")
+        return 1
+    print(f"recorded {args.shop} delivery terms as read on {args.observed_on}")
+    for r in conn.execute("SELECT * FROM v_shop_delivery_terms_latest ORDER BY code"):
+        fee = "not stated" if r["delivery_fee_uzs"] is None else f"{r['delivery_fee_uzs']:,} UZS"
+        free = ("not stated" if r["free_delivery_threshold_uzs"] is None
+                else f"free over {r['free_delivery_threshold_uzs']:,} UZS")
+        print(f"  {r['code']:13} {r['observed_on']}  fee {fee}; {free}")
+    conn.close()
+    return 0
+
+
 def cmd_check_integrity(args) -> int:
     from priceintel.integrity import cross_db_orphans
     market, secret = _open_existing(args.db), _open_existing(args.secret_db)
@@ -625,6 +694,29 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8000)
     s.set_defaults(func=cmd_dashboard)
+
+    s = sub.add_parser("fixtures",
+                       help="load, clear or count Secret's synthetic operational data")
+    s.add_argument("--secret-db", type=Path, default=config.SECRET_DB)
+    s.add_argument("--file", type=Path, default=config.SECRET_FIXTURES_FILE)
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--load", action="store_true", help="insert the synthetic demonstration data")
+    g.add_argument("--clear", action="store_true", help="remove synthetic rows (real rows are kept)")
+    s.set_defaults(func=cmd_fixtures)
+
+    s = sub.add_parser("record-delivery-terms",
+                       help="record a shop's published delivery terms, read from its own page")
+    s.add_argument("shop", help="shop code, e.g. probuket")
+    s.add_argument("--db", type=Path, default=config.MARKET_DB)
+    s.add_argument("--observed-on", required=True, help="date the page was read (YYYY-MM-DD)")
+    s.add_argument("--source-url", required=True, help="the page the terms were read from")
+    s.add_argument("--raw-text", required=True, help="the sentence on the page, quoted")
+    s.add_argument("--recorded-by", required=True, help="who read the page")
+    s.add_argument("--fee", type=int, help="delivery fee in UZS; omit if the page does not say")
+    s.add_argument("--free-over", type=int, help="free-delivery threshold in UZS, if stated")
+    s.add_argument("--same-day", type=int, choices=[0, 1], help="1 if same-day delivery is offered")
+    s.add_argument("--zone-note", help="districts or zones the terms apply to")
+    s.set_defaults(func=cmd_record_delivery_terms)
 
     s = sub.add_parser("check-integrity", help="cross-database orphan check")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
