@@ -8,7 +8,8 @@ from priceintel.db import MigrationError, connect, init_market_db, init_secret_d
 
 def cmd_init_db(args) -> int:
     try:
-        m_applied, n_shops = init_market_db(args.db, config.MARKET_MIGRATIONS, config.SHOPS_FILE)
+        m_applied, n_shops = init_market_db(args.db, config.MARKET_MIGRATIONS, config.SHOPS_FILE,
+                                           config.CATEGORY_RULES_FILE)
         s_applied, n_channels = init_secret_db(args.secret_db, config.SECRET_MIGRATIONS,
                                                config.SECRET_SOURCES_FILE)
     except MigrationError as e:

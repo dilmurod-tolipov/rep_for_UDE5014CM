@@ -336,3 +336,23 @@ def test_the_dashboard_cannot_show_fixture_rows_as_real(loaded, market, tmp_path
     body = render("/", {"purpose": ["test"]}, db).body
     assert "of which synthetic" in body
     assert "every operational row here is a declared synthetic fixture" in body
+
+
+def test_a_fresh_install_passes_the_cross_database_check(tmp_path):
+    """`init-db` then `check-integrity` must be clean on a brand-new install. It was not: the
+    category vocabulary was only registered by the first `classify` run, so a marker following the
+    README saw six 'problems' that were not problems. init-db now registers it."""
+    from priceintel.db import init_market_db
+    market_path, secret_path = tmp_path / "market.db", tmp_path / "secret.db"
+    init_market_db(market_path, config.MARKET_MIGRATIONS, config.SHOPS_FILE,
+                   config.CATEGORY_RULES_FILE)
+    init_secret_db(secret_path, config.SECRET_MIGRATIONS, config.SECRET_SOURCES_FILE)
+    market, secret = connect(market_path), connect(secret_path)
+    try:
+        assert cross_db_orphans(market, secret) == []
+        # And it stays clean once the demonstration data is loaded.
+        load_fixtures(secret, config.SECRET_FIXTURES_FILE)
+        assert cross_db_orphans(market, secret) == []
+    finally:
+        market.close()
+        secret.close()

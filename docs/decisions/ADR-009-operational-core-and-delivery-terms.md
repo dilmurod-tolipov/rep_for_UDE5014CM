@@ -80,7 +80,7 @@ after a fee is recorded.
 
 ## Consequences
 
-- 39 new tests (315 total, from 276). The operational tests are mostly about what the database
+- 40 new tests (316 total, from 276). The operational tests are mostly about what the database
   **refuses**: a real client without recorded consent, a full phone number, a delivery fee with no
   address, a cancelled order with no reason, captured payments above the order total, a synthetic
   product in a real order, a fixture title reaching the analysis data.

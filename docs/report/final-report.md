@@ -237,7 +237,7 @@ with the evidence one click away on the Analysis and Models pages. The dashboard
 function, which is why most of it is testable without a running server, and where no analysis has
 been built it names the command to run instead of showing a blank page.
 
-**Testing.** **315 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
+**Testing.** **316 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
 parser, price validation, category rules and feature extraction; data-validation tests for invalid,
 boundary and failure cases (out-of-range prices, missing prices, a currency served in USD, a run
 refused from modified code, a shop that returns 200 with no products); and 14 end-to-end tests in
@@ -338,7 +338,7 @@ against the brief, to write the collector, migrations, category rules, feature e
 pipeline, statistics, dashboard and tests, and to draft documentation and emails for my review. I
 directed the design decisions, chose the hypothesis design, supplied the sources and consent
 arrangements, and sent all correspondence myself. AI output was verified, not accepted: by tests
-(315, several written to reproduce a defect before fixing it), by running the code against live
+(316, several written to reproduce a defect before fixing it), by running the code against live
 pages, and by mutation checks in which a deliberately broken rule was confirmed to fail tests. Errors
 caught that way are logged — a classifier reading a URL slug as a section, a potted orchid read as a
 single cut stem, an outlier rule that flagged all 19 of one shop's rose bouquets, and a permutation
@@ -405,7 +405,7 @@ measured once per operator group: products collected 2,571 (threshold 300) **pas
 pass; unclassified rate 4.6% (≤25%) pass; price-outlier rate 1.4% (≤2%, 35 products above ten times
 their category median — a wider rule than the pipeline's within-group MAD flag) pass; freshness 0.67
 days (≤1) pass; per-group freshness, four groups, all pass; duplicate observations 0 pass; orphan
-observations 0 pass. Overall status **fail**, driven by the two collection-volume criteria. Test suite: 315 passing tests; selected results in Section 4.
+observations 0 pass. Overall status **fail**, driven by the two collection-volume criteria. Test suite: 316 passing tests; selected results in Section 4.
 
 ## Appendix D — AI Use Declaration log references
 

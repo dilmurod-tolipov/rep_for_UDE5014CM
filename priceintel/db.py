@@ -151,11 +151,22 @@ def init_secret_db(path: Path, migrations: Path, sources_file: Path) -> tuple[li
     return applied, n
 
 
-def init_market_db(path: Path, migrations: Path, shops_file: Path) -> tuple[list[str], int]:
+def init_market_db(path: Path, migrations: Path, shops_file: Path,
+                   rules_file: Path | None = None) -> tuple[list[str], int]:
+    """Migrate, load the shop registry, and register the category vocabulary.
+
+    The vocabulary is registered at init because both databases must agree about it and the
+    cross-database check compares them: before this, a fresh `init-db` followed by
+    `check-integrity` reported six problems that were not problems, because `analysis_categories`
+    stayed empty until the first `classify` run. Registering is idempotent and refuses a changed
+    file under an applied version, exactly as a migration does."""
     conn = connect(path)
     try:
         applied = migrate(conn, migrations)
         n = seed_shops(conn, shops_file)
+        if rules_file is not None:
+            from priceintel.analysis.categories import load_rules, register_rules
+            register_rules(conn, load_rules(rules_file))
     finally:
         conn.close()
     return applied, n
