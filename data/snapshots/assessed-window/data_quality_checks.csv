@@ -1,14 +1,14 @@
 check_run_id,run_at,purpose,check_name,scope,measured,threshold,unit,status,detail
-1,2026-11-22T11:44:47Z,assessed,products_collected,all,2571.0,300.0,count,pass,"distinct competitor products, mirrors excluded by design"
-2,2026-11-22T11:44:47Z,assessed,runs_completed,all,27.0,50.0,count,fail,
-3,2026-11-22T11:44:47Z,assessed,run_success_rate,all,59.3,95.0,percent,fail,16 of 27 runs
-4,2026-11-22T11:44:47Z,assessed,quarantine_rate,all,1.7,5.0,percent,pass,598 of 35205 parsed records; most common rule: missing_price (572)
-5,2026-11-22T11:44:47Z,assessed,unclassified_rate,all,4.6,25.0,percent,pass,119 of 2571 products excluded by the rules
-6,2026-11-22T11:44:47Z,assessed,price_outlier_rate,all,1.4,2.0,percent,pass,"35 products above 10x their category median; counted, not removed - the robustness checks handle them"
-7,2026-11-22T11:44:47Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-22T11:44:43Z
-8,2026-11-22T11:44:47Z,assessed,group_freshness_days,KAMILAS,0.01,1.0,days,pass,newest observation from this group: 2026-11-22T11:35:21Z
-9,2026-11-22T11:44:47Z,assessed,group_freshness_days,LOVEFLOWERS_NET,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T11:43:45Z
-10,2026-11-22T11:44:47Z,assessed,group_freshness_days,PROBUKET,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T11:43:50Z
-11,2026-11-22T11:44:47Z,assessed,group_freshness_days,UZFLORA,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T11:44:43Z
-12,2026-11-22T11:44:47Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
-13,2026-11-22T11:44:47Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
+1,2026-11-22T21:18:01Z,assessed,products_collected,all,2571.0,300.0,count,pass,"distinct competitor products, mirrors excluded by design"
+2,2026-11-22T21:18:01Z,assessed,runs_completed,all,28.0,50.0,count,fail,
+3,2026-11-22T21:18:01Z,assessed,run_success_rate,all,60.7,95.0,percent,fail,17 of 28 runs
+4,2026-11-22T21:18:01Z,assessed,quarantine_rate,all,1.7,5.0,percent,pass,622 of 37478 parsed records; most common rule: missing_price (594)
+5,2026-11-22T21:18:01Z,assessed,unclassified_rate,all,4.6,25.0,percent,pass,119 of 2571 products excluded by the rules
+6,2026-11-22T21:18:01Z,assessed,price_outlier_rate,all,1.4,2.0,percent,pass,"35 products above 10x their category median; counted, not removed - the robustness checks handle them"
+7,2026-11-22T21:18:01Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-22T21:17:57Z
+8,2026-11-22T21:18:01Z,assessed,group_freshness_days,KAMILAS,0.01,1.0,days,pass,newest observation from this group: 2026-11-22T21:08:33Z
+9,2026-11-22T21:18:01Z,assessed,group_freshness_days,LOVEFLOWERS_NET,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T21:16:58Z
+10,2026-11-22T21:18:01Z,assessed,group_freshness_days,PROBUKET,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T21:17:04Z
+11,2026-11-22T21:18:01Z,assessed,group_freshness_days,UZFLORA,0.0,1.0,days,pass,newest observation from this group: 2026-11-22T21:17:57Z
+12,2026-11-22T21:18:01Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
+13,2026-11-22T21:18:01Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"

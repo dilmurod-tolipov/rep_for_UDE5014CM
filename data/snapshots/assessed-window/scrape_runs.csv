@@ -28,3 +28,4 @@ run_id,kind,purpose,triggered_by,started_at,finished_at,status,git_commit,git_di
 37,competitor_scrape,assessed,scheduled,2026-11-21T11:13:46Z,2026-11-21T11:25:43Z,success,9b456dd81a79a5a98908038ada7528c599ecb404,0,0.1.0,runnervm0hi8g,126,126,2249,24,,4,4
 38,competitor_scrape,assessed,scheduled,2026-11-21T20:55:18Z,2026-11-21T21:07:15Z,success,1cba392afef2bc83563329478aa80839faa41453,0,0.1.0,runnervm0hi8g,126,126,2249,24,,4,4
 39,competitor_scrape,assessed,scheduled,2026-11-22T11:32:46Z,2026-11-22T11:44:44Z,success,7bfb7fc5e89e7d286a199bc6d4676370d532ed3c,0,0.1.0,runnervm0hi8g,126,126,2249,24,,4,4
+40,competitor_scrape,assessed,scheduled,2026-11-22T21:05:58Z,2026-11-22T21:17:58Z,success,6aeb57de344d9f20f2dd673ede610d609471fc19,0,0.1.0,runnervm0hi8g,126,126,2249,24,,4,4
