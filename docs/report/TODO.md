@@ -8,7 +8,7 @@ The draft is `docs/report/final-report.md`. Everything in it is computed from as
 | # | Item | Earliest date | Who |
 |---|---|---|---|
 | 1 | Collection window closes; final assessed dataset complete | 6 Dec 2026 | automatic (the scheduled workflow stops by date) |
-| 2 | Owner's Telegram Desktop export + written consent wording | any time before 7 Dec | the owner (one file, once — he does not use the app) |
+| 2 | Telegram Desktop export of Secret's public channel, and the consent-note wording for the import | any time before 7 Dec | me (ADR-010 — the owner is not involved) |
 | 3 | `python -m priceintel import-reference` then re-run `analyse --replicates 5000`; fill in Section 3's Secret comparisons with their bootstrap intervals, and the pooled unweighted figure | 7 Dec | me |
 | 4 | Re-run every figure in the report against the final dataset — Sections 2, 3, 5, 6 and Appendix C all cite counts that will change | 7 Dec | me |
 | 5 | Clean-checkout verification of the **final** commit; record the date, the test count and the reproduced decision in Section 4 | after the last commit | me |

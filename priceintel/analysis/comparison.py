@@ -29,7 +29,7 @@ report says so next to every interval.
 is the **unweighted mean of the per-group percentages**, so LOVEFLOWERS_NET does not outweigh
 KAMILAS because it has more products.
 
-Secret's offers come from `reference_offers` (the owner's export, ADR-007) and never from the
+Secret's offers come from `reference_offers` (the channel export, ADR-007, ADR-010) and never from the
 scraped data. Until that export is imported, every comparison is stored as insufficient evidence
 with `n_secret_offers = 0`, which is the honest state of the analysis rather than a blank page.
 """

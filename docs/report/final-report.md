@@ -60,8 +60,8 @@ only, not demand or margin.
 **Approved scope and boundaries.** The Module Leader approved the project on 3 November 2026 and set
 the assessed collection window to 9 November – 6 December 2026 (`docs/approval/APPROVED-SCOPE.md`).
 The design collects **primary data** from four independent competitor operator groups by reading
-their public catalogues, and treats Secret's own prices as **reference data** supplied once by the
-owner as a consented Telegram Desktop export (ADR-007). Four mirror sites are registered and never
+their public catalogues, and treats Secret's own prices as **reference data**, taken once as a
+Telegram Desktop export of the shop's public channel (ADR-007, ADR-010). Four mirror sites are registered and never
 crawled, so one operator cannot be counted four times (ADR-001). Observations are advertised
 catalogue prices in UZS excluding delivery; promotions are recorded but analysed separately.
 
@@ -186,7 +186,7 @@ that category's groups so the intervals share the same Secret draw. All **13** c
 return `insufficient_evidence` ("needs 10 of each") because Secret's export has not yet been
 imported. The competitor medians are nevertheless informative and are shown: in roses,
 LOVEFLOWERS_NET 475,000 UZS against PROBUKET 1,627,350 UZS. **[FINALISE after 6 December: import the
-owner's export and report the Secret comparisons with their intervals.]**
+channel export and report the Secret comparisons with their intervals.]**
 
 **Models (Q3).** Target: a product's median advertised price. Features: category, operator group,
 price unit, stem count, size and flower-type indicators — nothing price-derived. Baseline: the
@@ -282,12 +282,16 @@ status per shop, and one site that disallows crawling is registered and never cr
 data is collected: the data are product titles and prices, and no customer, courier or order record
 from Secret is used, and a real client could not be stored without recorded consent while the only
 contact column is the last four digits of a phone number — data minimisation by schema, not policy. A
-prior design that scraped Secret's own public Telegram channel was withdrawn and the data deleted
-after the Module Leader questioned whether it was primary data; the replacement is a one-off export
-the owner supplies with written consent (ADR-007), and the audit that found the scheduler had kept
-calling the withdrawn collector for eleven days was disclosed in writing rather than quietly fixed.
-Remaining exposure: a site's terms may change after the date recorded in `docs/compliance/`, and the
-owner's export, once imported, is commercially sensitive pricing in a local database. **Security.**
+prior design that scraped Secret's own public Telegram channel twice a day was withdrawn and the
+data deleted after the Module Leader questioned whether it was primary data; the replacement is a
+single manual export of that public channel, used because Secret publishes these prices itself and
+the project stores only each post's date, link, price and short title, with contact lines stripped
+and no personal data at all (ADR-007, ADR-010). No permission from the shop is held, which is a
+stated position rather than an oversight. The audit that found the scheduler had kept calling the
+withdrawn collector for eleven days was disclosed in writing rather than quietly fixed.
+Remaining exposure: a site's terms may change after the date recorded in `docs/compliance/`; a
+business could object to its published prices being reproduced in coursework even though they are
+public; and the export, once imported, is commercially sensitive pricing in a local database. **Security.**
 The system has no users, no credentials and no network listener beyond a localhost dashboard, which
 removes most of the attack surface rather than defending it. The dashboard bounds every query
 parameter, returns 400 with a message on bad input, and parameterises all SQL. It binds to
@@ -300,7 +304,7 @@ observation table grows without bound and would need archival within a year of r
 fragility is not volume but **source drift**: collection depends on four third-party HTML layouts,
 and one redesign silently emptied the largest source for five runs. The per-group freshness check now
 catches that class of failure on the first run, which is the most valuable piece of operational
-engineering in the project. Prioritised improvements: (1) import the owner's export and complete the
+engineering in the project. Prioritised improvements: (1) import the channel export and complete the
 Secret comparison — it is the project's purpose; (2) alert on a failing quality check rather than only
 recording it, since the 13-day silent failure was found by hand; (3) widen the sample to more
 operators publishing definite prices, which is what would make more than two categories testable.
@@ -318,7 +322,7 @@ against the approved 95%, from `robots.txt` timeouts and a site redesign; both a
 twice-daily answer to "where should I look?" that previously required manual checking and left no
 record. The main limitation is that Secret's own prices are not yet in the dataset, so the
 price-position comparison the project exists to produce is implemented, tested — and empty. The
-recommendation is to import the owner's export once the window closes, treat the findings as a
+recommendation is to import the channel export once the window closes, treat the findings as a
 statement about four sampled shops, and act on them only as a prompt to inspect a category.
 
 **Development story.** The four checkpoints are git tags, each runnable from a clean checkout: `cp1`

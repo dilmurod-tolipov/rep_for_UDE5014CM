@@ -157,14 +157,14 @@ def test_pairwise_tests_name_the_pair_and_carry_an_effect_size():
 
 
 # ---------------------------------------------------------------------------
-# Q2: Secret against a group (pending the owner's export)
+# Q2: Secret against a group (pending the channel export)
 # ---------------------------------------------------------------------------
 
 def test_secret_comparison_reports_insufficient_evidence_until_the_export_arrives():
     result = secret_versus_group([], [100_000.0] * 30, "bouquets_unspecified", "UZFLORA")
     assert result.p_value is None
     assert "insufficient evidence" in result.conclusion
-    assert "owner's export" in result.conclusion
+    assert "channel export" in result.conclusion
 
 
 def test_secret_comparison_reports_a_percentage_once_both_sides_have_enough():

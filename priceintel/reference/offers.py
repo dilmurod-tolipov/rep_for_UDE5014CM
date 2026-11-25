@@ -1,11 +1,11 @@
-"""Import Secret's offers from a file the owner exports, into ``reference_offers``.
+"""Import Secret's offers from one export of its public channel, into ``reference_offers``.
 
 Two input shapes, one code path after parsing:
 
-* **Telegram Desktop export** (``result.json``, "JSON, no media"): the owner exports their own
+* **Telegram Desktop export** (``result.json``, "JSON, no media"): one export of Secret's own
   channel and hands over the file. No account, API key or credential is needed to reproduce the
   project - the file is the input.
-* **CSV fallback** (``published_at,post_url,price_uzs,title``), if the owner prefers to keep a price
+* **CSV fallback** (``published_at,post_url,price_uzs,title``), for a hand-kept price
   list by hand.
 
 What the importer does, and why:

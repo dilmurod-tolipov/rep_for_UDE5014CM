@@ -262,12 +262,12 @@ offers are exported only with `--include-reference`, for the submission package.
 
 ## Secret's offers (reference data, not primary data)
 
-Secret's own offers are **reference data**: they are imported from an export the owner produces with
+Secret's own offers are **reference data**: they are imported from one export taken with
 Telegram Desktop, kept in their own table, and never written into `price_observations` or used by any
 model (ADR-007). Reading the channel automatically was withdrawn on 2026-10-29.
 
 ```bash
-python -m priceintel import-reference path/to/result.json     --exported-at 2026-11-30 --consent-note "owner's written consent, 2026-11-30"
+python -m priceintel import-reference path/to/result.json     --exported-at 2026-12-07 --consent-note "Prices published publicly by Secret on its own channel; one export, post date/link/price/title only (ADR-010)"
 python -m priceintel reference-report --since 2026-11-02 --until 2026-11-29   # Table 2
 ```
 

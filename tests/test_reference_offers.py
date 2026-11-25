@@ -105,7 +105,7 @@ def test_provenance_is_recorded_and_the_same_file_cannot_be_imported_twice(marke
 
 
 def test_reimporting_a_longer_export_adds_only_new_posts(market_db, tmp_path):
-    """The owner exports once after the window closes; if a second export is needed it overlaps the
+    """The export is taken once after the window closes; if a second export is needed it overlaps the
     first, and only the posts that are new may be added."""
     do_import(market_db)
     data = json.loads(EXPORT.read_text(encoding="utf-8"))

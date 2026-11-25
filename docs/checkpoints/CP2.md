@@ -104,7 +104,7 @@ hidden, in `docs/analysis_plan.md` and in the final report.
 - `KAMILAS` will not reach the 10-product minimum: it publishes prices for about 7 products.
 - Scheduled runs start several hours after their nominal times (GitHub queues scheduled workflows);
   each run's own `started_at` is what the analysis uses.
-- Secret's reference offers are not imported yet: the owner's export is taken once, after the window
+- Secret's reference offers are not imported yet: the export is taken once, after the window
   closes on 6 December (ADR-007).
 - No analysis yet — that is Checkpoint 3, which builds directly on the cleaning stage above.
 - `tools/load_snapshot.py` exists at this commit, but the data snapshot committed *in* it was
@@ -119,3 +119,7 @@ hidden, in `docs/analysis_plan.md` and in the final report.
 Claude Code (Opus) was used for the queries, the quality checks, the snapshot mechanism, the
 dashboard, the approval clarifications and the run-coverage fix. `docs/ai-use-log.md` records what it
 produced, the mistakes its own tests caught and how each was verified.
+
+> *Added 2026-11-25 (ADR-010): the export is produced by the student from Secret's public
+> channel, not handed over by the owner. The timing and the reference-only treatment are
+> unchanged.*

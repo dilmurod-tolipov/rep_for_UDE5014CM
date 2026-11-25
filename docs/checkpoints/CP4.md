@@ -80,7 +80,7 @@ run and commit that produced it.
 
 **Missing.**
 
-- **Secret's own prices.** All 13 Secret comparisons read `insufficient_evidence`; the owner's export
+- **Secret's own prices.** All 13 Secret comparisons read `insufficient_evidence`; the channel export
   is imported once after 6 December (ADR-007). Until then the dashboard compares competitors with
   each other and says so on the page.
 - **KAMILAS** publishes prices for about 7 products and will not reach the minimum.
@@ -95,3 +95,7 @@ run and commit that produced it.
 Claude Code (Opus) wrote the dashboard pages, the `refresh` command and the end-to-end tests. It
 introduced the decision-ranking defect above and the empty-state page bug that its own tests caught
 (`_no_analysis` was passed `None` instead of the database). See `docs/ai-use-log.md`.
+
+> *Added 2026-11-25 (ADR-010): the export is produced by the student from Secret's public
+> channel, not handed over by the owner. The timing and the reference-only treatment are
+> unchanged.*

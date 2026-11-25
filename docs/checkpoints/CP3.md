@@ -20,7 +20,7 @@ python -m priceintel analyse  --purpose assessed     # figures, tests, compariso
 
 Everything runs on **data this system collected**: `analyse` reads `analysis_products`, which the
 pipeline builds from scraped competitor observations only. Secret's offers are reference data and
-arrive with the owner's export after the window closes; no model ever sees them
+arrive with the channel export after the window closes; no model ever sees them
 (`tests/test_no_reference_in_models.py`).
 
 ## Value statement
@@ -57,7 +57,7 @@ the operator group carries real information: the same category is priced very di
 different shops, which is precisely what the hypothesis test found.
 
 **The Secret comparison is not yet available.** All 13 category × group comparisons are stored as
-`insufficient_evidence` with `n_secret_offers = 0`, because the owner's export is taken once after
+`insufficient_evidence` with `n_secret_offers = 0`, because the export is taken once after
 the window closes (ADR-007). The machinery is built and tested; it reports the state of the evidence
 rather than a blank page.
 
@@ -115,3 +115,7 @@ plants as outliers, and a pooled metric could not be stored because a STRICT tab
 NULL. A third was caught by a test it wrote: a permutation p-value of 0.047 from two identical
 distributions, which was a lucky seed rather than a bug — the test was replaced with a calibration
 check over 100 seeds. See `docs/ai-use-log.md`.
+
+> *Added 2026-11-25 (ADR-010): the export is produced by the student from Secret's public
+> channel, not handed over by the owner. The timing and the reference-only treatment are
+> unchanged.*

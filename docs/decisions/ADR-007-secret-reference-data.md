@@ -1,4 +1,10 @@
-# ADR-007: Secret's offers as reference data from one owner export
+# ADR-007: Secret's offers as reference data from one export
+
+> **Amended by [ADR-010](ADR-010-who-produces-the-secret-export.md) on 2026-11-25:** the export
+> is produced by the student from Secret's public channel, not handed over by the owner, and the
+> basis for using the data is that Secret publishes these prices publicly itself. The paragraph
+> "Consent and sharing" below, and the sentence "Public visibility does not establish a right to
+> reuse", are superseded to that extent. Everything else here stands.
 
 - **Date:** 2026-10-29 (Week 8)
 - **Status:** Accepted; to be confirmed by the Module Leader with the final approval decision.
@@ -27,8 +33,8 @@ discrepancy was reported to the Module Leader.
 ### One export, not a weekly chore
 
 Because reference imports earn no primary-data credit, their **frequency carries no assessment
-weight**. So the owner exports the channel history **once**, after the 28-day competitor collection
-window closes, with Telegram Desktop's own "Export chat history" (JSON, no media). One file covers the
+weight**. So the channel history is exported **once**, after the 28-day competitor collection window
+closes, with Telegram Desktop's own "Export chat history" (JSON, no media). One file covers the
 whole window, dated by each post's publication date.
 
 This replaces the "weekly export" of the earlier draft. It also removes the only part of the design
@@ -61,14 +67,15 @@ current availability.
 
 ### Consent and sharing
 
-The export is the owner's own channel content, handed over for this coursework. The consent note is
-recorded with every import (`reference_imports.consent_note`) and must cover the academic use and the
-sharing of the file with the assessors. The real export is **not** committed to the public repository
+*(Superseded in part by ADR-010: the export is produced by the student, and no permission from
+the shop is held; the basis is that Secret publishes these prices publicly itself.)* The note
+recorded with every import (`reference_imports.consent_note`) states that basis and covers the
+academic use and the sharing of the file with the assessors. The real export is **not** committed to the public repository
 (`.gitignore`); it travels in the submission package. The repository contains a synthetic sample
 export in the same shape (`tests/fixtures/telegram_export_synthetic.json`) so the tests and a clean
 checkout work without it.
 
-A CSV price log from the owner is accepted through the same importer as a fallback.
+A CSV price log is accepted through the same importer as a fallback.
 
 ## Consequences
 

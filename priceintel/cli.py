@@ -25,7 +25,7 @@ def cmd_init_db(args) -> int:
 
 
 def cmd_import_reference(args) -> int:
-    """Import Secret's offers from the owner's own export (reference data, not primary data)."""
+    """Import Secret's offers from one export of its public channel (reference, not primary data)."""
     from priceintel.analysis.categories import load_rules
     from priceintel.reference.offers import ImportError_, import_offers
     conn = _open_existing(args.db)
@@ -190,7 +190,7 @@ def cmd_analyse(args) -> int:
     print(f"\nprice-position comparison: {len(displayed)} displayed of {len(results)}"
           f" (bootstrap B={args.replicates:,})")
     if not displayed:
-        print("  every comparison is insufficient evidence: Secret's offers arrive with the owner's"
+        print("  every comparison is insufficient evidence: Secret's offers arrive with the channel"
               " export after the window closes (ADR-007)")
 
     model_results = models.evaluate(conn, run_id)
@@ -611,13 +611,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.set_defaults(func=cmd_init_db)
 
     s = sub.add_parser("import-reference",
-                       help="import Secret's offers from the owner's export (reference data)")
+                       help="import Secret's offers from the channel export (reference data)")
     s.add_argument("file", help="Telegram Desktop export (result.json) or a CSV price log")
     s.add_argument("--db", type=Path, default=config.MARKET_DB)
     s.add_argument("--rules", type=Path, default=config.CATEGORY_RULES_FILE)
-    s.add_argument("--exported-at", required=True, help="date the owner produced the file (YYYY-MM-DD)")
+    s.add_argument("--exported-at", required=True, help="date the export file was produced (YYYY-MM-DD)")
     s.add_argument("--consent-note", required=True,
-                   help="how the owner agreed to the academic use and sharing of these prices")
+                   help="the basis for using these prices academically, recorded with the import (ADR-010)")
     s.add_argument("--purpose", choices=["dev", "assessed"], default="dev")
     s.set_defaults(func=cmd_import_reference)
 

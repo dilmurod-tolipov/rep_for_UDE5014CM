@@ -13,7 +13,7 @@ Two rules hold everything together:
    `priceintel.integrity` fails the cross-database check if a synthetic row ever becomes reachable
    from the analysis side. Fabricated data cannot quietly become evidence.
 2. **This module never touches `market_intel`.** Secret's real prices reach the comparison only
-   through `reference_offers`, imported from the owner's own export (ADR-007).
+   through `reference_offers`, imported from one export of its public channel (ADR-007, ADR-010).
 
 `load_fixtures` is idempotent in the useful sense: it refuses to run twice, so a second call cannot
 double the demo revenue. `clear_fixtures` removes synthetic rows only, and leaves anything real

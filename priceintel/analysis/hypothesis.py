@@ -10,7 +10,8 @@ about, and one where they diverge is where a price position actually matters.
 
 **Q2 - the approved hypothesis, pending Secret's export.** *Is Secret's median advertised price equal
 to a competitor group's median in the same category?* H0: the percentage difference is zero. It is
-tested by permutation once the owner's export is imported (ADR-007); until then it is recorded as
+tested by permutation once Secret's channel export is imported (ADR-007, ADR-010); until then it
+is recorded as
 insufficient evidence rather than left out, so the report shows the state of the evidence.
 
 **Why these methods.**
@@ -206,7 +207,7 @@ def secret_versus_group(secret: list[float], competitor: list[float], category: 
             question, f"{category}: SECRET vs {group}", "permutation_median_difference",
             None, None, None, None, None, None, None, 2, len(secret) + len(competitor),
             f"needs {min_items} items on each side; Secret={len(secret)}, {group}={len(competitor)}",
-            "insufficient evidence: Secret's offers are imported from the owner's export after the "
+            "insufficient evidence: Secret's offers are imported from the channel export after the "
             "collection window closes (ADR-007)")
     a, b = np.array(secret, dtype=float), np.array(competitor, dtype=float)
     difference, p_value = permutation_median_difference(a, b, permutations=permutations)
