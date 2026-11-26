@@ -33,6 +33,7 @@ Secret's offers come from `reference_offers` (the channel export, ADR-007, ADR-0
 scraped data. Until that export is imported, every comparison is stored as insufficient evidence
 with `n_secret_offers = 0`, which is the honest state of the analysis rather than a blank page.
 """
+import statistics
 from dataclasses import dataclass
 
 import numpy as np
@@ -64,15 +65,51 @@ def _median(values) -> float | None:
     return float(np.median(values)) if len(values) else None
 
 
+def full_coverage_days(conn, purpose: str) -> list[str]:
+    """Dates on which at least one run reached every operator group.
+
+    The Module Leader's question of 26 November 2026: do the category comparisons change when they
+    are restricted to days with coverage from all four groups? On such a day every group is present
+    in that day's data, so a missing source cannot tilt a category median."""
+    return [r[0] for r in conn.execute(
+        "SELECT DISTINCT substr(started_at, 1, 10) FROM scrape_runs"
+        " WHERE purpose = ? AND shops_expected > 0 AND shops_collected = shops_expected"
+        " ORDER BY 1", (purpose,))]
+
+
+def _median_prices_on_days(conn, purpose: str, days: list[str]) -> dict[int, float]:
+    """Each listing's median regular price, computed only from observations made on those days.
+
+    The price rule is the pipeline's: a regular price is the old price where a sale is shown and the
+    shown price otherwise, and starting prices ("от") are not regular prices."""
+    if not days:
+        return {}
+    marks = ", ".join("?" * len(days))
+    rows = conn.execute(
+        f"""SELECT o.listing_id, COALESCE(o.old_price_uzs, o.price_uzs) AS regular
+            FROM price_observations o
+            JOIN scrape_runs r ON r.run_id = o.run_id
+            WHERE r.purpose = ? AND o.is_from_price = 0
+              AND substr(o.observed_at, 1, 10) IN ({marks})""", (purpose, *days)).fetchall()
+    by_listing: dict[int, list[float]] = {}
+    for r in rows:
+        by_listing.setdefault(r["listing_id"], []).append(float(r["regular"]))
+    return {listing: float(statistics.median(prices)) for listing, prices in by_listing.items()}
+
+
 def competitor_prices(conn, pipeline_run_id: int, *, exclude_outliers: bool = False,
                       only_stated_units: bool = False,
                       first_seen_before: str | None = None,
                       first_seen_from: str | None = None,
+                      full_coverage_only: bool = False,
                       drop_group: str | None = None) -> dict[tuple[str, str], list[float]]:
     """Included products as {(category, operator_group): [regular prices]}.
 
     The keyword arguments are the robustness checks: each one re-runs the same comparison on a
-    deliberately different subset, rather than on a different method."""
+    deliberately different subset, rather than on a different method. `full_coverage_only` is the
+    exception in one respect: it does not merely drop products, it recomputes each product's median
+    from the observations made on full-coverage days, because that is the price the shops showed on
+    the days when every group was being read."""
     sql = ["SELECT category, operator_group, regular_price_uzs, is_outlier, price_unit,"
            "       first_observed_at, listing_id",
            "FROM analysis_products",
@@ -91,8 +128,16 @@ def competitor_prices(conn, pipeline_run_id: int, *, exclude_outliers: bool = Fa
         params["from_date"] = first_seen_from
     rows = conn.execute("\n".join(sql), params).fetchall()
 
+    on_full_days: dict[int, float] = {}
+    if full_coverage_only:
+        purpose = conn.execute("SELECT purpose FROM pipeline_runs WHERE pipeline_run_id = ?",
+                               (pipeline_run_id,)).fetchone()[0]
+        on_full_days = _median_prices_on_days(conn, purpose, full_coverage_days(conn, purpose))
+
     prices: dict[tuple[str, str], list[float]] = {}
     for r in rows:
+        if full_coverage_only and r["listing_id"] not in on_full_days:
+            continue        # never seen on a day when every group reported
         if only_stated_units:
             # The robustness check that drops products whose price unit was inferred rather than
             # stated by the shop.
@@ -101,8 +146,9 @@ def competitor_prices(conn, pipeline_run_id: int, *, exclude_outliers: bool = Fa
                 " ORDER BY computed_at DESC LIMIT 1", (r["listing_id"],)).fetchone()
             if feature is not None and feature["evidence"] != "stated":
                 continue
-        prices.setdefault((r["category"], r["operator_group"]), []).append(
-            float(r["regular_price_uzs"]))
+        price = (on_full_days[r["listing_id"]] if full_coverage_only
+                 else float(r["regular_price_uzs"]))
+        prices.setdefault((r["category"], r["operator_group"]), []).append(price)
     return prices
 
 

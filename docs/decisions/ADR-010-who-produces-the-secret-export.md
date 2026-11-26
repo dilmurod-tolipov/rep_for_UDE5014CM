@@ -1,7 +1,22 @@
 # ADR-010: the Secret export is produced by me, from the public channel
 
-- **Date:** 2026-11-25 (Week 11)
-- **Status:** accepted
+> **Ruled on by the Module Leader, 2026-11-26.** The position recorded below — that public
+> publication is a sufficient basis on its own — was **not accepted**. His words: "The channel's
+> public status documents where the prices came from. It does not document Secret's consent to the
+> proposed coursework use and sharing with assessors." The requirement is therefore:
+>
+> 1. obtain **short written confirmation from Secret** covering the coursework use and the sharing
+>    of the prices with assessors, and keep it with this record; **or**
+> 2. if it cannot be obtained by submission, **omit Secret's records and comparisons entirely**,
+>    complete the competitor analysis, and explain the limitation. The reference importer may still
+>    be demonstrated with the labelled synthetic fixtures.
+>
+> Who produces the export is unaffected and stands as decided below: I do. What changed is that
+> provenance and permission are two different things, and only the first is settled by the channel
+> being public. See the postscript at the end of this record.
+
+- **Date:** 2026-11-25 (Week 11); amended 2026-11-26 after the Module Leader's ruling
+- **Status:** accepted in part — the export route stands, the consent basis is superseded
 - **Amends:** ADR-007 §"Consent and sharing" and its sentence "Public visibility does not establish
   a right to reuse". Everything else in ADR-007 stands: one export, after the window, into
   `reference_offers`, never into a model.
@@ -72,3 +87,35 @@ What keeps that proportionate, and all of it was already true in ADR-007:
   is a historical record, and editing it would break the migration guard.
 - `--exported-at` is now the date I produced the file, and `--consent-note` carries the
   public-publication basis above.
+
+---
+
+## Postscript, 2026-11-26: what the Module Leader ruled, and what now happens
+
+The reasoning above separated two things that the ruling puts back together. Publication settles
+**where the prices came from**. It does not settle **whether Secret agrees to this use of them** —
+being read by a customer in a shop window is not the same as being collected into a coursework
+dataset and handed to an assessor. That distinction was ADR-007's original point, and dropping it
+was the weak step in this record.
+
+**Required before any import.** A short written confirmation from Secret, covering (a) the use of
+its published prices in this coursework and (b) sharing them with the assessors. A message is
+enough; it is stored with this record as `docs/approval/secret-consent.*` and quoted in
+`reference_imports.consent_note`.
+
+**If it does not arrive by submission.** Secret's records and comparisons are omitted entirely:
+
+- no `import-reference` run against real data, so `reference_offers` stays empty;
+- every Secret comparison already reports `insufficient_evidence`, so the analysis needs no change
+  — this is the state the project has been in all along;
+- the report states the limitation in Section 3 and Section 5: the price-position comparison the
+  project was approved to produce could not be completed, and why;
+- the importer is still demonstrated, with the labelled synthetic fixture export in
+  `tests/fixtures/`, which is what the nine import tests already use.
+
+Either way the competitor analysis — the primary data, the hypothesis tests, the models and the
+decision output — is unaffected, because Secret's offers were never an input to any of it.
+
+**What this costs if the confirmation does not arrive.** Analytical question Q2 goes unanswered.
+Objective O3 is then partly met at best. The project still answers Q1 and Q3 from its own collected
+data, which is where the assessed evidence lives.

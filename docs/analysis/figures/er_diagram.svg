@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 820" width="1180" height="820" role="img" aria-label="Entity-relationship diagram of both databases">
+<style>text { font-family: "Segoe UI", system-ui, sans-serif; fill: #1f2328; }.title { font-size: 19px; font-weight: 700; }.subtitle { font-size: 12.5px; fill: #57606a; }.zone-title { font-size: 13px; font-weight: 700; }.zone-note { font-size: 11.5px; fill: #57606a; }.tname { font-size: 12.5px; font-weight: 700; }.col { font-size: 11px; fill: #424a53; }.edge { stroke: #8c959f; stroke-width: 1.1; }.link { stroke: #cf222e; stroke-width: 1.6; stroke-dasharray: 6 4; }.linklabel { font-size: 11.5px; fill: #cf222e; }</style>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16" y="24" class="title">Competitive Price Intelligence for a Tashkent Flower Shop — database design</text>
+<text x="16" y="42" class="subtitle">Two SQLite databases, every table STRICT. Zones are what the data IS: collected evidence, derived, reference, or synthetic.</text>
+<rect x="16" y="54" width="560" height="430" rx="8" fill="#1f6feb0d" stroke="#1f6feb" stroke-width="1.4"/>
+<text x="30" y="76" class="zone-title" fill="#1f6feb">market_intel — collected competitor data (PRIMARY)</text>
+<text x="30" y="92" class="zone-note">Every row produced by this project's own collector. This is the assessed data.</text>
+<rect x="592" y="54" width="572" height="250" rx="8" fill="#8250df0d" stroke="#8250df" stroke-width="1.4"/>
+<text x="606" y="76" class="zone-title" fill="#8250df">market_intel — derived analysis tables</text>
+<text x="606" y="92" class="zone-note">Computed from the collected rows; rebuilt by the pipeline, never hand-edited.</text>
+<rect x="592" y="318" width="572" height="166" rx="8" fill="#bf87000d" stroke="#bf8700" stroke-width="1.4"/>
+<text x="606" y="340" class="zone-title" fill="#bf8700">market_intel — reference data (NOT primary)</text>
+<text x="606" y="356" class="zone-note">Secret's own published prices, imported once. Excluded from every model by test.</text>
+<rect x="16" y="516" width="1148" height="288" rx="8" fill="#cf222e0d" stroke="#cf222e" stroke-width="1.4"/>
+<text x="30" y="538" class="zone-title" fill="#cf222e">secret_shop — operational core (SYNTHETIC fixtures only)</text>
+<text x="30" y="554" class="zone-note">Secret keeps no digital order record. Every row is is_synthetic = 1, enforced by triggers.</text>
+<line x1="107" y1="183" x2="107" y2="212" class="edge"/>
+<line x1="369" y1="148" x2="392" y2="148" class="edge"/>
+<line x1="182" y1="148" x2="392" y2="148" class="edge"/>
+<line x1="392" y1="148" x2="369" y2="255" class="edge"/>
+<line x1="182" y1="248" x2="205" y2="255" class="edge"/>
+<line x1="287" y1="183" x2="287" y2="212" class="edge"/>
+<line x1="369" y1="148" x2="392" y2="248" class="edge"/>
+<line x1="107" y1="183" x2="117" y2="330" class="edge"/>
+<line x1="182" y1="248" x2="608" y2="140" class="edge"/>
+<line x1="182" y1="248" x2="788" y2="140" class="edge"/>
+<line x1="968" y1="140" x2="774" y2="140" class="edge"/>
+<line x1="774" y1="228" x2="788" y2="228" class="edge"/>
+<line x1="182" y1="248" x2="788" y2="228" class="edge"/>
+<line x1="774" y1="228" x2="968" y2="236" class="edge"/>
+<line x1="788" y1="412" x2="812" y2="412" class="edge"/>
+<line x1="350" y1="610" x2="368" y2="610" class="edge"/>
+<line x1="350" y1="610" x2="536" y2="617" class="edge"/>
+<line x1="518" y1="610" x2="536" y2="617" class="edge"/>
+<line x1="182" y1="602" x2="536" y2="617" class="edge"/>
+<line x1="700" y1="617" x2="718" y2="610" class="edge"/>
+<line x1="700" y1="617" x2="900" y2="610" class="edge"/>
+<line x1="800" y1="700" x2="800" y2="645" class="edge"/>
+<line x1="1068" y1="602" x2="882" y2="736" class="edge"/>
+<line x1="882" y1="736" x2="900" y2="736" class="edge"/>
+<line x1="718" y1="736" x2="700" y2="720" class="edge"/>
+<rect x="32" y="112" width="150" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="40" y="128" class="tname">shops</text>
+<text x="40" y="143" class="col">shop_id PK</text>
+<text x="40" y="158" class="col">code UQ, operator_group</text>
+<text x="40" y="173" class="col">is_mirror, is_own_shop</text>
+<rect x="205" y="112" width="164" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="213" y="128" class="tname">scrape_runs</text>
+<text x="213" y="143" class="col">run_id PK</text>
+<text x="213" y="158" class="col">purpose, status</text>
+<text x="213" y="173" class="col">git_commit, git_dirty</text>
+<rect x="392" y="112" width="152" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="400" y="128" class="tname">fetch_log</text>
+<text x="400" y="143" class="col">fetch_id PK</text>
+<text x="400" y="158" class="col">run_id FK, shop_id FK</text>
+<text x="400" y="173" class="col">content_sha256</text>
+<rect x="32" y="212" width="150" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="40" y="228" class="tname">listings</text>
+<text x="40" y="243" class="col">listing_id PK</text>
+<text x="40" y="258" class="col">shop_id FK</text>
+<text x="40" y="273" class="col">url UQ</text>
+<rect x="205" y="212" width="164" height="86" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="213" y="228" class="tname">price_observations</text>
+<text x="213" y="243" class="col">observation_id PK</text>
+<text x="213" y="258" class="col">listing_id FK, run_id FK</text>
+<text x="213" y="273" class="col">fetch_id FK</text>
+<text x="213" y="288" class="col">UQ (listing_id, run_id)</text>
+<rect x="392" y="212" width="152" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="400" y="228" class="tname">rejected_records</text>
+<text x="400" y="243" class="col">reject_id PK</text>
+<text x="400" y="258" class="col">run_id FK, shop_id FK</text>
+<text x="400" y="273" class="col">rule</text>
+<rect x="32" y="330" width="170" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="40" y="346" class="tname">shop_delivery_terms</text>
+<text x="40" y="361" class="col">term_id PK</text>
+<text x="40" y="376" class="col">shop_id FK</text>
+<text x="40" y="391" class="col">UQ (shop, observed_on)</text>
+<rect x="225" y="330" width="160" height="71" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="233" y="346" class="tname">data_quality_checks</text>
+<text x="233" y="361" class="col">check_run_id PK</text>
+<text x="233" y="376" class="col">check_name, measured</text>
+<text x="233" y="391" class="col">threshold, status</text>
+<rect x="400" y="330" width="144" height="56" rx="5" fill="#ffffff" stroke="#1f6feb" stroke-width="1.2"/>
+<text x="408" y="346" class="tname">category_rule_sets</text>
+<text x="408" y="361" class="col">rules_version PK</text>
+<text x="408" y="376" class="col">sha256</text>
+<rect x="608" y="112" width="166" height="56" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="616" y="128" class="tname">listing_categories</text>
+<text x="616" y="143" class="col">listing_id, rules_version PK</text>
+<text x="616" y="158" class="col">category FK</text>
+<rect x="788" y="112" width="166" height="56" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="796" y="128" class="tname">listing_features</text>
+<text x="796" y="143" class="col">listing_id, rules_version PK</text>
+<text x="796" y="158" class="col">price_unit, stem_count</text>
+<rect x="968" y="112" width="180" height="56" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="976" y="128" class="tname">analysis_categories</text>
+<text x="976" y="143" class="col">code PK</text>
+<text x="976" y="158" class="col">the shared vocabulary</text>
+<rect x="608" y="200" width="166" height="56" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="616" y="216" class="tname">pipeline_runs</text>
+<text x="616" y="231" class="col">pipeline_run_id PK</text>
+<text x="616" y="246" class="col">window, rules_version</text>
+<rect x="788" y="200" width="166" height="56" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="796" y="216" class="tname">analysis_products</text>
+<text x="796" y="231" class="col">pipeline_run_id, listing_id PK</text>
+<text x="796" y="246" class="col">category, price_unit</text>
+<rect x="968" y="200" width="180" height="71" rx="5" fill="#ffffff" stroke="#8250df" stroke-width="1.2"/>
+<text x="976" y="216" class="tname">results tables</text>
+<text x="976" y="231" class="col">hypothesis_tests, comparison_results,</text>
+<text x="976" y="246" class="col">model_runs → model_metrics,</text>
+<text x="976" y="261" class="col">dataset_splits</text>
+<rect x="608" y="376" width="180" height="71" rx="5" fill="#ffffff" stroke="#bf8700" stroke-width="1.2"/>
+<text x="616" y="392" class="tname">reference_imports</text>
+<text x="616" y="407" class="col">import_id PK</text>
+<text x="616" y="422" class="col">file_sha256, exported_at</text>
+<text x="616" y="437" class="col">consent_note</text>
+<rect x="812" y="376" width="180" height="71" rx="5" fill="#ffffff" stroke="#bf8700" stroke-width="1.2"/>
+<text x="820" y="392" class="tname">reference_offers</text>
+<text x="820" y="407" class="col">offer_id PK</text>
+<text x="820" y="422" class="col">import_id FK</text>
+<text x="820" y="437" class="col">offer_group_id FK self</text>
+<rect x="32" y="574" width="150" height="56" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="40" y="590" class="tname">admin_users</text>
+<text x="40" y="605" class="col">admin_user_id PK</text>
+<text x="40" y="620" class="col">role, is_synthetic</text>
+<rect x="200" y="574" width="150" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="208" y="590" class="tname">clients</text>
+<text x="208" y="605" class="col">client_id PK</text>
+<text x="208" y="620" class="col">phone_last4, is_synthetic</text>
+<text x="208" y="635" class="col">CK consent if real</text>
+<rect x="368" y="574" width="150" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="376" y="590" class="tname">addresses</text>
+<text x="376" y="605" class="col">address_id PK</text>
+<text x="376" y="620" class="col">client_id FK</text>
+<text x="376" y="635" class="col">is_synthetic</text>
+<rect x="536" y="574" width="164" height="86" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="544" y="590" class="tname">orders</text>
+<text x="544" y="605" class="col">order_id PK</text>
+<text x="544" y="620" class="col">client_id FK, address_id FK</text>
+<text x="544" y="635" class="col">created_by FK, is_synthetic</text>
+<text x="544" y="650" class="col">total_uzs GENERATED</text>
+<rect x="718" y="574" width="164" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="726" y="590" class="tname">order_items</text>
+<text x="726" y="605" class="col">order_id, line_no PK</text>
+<text x="726" y="620" class="col">product_id FK</text>
+<text x="726" y="635" class="col">line_total_uzs GENERATED</text>
+<rect x="900" y="574" width="150" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="908" y="590" class="tname">payments</text>
+<text x="908" y="605" class="col">payment_id PK</text>
+<text x="908" y="620" class="col">order_id FK</text>
+<text x="908" y="635" class="col">is_synthetic</text>
+<rect x="1068" y="574" width="96" height="56" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="1076" y="590" class="tname">categories</text>
+<text x="1076" y="605" class="col">category_id PK</text>
+<text x="1076" y="620" class="col">code</text>
+<rect x="718" y="700" width="164" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="726" y="716" class="tname">products</text>
+<text x="726" y="731" class="col">product_id PK</text>
+<text x="726" y="746" class="col">category_id FK</text>
+<text x="726" y="761" class="col">origin, is_synthetic</text>
+<rect x="900" y="700" width="184" height="71" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="908" y="716" class="tname">product_price_history</text>
+<text x="908" y="731" class="col">price_id PK</text>
+<text x="908" y="746" class="col">product_id FK</text>
+<text x="908" y="761" class="col">effective_from, append-only</text>
+<rect x="536" y="700" width="164" height="41" rx="5" fill="#ffffff" stroke="#cf222e" stroke-width="1.2"/>
+<text x="544" y="716" class="tname">product_attributes</text>
+<text x="544" y="731" class="col">product_id, attribute, value PK</text>
+<line x1="1116" y1="160" x2="1116" y2="574" class="link"/>
+<text x="20" y="505" class="linklabel">analysis_categories ↔ categories is the only link between the two files. SQLite cannot enforce a foreign key across files, so it is checked in code: on every dashboard page load, by check-integrity, and by the tests.</text>
+</svg>

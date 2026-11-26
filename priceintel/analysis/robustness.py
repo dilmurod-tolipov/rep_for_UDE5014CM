@@ -13,7 +13,12 @@ the method:
    in one half is a seasonal observation, not a price position.
 4. **Only stated price units.** Products whose per-stem or per-item status was inferred rather than
    stated by the shop are dropped.
-5. **Exclude uncertain Secret matches** - reposts grouped by caption at a different price (ADR-008).
+5. **Only days when every operator group reported.** Eleven runs in the window lost a group, so a
+   category median could in principle be set by whichever shops happened to answer that day. This
+   check recomputes every product's median from the observations made on full-coverage days only.
+   Asked for by the Module Leader on 26 November 2026, who called it "the most useful check for
+   your conclusions".
+6. **Exclude uncertain Secret matches** - reposts grouped by caption at a different price (ADR-008).
    It runs once Secret's export is imported.
 
 Each check stores its results under its own `variant`, beside the main one, so the report can show
@@ -97,6 +102,30 @@ def run_all(conn, pipeline_run_id: int, *, window_start: str, window_end: str,
             variant, label, sum(len(v) for v in prices.values()), tested, significant,
             shift(prices),
             f"{significant} of {tested} categories differ in this half of the window"))
+
+    # The Module Leader's check (26 November 2026): 11 of the window's runs lost an operator group,
+    # so do the category comparisons change when only the days with all four groups are used?
+    # Prices are recomputed from those days' observations, not merely filtered.
+    prices = comparison.competitor_prices(conn, pipeline_run_id, full_coverage_only=True)
+    days = comparison.full_coverage_days(
+        conn, conn.execute("SELECT purpose FROM pipeline_runs WHERE pipeline_run_id = ?",
+                           (pipeline_run_id,)).fetchone()[0])
+    if not prices:
+        outcomes.append(CheckOutcome("full_coverage_days", "only days when every group reported",
+                                     0, 0, 0, None, "no products were seen on such a day"))
+    else:
+        comparison.run_comparison(conn, pipeline_run_id, variant="full_coverage_days",
+                                  replicates=replicates, full_coverage_only=True)
+        tested, significant = _significant(prices)
+        kept = sum(len(v) for v in prices.values())
+        dropped = sum(len(v) for v in main_prices.values()) - kept
+        outcomes.append(CheckOutcome(
+            "full_coverage_days", "only days when every group reported", kept, tested, significant,
+            shift(prices),
+            f"{significant} of {tested} categories differ using only the {len(days)} day(s) on "
+            f"which every operator group reported (main run: {main_significant} of {main_tested}); "
+            f"{dropped} product(s) were never seen on such a day, and the rest were re-priced from "
+            f"those days' observations alone"))
 
     prices = comparison.competitor_prices(conn, pipeline_run_id, only_stated_units=True)
     comparison.run_comparison(conn, pipeline_run_id, variant="stated_units_only",

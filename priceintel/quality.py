@@ -5,7 +5,17 @@ status. They are deliberately about *fitness for the planned analysis*, not abou
 
 * ``products_collected`` and ``runs_completed`` - progress against the approved data target.
 * ``run_success_rate`` - the approved definition of a successful run (>= 80% of pages), against the
-  95% promised in the proposal.
+  95% promised in the proposal. Measured over the runs that **started**.
+* ``scheduled_slot_completion`` - the same question measured the way the Module Leader directed on
+  26 November 2026: against **every scheduled run, including any that never started**. The schedule
+  is two slots a day (`SCHEDULE_UTC_HOURS`), so the denominator is every elapsed slot in the
+  approved window and a slot with no run at all counts as a failure. This is the figure objective O1
+  is judged on; `run_success_rate` is kept beside it because the difference between the two is
+  exactly the number of runs GitHub never started.
+* ``consecutive_complete_runs`` - the current streak of runs that reached every operator group.
+  Reported, with no threshold: after the two defects of the first week were fixed, the streak is the
+  evidence that they stayed fixed, and the Module Leader asked for it to be reported separately
+  rather than folded into the rate.
 * ``quarantine_rate`` - how much of what was parsed had to be rejected. A rising rate is usually a
   parser breaking after a site redesign, which is the failure this project is most exposed to.
 * ``unclassified_rate`` - products no category rule matched: they are excluded from the analysis, so
@@ -25,9 +35,17 @@ status. They are deliberately about *fitness for the planned analysis*, not abou
 A check that fails does not stop collection; it is evidence, and the report explains what was done
 about it.
 """
+import datetime as dt
 from dataclasses import dataclass
 
+from priceintel import config
 from priceintel.db import transaction
+
+# The collection schedule, from .github/workflows/collect.yml (`cron: "17 3,15 * * *"`). One
+# definition, so the workflow and the measure of it cannot drift apart.
+SCHEDULE_UTC_HOURS = (3, 15)
+SCHEDULE_UTC_MINUTE = 17
+SLOT_HOURS = 12
 
 TARGET_PRODUCTS = 300          # approved minimum data target
 TARGET_RUNS = 50               # completed runs in the 28-day window
@@ -68,6 +86,69 @@ def _scalar(conn, sql, params=()):
     return row[0] if row and row[0] is not None else 0
 
 
+def scheduled_slots(window_start: str, window_end: str) -> list[dt.datetime]:
+    """Every scheduled collection time in the approved window, from the workflow's own cron.
+
+    The window is given in Asia/Tashkent dates (UTC+5), which is how the Module Leader set it, so a
+    slot belongs to the window when its local date does."""
+    local = dt.timezone(dt.timedelta(hours=5))
+    first = dt.date.fromisoformat(window_start)
+    last = dt.date.fromisoformat(window_end)
+    slots = []
+    day = first - dt.timedelta(days=1)          # a 15:17Z slot falls on the next local date
+    while day <= last:
+        for hour in SCHEDULE_UTC_HOURS:
+            slot = dt.datetime(day.year, day.month, day.day, hour, SCHEDULE_UTC_MINUTE,
+                               tzinfo=dt.timezone.utc)
+            if first <= slot.astimezone(local).date() <= last:
+                slots.append(slot)
+        day += dt.timedelta(days=1)
+    return sorted(slots)
+
+
+def _schedule_checks(conn, purpose: str) -> list[CheckResult]:
+    """O1 measured against every scheduled run, including the ones that never started."""
+    rows = conn.execute(
+        "SELECT started_at, shops_expected, shops_collected FROM scrape_runs"
+        " WHERE purpose = ? ORDER BY started_at", (purpose,)).fetchall()
+    if not rows:
+        return []
+    started = [(dt.datetime.fromisoformat(r["started_at"].replace("Z", "+00:00")),
+                bool(r["shops_expected"]) and r["shops_collected"] == r["shops_expected"])
+               for r in rows]
+    latest = max(when for when, _ in started)
+
+    slots = scheduled_slots(config.APPROVED_WINDOW_START, config.APPROVED_WINDOW_END)
+    span = dt.timedelta(hours=SLOT_HOURS)
+    elapsed = [s for s in slots if s + span <= latest]
+    complete = never_started = 0
+    for slot in elapsed:
+        inside = [full for when, full in started if slot <= when < slot + span]
+        if not inside:
+            never_started += 1
+        elif any(inside):
+            complete += 1
+    rate = 100.0 * complete / len(elapsed) if elapsed else 0.0
+
+    streak = 0
+    for _, full in reversed(started):
+        if not full:
+            break
+        streak += 1
+
+    return [
+        CheckResult("scheduled_slot_completion", "all", round(rate, 1), TARGET_SUCCESS_RATE,
+                    "percent", _status(rate, TARGET_SUCCESS_RATE, higher_is_better=True),
+                    f"{complete} of {len(elapsed)} elapsed scheduled slots reached every operator "
+                    f"group; {never_started} slot(s) never started at all "
+                    f"({len(slots)} slots in the approved window)"),
+        # No threshold: this one is reported, not judged. The schema allows pass/warn/fail only.
+        CheckResult("consecutive_complete_runs", "all", streak, None, "count", "pass",
+                    f"reported, not judged: the most recent {streak} run(s) reached every "
+                    f"operator group"),
+    ]
+
+
 def run_checks(conn, *, purpose: str = "assessed", rules_version: str | None = None,
                store: bool = True) -> list[CheckResult]:
     """Run every check and (by default) record the results in ``data_quality_checks``."""
@@ -93,7 +174,9 @@ def run_checks(conn, *, purpose: str = "assessed", rules_version: str | None = N
     rate = 100.0 * ok / runs if runs else 0.0
     results.append(CheckResult("run_success_rate", "all", round(rate, 1), TARGET_SUCCESS_RATE,
                                "percent", _status(rate, TARGET_SUCCESS_RATE, higher_is_better=True),
-                               f"{ok} of {runs} runs"))
+                               f"{ok} of {runs} runs that started"))
+
+    results.extend(_schedule_checks(conn, purpose))
 
     saved = _scalar(conn, "SELECT SUM(observations_saved) FROM scrape_runs WHERE purpose = ?",
                     (purpose,))

@@ -356,3 +356,70 @@ def test_a_fresh_install_passes_the_cross_database_check(tmp_path):
     finally:
         market.close()
         secret.close()
+
+
+def test_one_transaction_across_every_operational_table(secret_db):
+    """The Module Leader asked for one transaction or constraint test showing how the tables work
+    together (26 November 2026). This is it: a whole order is written in a single transaction -
+    staff member, client, address, catalogue product with a dated price, order, two lines, payment -
+    and the views answer from the result. Then a second transaction violates one constraint and the
+    whole thing rolls back, leaving the first order untouched."""
+    from priceintel.db import transaction
+    conn = secret_db
+
+    with transaction(conn):
+        florist = add_user(conn, username="florist.tx", role="florist")
+        client = conn.execute(
+            "INSERT INTO clients (display_name, phone_last4, preferred_channel, is_synthetic)"
+            " VALUES ('Transaction demo', '0404', 'telegram', 1) RETURNING client_id").fetchone()[0]
+        address = conn.execute(
+            "INSERT INTO addresses (client_id, district, line1, is_default, is_synthetic)"
+            " VALUES (?, 'Mirzo Ulugbek', 'Demo street 7', 1, 1) RETURNING address_id",
+            (client,)).fetchone()[0]
+        roses = add_product(conn, title="Transaction demo: 15 roses", price=700_000)
+        plant = add_product(conn, title="Transaction demo: orchid", price=390_000)
+        order = conn.execute(
+            "INSERT INTO orders (client_id, address_id, created_by, channel, placed_at, status,"
+            " delivery_fee_uzs, is_synthetic) VALUES (?, ?, ?, 'telegram', ?, 'confirmed', 30000, 1)"
+            " RETURNING order_id", (client, address, florist, TS)).fetchone()[0]
+        for line_no, (product, qty, price) in enumerate(
+                ((roses, 2, 700_000), (plant, 1, 390_000)), start=1):
+            conn.execute(
+                "INSERT INTO order_items (order_id, line_no, product_id, quantity, unit_price_uzs)"
+                " VALUES (?, ?, ?, ?, ?)", (order, line_no, product, qty, price))
+        conn.execute(
+            "INSERT INTO payments (order_id, paid_at, method, amount_uzs, status, is_synthetic)"
+            " VALUES (?, ?, 'click', 1000000, 'captured', 1)", (order, TS))
+
+    summary = conn.execute("SELECT * FROM v_order_summary WHERE order_id = ?", (order,)).fetchone()
+    assert summary["lines"] == 2 and summary["units"] == 3
+    assert summary["items_total_uzs"] == 1_790_000          # 2x700,000 + 390,000, by trigger
+    assert summary["total_uzs"] == 1_820_000                # + delivery, generated column
+    assert summary["captured_uzs"] == 1_000_000
+    assert summary["balance_uzs"] == 820_000
+    assert summary["client_name"] == "Transaction demo" and summary["district"] == "Mirzo Ulugbek"
+    assert conn.execute("SELECT price_uzs FROM v_current_prices WHERE product_id = ?",
+                        (roses,)).fetchone()[0] == 700_000
+
+    # A second order in one transaction, where the last statement breaks a constraint: the payment
+    # exceeds the order total. Everything in that transaction must disappear.
+    before = conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0]
+    with pytest.raises(sqlite3.IntegrityError, match="exceed the order total"):
+        with transaction(conn):
+            doomed = conn.execute(
+                "INSERT INTO orders (client_id, created_by, channel, placed_at, status,"
+                " is_synthetic) VALUES (?, ?, 'phone', ?, 'new', 1) RETURNING order_id",
+                (client, florist, TS)).fetchone()[0]
+            conn.execute(
+                "INSERT INTO order_items (order_id, line_no, product_id, quantity, unit_price_uzs)"
+                " VALUES (?, 1, ?, 1, 390000)", (doomed, plant))
+            conn.execute(
+                "INSERT INTO payments (order_id, paid_at, method, amount_uzs, status, is_synthetic)"
+                " VALUES (?, ?, 'cash', 5000000, 'captured', 1)", (doomed, TS))
+
+    assert conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0] == before, "rolled back"
+    assert conn.execute("SELECT COUNT(*) FROM order_items WHERE order_id NOT IN"
+                        " (SELECT order_id FROM orders)").fetchone()[0] == 0, "no orphan lines"
+    # The first order is untouched by the failure.
+    assert conn.execute("SELECT total_uzs FROM orders WHERE order_id = ?",
+                        (order,)).fetchone()[0] == 1_820_000

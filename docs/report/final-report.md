@@ -43,8 +43,9 @@
 - References
 - Appendix A — Checkpoint evidence register
 - Appendix B — LO1, LO2 and LO5 evidence map
-- Appendix C — Data-quality checks and selected test results
-- Appendix D — AI Use Declaration log references
+- Appendix C — Entity-relationship diagram
+- Appendix D — Data-quality checks and selected test results
+- Appendix E — AI Use Declaration log references
 
 ---
 
@@ -61,7 +62,8 @@ only, not demand or margin.
 the assessed collection window to 9 November – 6 December 2026 (`docs/approval/APPROVED-SCOPE.md`).
 The design collects **primary data** from four independent competitor operator groups by reading
 their public catalogues, and treats Secret's own prices as **reference data**, taken once as a
-Telegram Desktop export of the shop's public channel (ADR-007, ADR-010). Four mirror sites are registered and never
+Telegram Desktop export of the shop's public channel and used only with Secret's written
+confirmation; without it they are omitted entirely (ADR-007, ADR-010). Four mirror sites are registered and never
 crawled, so one operator cannot be counted four times (ADR-001). Observations are advertised
 catalogue prices in UZS excluding delivery; promotions are recorded but analysed separately.
 
@@ -69,7 +71,7 @@ catalogue prices in UZS excluding delivery; promotions are recorded but analysed
 
 | # | Objective | Success criterion | Achieved to date |
 |---|---|---|---|
-| O1 | Reliable collection | ≥95% of 12-hourly runs reach every group | **Not met** — 11 of 22 (50%); last 11 clean |
+| O1 | Reliable collection | ≥95% of **scheduled** runs reach every group, counting any that never started | **Not met** — 23 of 34 slots (67.6%); 22 consecutive clean |
 | O2 | Enough evidence | ≥300 listings from ≥4 independent sources | **Met** — 2,571 products, four groups |
 | O3 | Valid comparison | ≥10 usable products each side (plan v2.0) | **Partly** — two categories qualify; Secret's side empty |
 | O4 | Honest evaluation | State whether a model beats the baseline | **Met** — both do (Section 3) |
@@ -79,92 +81,72 @@ catalogue prices in UZS excluding delivery; promotions are recorded but analysed
 advertise the same price level? (Q2) How far is Secret's median from each competitor's, with an
 uncertainty interval? (Q3) What predicts a listing's price, and can a model beat a category-median
 baseline? Q1 and Q3 are answered here from system-collected data; Q2 is implemented and tested but
-reports `insufficient_evidence` until Secret's export is imported — stated, not estimated. The
-owner's alternative is manual checking: slow, undated, unrepeatable. A collector that records
-provenance for every price turns an impression into a record, and the minimum-evidence rule makes the
-system say "not enough evidence" rather than invent a comparison — which is what makes it usable for
-a real pricing decision.
+reports `insufficient_evidence` until Secret's export is imported — stated, not estimated.
 
 ## Report Section 2: Data Collection System, Database, Pipeline and Feature Engineering
 
 **Collection method and provenance.** The collector (`priceintel/collect/`) is written from scratch
-in Python 3.13 over the standard library plus `requests` and `BeautifulSoup`. For each operator group
-it reads `robots.txt` first, through a hand-written parser rather than `urllib.robotparser`, which
-ignores `*` wildcards and would have mis-read three of the four sites; it then requests only allowed
-paths, with a per-host crawl delay of 5–6 s and an identifying user agent. GitHub Actions runs it twice a day and derives the run's `purpose` from the date, so assessed
-and development data cannot be confused by hand (ADR-005). Every HTTP attempt is written to
-`fetch_log` with its status, size, duration and SHA-256 content hash; every observation points at
-the fetch that produced it, the run, and the run's git commit plus a dirty flag, and a `CHECK`
-constraint refuses an assessed run from modified code. In the window 9–19 November the system
-made **1,820 logged requests (1,755 returning HTTP 200)** across **22 assessed runs**, storing
-**23,144 in-window observations of 2,571 distinct products** against an approved target of 300.
-Records failing validation are not discarded but written to `rejected_records` with the rule that
-failed: 478 of 23,840 parsed records (2.0%), 462 because the shop advertised no price.
+in Python 3.13 over the standard library plus `requests` and `BeautifulSoup`. It reads `robots.txt` before every crawl, through a hand-written
+parser rather than `urllib.robotparser`, which ignores `*` wildcards and would have mis-read three
+of the four sites, then requests only allowed paths with a 5-6 s delay and an identifying agent. GitHub Actions
+runs it twice a day and derives the run's `purpose` from the date, so assessed and development data
+cannot be confused by hand (ADR-005). Every HTTP attempt is logged with its status, size, duration
+and SHA-256 content hash; every observation points at the fetch that produced it, the run, and the
+run's git commit plus a dirty flag, and a `CHECK` constraint refuses an assessed run from modified
+code. By 26 November the system had made 3,120 logged requests across 35 assessed runs, storing
+45,852 observations of 2,571 distinct products against an approved target of 300. Records failing
+validation are not discarded but written to `rejected_records` with the rule that failed: 1.5% of
+parsed records, almost all because the shop advertised no price. **[FINALISE on the final dataset.]**
 
-**Database design.** Two SQLite databases are used. `market_intel` holds the collection entities
-(`shops` → `listings` → `price_observations`, with `scrape_runs`, `fetch_log`, `rejected_records` and
-`data_quality_checks` recording how each row came to exist) and eight analysis tables from
-`listing_features` to `model_metrics`, plus dated `shop_delivery_terms`; `secret_shop` holds
-Secret's catalogue and its operational core (`clients`, `addresses`, `orders`, `order_items`,
-`payments`, `admin_users`). SQLite cannot enforce a foreign key between two files, so the link
-between them — one shared category vocabulary, plus the rule that no own-shop, reference or
-synthetic row may enter the primary data — is checked in code by the pipeline, by every dashboard
-page load, by `check-integrity` and by the tests (`priceintel/integrity.py`). The per-product
-`product_matches` table in the proposal is **not built**: comparison is by category, which is what
-the approved analysis plan v2.0 tests, so it would be unused scaffolding (ADR-009). Every table is
-`STRICT`, so SQLite's permissive typing cannot silently store a string in a price column.
-Integrity is enforced by the schema rather than application code: foreign keys on every relationship
-(the self-referencing `offer_group_id` is `DEFERRABLE INITIALLY DEFERRED` so a group's first member
-can be inserted), `CHECK` constraints on price range and currency, a partial unique index permitting
-only one active canonical domain per operator group, and `UNIQUE (listing_id, run_id)`, which makes
-a re-run idempotent and duplicate observations structurally impossible. Schema changes are numbered
-migrations whose SHA-256 is stored on application, so editing an applied one stops `init-db`.
-Retrieval is through five named stakeholder queries in `sql/queries/` and a JSON API. Two parts of
-the schema hold no real rows, and are built so that cannot be faked: Secret records no orders
-digitally, so every operational row carries a `NOT NULL` `is_synthetic` flag that triggers propagate
-and the dashboard reports in its own column, and `shop_delivery_terms` ships empty because an
-invented fee would be fabricated evidence about a named business (ADR-009).
+**Database design.** Two SQLite databases, drawn in Appendix C. `market_intel` holds the collection
+chain `shops` -> `listings` -> `price_observations`, with `scrape_runs`, `fetch_log` and
+`rejected_records` recording how each row came to exist, the derived analysis tables, dated
+`shop_delivery_terms`, and Secret's `reference_offers`; `secret_shop` holds Secret's catalogue and
+its operational core. Every table is `STRICT`, so SQLite's permissive typing cannot store a string
+in a price column, and integrity is enforced by the schema rather than by application code. The constraints that carry the most weight are `UNIQUE (listing_id, run_id)`, which makes a re-run
+idempotent and a duplicate observation structurally impossible; a partial unique index allowing
+only one active canonical domain per operator group, so one business cannot be counted four times
+(ADR-001); and `NOT NULL` `is_synthetic` on every operational table, propagated by triggers, so a
+fabricated row cannot pass as real. SQLite cannot enforce a foreign key between two files, so the single link between the
+databases - one shared category vocabulary - is checked in code by the pipeline, by every dashboard
+page load, by `check-integrity` and by the tests. Schema changes are numbered migrations whose SHA-256 is stored
+on application; retrieval is through five named stakeholder queries and a JSON API. Two parts of the schema hold no real rows and are built so that cannot be faked: Secret's
+operational rows are declared fixtures, and `shop_delivery_terms` ships empty because an invented
+fee would be fabricated evidence about a named business (ADR-009). 
 
 **Cleaning, transformation and features.** `python -m priceintel pipeline` builds one analysis row
-per product from the stored observations and records every decision it makes
-(`pipeline_runs`): of 2,571 products, 119 matched no analysis category, 298 are priced per stem and
-so are not comparable with whole arrangements, 1,396 advertise only a starting price ("от"), and 47
-were flagged as outliers — leaving **758 usable products**. Three choices were corrected after seeing
-real data. Starting prices are **kept and labelled**, not dropped: dropping them silently removed
-most of the largest operator group. Outliers are **flagged, never removed**, and judged within one
-category and one operator group, because judging them across all groups flagged all 19 of one shop's
-rose bouquets; the median absolute deviation falls back to IQR/1.349 when it is zero. Nothing is
-imputed. Feature engineering (`priceintel/analysis/features.py`) derives `price_unit` (per item,
-bundle or stem), `stem_count`, `size_cm` and flower types from the title and composition text, using
-a versioned, **price-independent** rules file whose SHA-256 is registered in the database; the loader
-rejects any rule key it does not recognise, which is how price is kept out of the feature deciding
-comparability. Leakage is prevented structurally: splits are grouped so every observation of a
-listing falls in one fold, the baseline and all preprocessing are fitted on training folds only, and
-reference offers are excluded from model matrices by a test that fails if one appears.
+per product and records every decision it makes: of 2,571 products, 119 matched no analysis
+category, 298 are priced per stem and so are not comparable with whole arrangements, 1,396 advertise
+only a starting price ("от"), and 47 were flagged as outliers - leaving **758 usable products**.
+Three choices were corrected after seeing real data. Starting prices are **kept and labelled**, not
+dropped: dropping them silently removed most of the largest operator group. Outliers are **flagged,
+never removed**, and judged within one category and one operator group, because judging them across
+all groups flagged all 19 of one shop's rose bouquets; the median absolute deviation falls back to
+IQR/1.349 when it is zero. Nothing is imputed. Features derive the price unit, stem count, size and flower types from the title and composition
+text, using a versioned, **price-independent** rules file whose SHA-256 is registered in the
+database and whose loader rejects any rule key it does not recognise, so price cannot reach the
+feature that decides comparability. Leakage is prevented structurally - splits are grouped so every
+observation of a listing falls in one fold, the baseline and all preprocessing are fitted on
+training folds only, and reference offers cannot reach a model matrix, which a test proves.
 
-**Difficult conditions and corrections.** Three failures are on the record. Scheduled collection
-failed silently for eleven days in October, because expired artifacts could not be distinguished
-from a failed download (`1cd776d`). Five early assessed runs lost an entire operator group to
-`robots.txt` timeouts yet reported success, because the skipped shop's pages were never requested
-and so never counted; migration 011 records groups expected and reached, and 11 runs were re-marked
-`partial` (`88b75d2`). On 13 November the largest site redesigned its theme: pages returned 200, the
-parser found nothing, and every aggregate measure stayed green — so the parser now reads both
-layouts and a **per-group** freshness check fails on the first run a source goes quiet (`60949a5`).
-The value created is a dated competitor price record that did not exist before, in which every
-number traces to the request, run and commit that produced it.
+**Difficult conditions and corrections.** Three failures are on the record, each with its issue,
+fix and test in the evidence register. Scheduled collection failed silently for eleven days in
+October, because expired artifacts could not be distinguished from a failed download (`1cd776d`).
+Early runs lost an entire operator group to `robots.txt` timeouts yet reported success, because the
+skipped shop's pages were never requested and so never counted; migration 011 records groups
+expected and reached, and 11 runs were re-marked `partial` (`88b75d2`). On 13 November the largest
+site redesigned its theme: pages returned 200, the parser found nothing, and every aggregate measure
+stayed green - so the parser now reads both layouts and a **per-group** freshness check fails on the
+first run a source goes quiet (`60949a5`). 
 
 ## Report Section 3: Statistical Analysis, Modelling, Evaluation, Results and Interpretation
 
 **Exploratory analysis.** Six labelled figures are generated by `python -m priceintel analyse` into
-`docs/analysis/figures/`: usable products and median price per category and group (Figures 1–2), the
-price distribution (3), observations per day by group (4), the spread between the dearest and
-cheapest group (5), and the share of products on sale (6). They show a market whose advertised
+`docs/analysis/figures/` (coverage, median price, price distribution, observations per day,
+the spread between groups, and discounting). They show a market whose advertised
 prices are extremely right-skewed: within usable products the roses category spans
-25,000–31,031,000 UZS, and skewness inside a single group reaches 6.3. That fact drives every later
-method choice — parametric tests are inappropriate here, so medians, rank tests and resampled
-intervals are used throughout. Coverage is also very uneven: of the 758 usable products, 484 are
-mono-flower roses, 134 unspecified bouquets, 105 boxes and baskets, 18 edible sets and 17 potted
-plants; 2,346 of the 2,571 collected products come from LOVEFLOWERS_NET against 154, 64 and 7.
+25,000–31,031,000 UZS, and skewness inside a single group reaches 6.3. Coverage is also very uneven: 484 of the 758 usable products are
+mono-flower roses, and 2,346 of the 2,571 collected come from one operator group.
 
 **Hypothesis test (Q1).** For each category, H0 is that the operator groups' price distributions are
 the same, tested by Kruskal–Wallis (Kruskal and Wallis, 1952) across groups holding at least ten
@@ -179,22 +161,31 @@ median is 965,840 UZS above UZFLORA's (p = 1.0 × 10⁻⁴, probability of super
 PROBUKET is 1,152,350 UZS above LOVEFLOWERS_NET (p = 2.0 × 10⁻⁴). Three categories report
 **insufficient evidence** with the reason, which is designed behaviour, not a failure.
 
-**Secret's price position (Q2).** The approved estimand is
-100 × (Secret median ÷ competitor median − 1) per category and operator group, with a percentile
-bootstrap interval (B = 5,000) in which Secret's sample is drawn once per replicate and reused across
-that category's groups so the intervals share the same Secret draw. All **13** comparisons currently
-return `insufficient_evidence` ("needs 10 of each") because Secret's export has not yet been
-imported. The competitor medians are nevertheless informative and are shown: in roses,
-LOVEFLOWERS_NET 475,000 UZS against PROBUKET 1,627,350 UZS. **[FINALISE after 6 December: import the
-channel export and report the Secret comparisons with their intervals.]**
+**Secret's price position (Q2).** The approved estimand is 100 x (Secret median / competitor median
+- 1) per category and group, with a percentile bootstrap interval (B = 5,000) in which Secret's
+sample is drawn once per replicate, so the intervals share one draw. All **13** comparisons currently
+return `insufficient_evidence` ("needs 10 of each") because Secret's offers are not imported. They
+are imported only with Secret's written confirmation that its published prices may be used in this
+coursework and shared with assessors: the channel being public establishes where the prices came
+from, not permission to use them this way, and the Module Leader ruled on 26 November 2026 that
+without that confirmation Secret's records and comparisons are omitted and the limitation explained
+(ADR-010). The competitor medians stand either way: in roses, LOVEFLOWERS_NET 475,000 UZS against
+PROBUKET 1,627,350 UZS. **[FINALISE after 6 December: either report the Secret comparisons with
+their intervals, or state here that the confirmation did not arrive and Q2 is unanswered.]**
+
+**What the comparison does not establish.** A category median compares the *assortments* two shops
+advertise, not two equivalent products. Secret's posts rarely name a flower type and never a stem
+count, so no per-product matching is attempted (`product_matches` is deliberately not built,
+ADR-009): a 243% gap in roses may reflect larger bouquets, better stems or more elaborate
+presentation at the dearer shop as much as a higher price for the same thing. That is why the output
+is "look here first" and not "you are overpriced".
 
 **Models (Q3).** Target: a product's median advertised price. Features: category, operator group,
 price unit, stem count, size and flower-type indicators — nothing price-derived. Baseline: the
 category median, fitted on training folds only. Comparators: ridge regression (Hoerl and Kennard,
 1970) and a decision tree (Breiman et al., 1984), both from scikit-learn (Pedregosa et al., 2011),
-each tuned on an inner split of the training folds. Validation is 5-fold cross-validation grouped by
-listing (n_train 3,032, n_validation 758), with leave-one-operator-group-out and chronological splits
-also stored. Pooled results:
+each tuned on an inner split of the training folds. Validation is 5-fold cross-validation grouped by listing, with
+leave-one-group-out and chronological splits also stored. Pooled results:
 
 | Model | MAE (UZS) | MdAPE (%) |
 |---|---|---|
@@ -207,21 +198,23 @@ with a skewed target in which the tree isolates the cheapest segment well but is
 very expensive bouquets. Error analysis by category shows where they are weak: for potted plants the
 tree's MdAPE is 22.2% against ridge's 114.7%, on 17 products — too few to report as a finding.
 
-**Robustness and uncertainty.** Eight checks run with the analysis. Dropping each operator group in
+**Robustness and uncertainty.** Nine checks run with the analysis. Dropping each operator group in
 turn is the decisive one: **removing PROBUKET leaves no category with two qualifying groups, so every
 significant result disappears.** Removing LOVEFLOWERS_NET or UZFLORA leaves one testable category,
 which still differs; so does restricting to products whose price unit the shop stated rather than
 inferred. Excluding the flagged outliers leaves both results significant. The window-half check
-cannot yet discriminate, as all current products were first seen in the first half.
+cannot yet discriminate, as all current products were first seen in the first half. The ninth check
+asks whether the findings are an artefact of which shops happened to answer, since eleven runs lost
+a group. Restricted to the 14 days on which **every** group reported - 7.7% of regular-price observations
+discarded, every remaining product re-priced from those days alone - both categories still differ
+and no category median moves at all. The conclusions do not depend on the incomplete days.
 
 **Interpretation against the decision.** The honest reading is narrow. Two categories show that these
 sampled shops demonstrably do not price alike, with a spread in roses of 243% between the dearest and
 cheapest qualifying group, and that is what the dashboard tells the owner to examine first. But the
 result rests on one shop, it describes four sampled operators over eleven days rather than the
 Tashkent market, and it cannot yet say whether **Secret** is dear or cheap, because Secret's prices
-are not in the dataset. The finding is actionable in one way only — it names the category to inspect,
-and the category pages list the comparable products — and it is not evidence that changing a price
-would increase revenue.
+are not in the dataset. It names a category to inspect; it is not evidence that changing a price would raise revenue.
 
 ## Report Section 4: Integrated Application, Automated Testing and Reproducibility
 
@@ -237,7 +230,7 @@ with the evidence one click away on the Analysis and Models pages. The dashboard
 function, which is why most of it is testable without a running server, and where no analysis has
 been built it names the command to run instead of showing a blank page.
 
-**Testing.** **316 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
+**Testing.** **331 automated tests pass** (`python -m pytest -q`), spanning unit tests of the robots
 parser, price validation, category rules and feature extraction; data-validation tests for invalid,
 boundary and failure cases (out-of-range prices, missing prices, a currency served in USD, a run
 refused from modified code, a shop that returns 200 with no products); and 14 end-to-end tests in
@@ -271,43 +264,42 @@ advertise a starting price only — so the usable set is not a random sample of 
 subset whose shops publish a definite price, which plausibly skews towards simpler, standardised
 items. Every significant result depends on one shop: dropping PROBUKET removes them all, and only two
 of five categories could be tested. Advertised prices are not transaction prices, and nothing here
-measures demand or margin. The models are evaluated on unseen listings, not a future period — the
-window holds too few price changes — so their numbers are not forecast accuracy. Finally, the
+measures demand or margin. The models are evaluated on unseen listings rather than a future period, so their numbers are not
+forecast accuracy. Finally, the
 comparison the project was approved to produce, Secret against the market, is not yet computed, and
 the report says `insufficient_evidence` rather than estimating it.
 
-**Ethics, legality and privacy.** Only public catalogue pages are read; `robots.txt` is parsed and
-obeyed before every crawl, with polite delays, an identifying user agent and a recorded compliance
-status per shop, and one site that disallows crawling is registered and never crawled. No personal
-data is collected: the data are product titles and prices, and no customer, courier or order record
-from Secret is used, and a real client could not be stored without recorded consent while the only
-contact column is the last four digits of a phone number — data minimisation by schema, not policy. A
+**Ethics, legality and privacy.** Only public catalogue pages are read, `robots.txt` obeyed before every
+crawl, and the one site that disallows crawling is never crawled. No personal data is collected
+anywhere: the data are product titles and prices, no real customer or order record exists, and a
+real client could not be stored without recorded consent while the only contact column is the
+last four digits of a phone number. A
 prior design that scraped Secret's own public Telegram channel twice a day was withdrawn and the
 data deleted after the Module Leader questioned whether it was primary data; the replacement is a
-single manual export of that public channel, used because Secret publishes these prices itself and
-the project stores only each post's date, link, price and short title, with contact lines stripped
-and no personal data at all (ADR-007, ADR-010). No permission from the shop is held, which is a
-stated position rather than an oversight. The audit that found the scheduler had kept calling the
-withdrawn collector for eleven days was disclosed in writing rather than quietly fixed.
-Remaining exposure: a site's terms may change after the date recorded in `docs/compliance/`; a
-business could object to its published prices being reproduced in coursework even though they are
-public; and the export, once imported, is commercially sensitive pricing in a local database. **Security.**
-The system has no users, no credentials and no network listener beyond a localhost dashboard, which
-removes most of the attack surface rather than defending it. The dashboard bounds every query
-parameter, returns 400 with a message on bad input, and parameterises all SQL. It binds to
+single manual export of that public channel, storing only each post's date, link, price and short
+title, with contact lines stripped and no personal data at all. I first judged that Secret's own
+publication of the prices was a sufficient basis on its own; the Module Leader ruled otherwise on
+26 November 2026, and he is right that publication documents provenance rather than permission.
+Secret's prices are therefore used only with its written confirmation covering this use and the
+sharing with assessors, and are omitted entirely without it (ADR-010). The audit that found the scheduler still calling the
+withdrawn collector for eleven days was disclosed in writing rather than quietly fixed. Remaining
+exposure: a site's terms may change after the date recorded in
+`docs/compliance/`, and the export, once imported, is commercially sensitive pricing in a local
+database. **Security.** The system has no users, no credentials and no
+listener beyond a localhost dashboard, which removes most of the attack surface rather than
+defending it; the dashboard bounds every query parameter and parameterises all SQL. It binds to
 `127.0.0.1` and must not be exposed as-is: with no authentication, publishing it would publish the
 owner's price position.
 
-**Scalability, maintainability and operations.** SQLite with twice-daily writes is comfortable at the
-current scale (23,144 observations) and would remain so at ten times it, but the append-only
-observation table grows without bound and would need archival within a year of running. The real
-fragility is not volume but **source drift**: collection depends on four third-party HTML layouts,
+**Scalability, maintainability and operations.** SQLite at twice-daily writes is comfortable at this scale
+and would remain so at ten times it, though the append-only observation table would need archival
+within a year. The real fragility is not volume but **source drift**: collection depends on four third-party HTML layouts,
 and one redesign silently emptied the largest source for five runs. The per-group freshness check now
 catches that class of failure on the first run, which is the most valuable piece of operational
-engineering in the project. Prioritised improvements: (1) import the channel export and complete the
-Secret comparison — it is the project's purpose; (2) alert on a failing quality check rather than only
-recording it, since the 13-day silent failure was found by hand; (3) widen the sample to more
-operators publishing definite prices, which is what would make more than two categories testable.
+engineering in the project. Prioritised improvements: import Secret's export and complete the comparison, which is the
+project's purpose; alert on a failing quality check rather than only recording it, since the
+13-day silent failure was found by hand; and widen the sample to more operators publishing
+definite prices, which is what would make more than two categories testable. 
 
 ## Report Section 6: Conclusion, Professional Communication, Referencing and AI Use
 
@@ -316,11 +308,10 @@ products, 23,144 observations, each traceable to its request, run and commit), a
 answer to the owner's question of where to look — two categories in which the sampled shops
 demonstrably do not price alike, a 243% spread in roses, and three where the evidence is explicitly
 too thin. Both models beat the category-median baseline (MAE 368,570 UZS, MdAPE 25.1%, against
-850,985 UZS and 57.2%). O1 was **not** met: 11 of 22 assessed runs reached every operator group, 50%
-against the approved 95%, from `robots.txt` timeouts and a site redesign; both are fixed and the last
-11 runs are clean, but the target cannot be recovered inside the window. The value is a standing,
-twice-daily answer to "where should I look?" that previously required manual checking and left no
-record. The main limitation is that Secret's own prices are not yet in the dataset, so the
+850,985 UZS and 57.2%). O1 was **not** met: 23 of 34 scheduled runs reached every operator group,
+67.6% against the approved 95%, counting one slot that never started at all, from `robots.txt`
+timeouts and a site redesign; both are fixed and the last 22 runs are clean, but with 11 failures on
+the record the target would need 220 runs to recover and is unreachable inside the window. The main limitation is that Secret's own prices are not yet in the dataset, so the
 price-position comparison the project exists to produce is implemented, tested — and empty. The
 recommendation is to import the channel export once the window closes, treat the findings as a
 statement about four sampled shops, and act on them only as a prompt to inspect a category.
@@ -328,22 +319,20 @@ statement about four sampled shops, and act on them only as a prompt to inspect 
 **Development story.** The four checkpoints are git tags, each runnable from a clean checkout: `cp1`
 (`1cd776d`, 187 tests) collection MVP; `cp2` (`35ba260`, 215 tests) reliable collection, quality
 checks and cleaning; `cp3` (`82b5f29`, 259 tests) the statistics; `cp4` (`7341057`, 276 tests) the
-integrated system. They differ in kind: CP1 could store a price, CP4 turns a new price into changed
-advice. Appendix A links each decision and failure to its evidence — Telegram collection withdrawn
-(ADR-007, issues #7 and #9), the approval clarifications implemented before collection began
-(ADR-008, `ecac792`), the dishonest run status (migration 011, `88b75d2`), the silent parser breakage
-(`60949a5`) and the single-product decision ranking (`cp4`). Two tags were moved after landing on the
+integrated system. Appendix A links each decision and failure to its evidence: Telegram collection withdrawn
+(ADR-007), the approval clarifications implemented before collection began (ADR-008), the
+dishonest run status (migration 011), the silent parser breakage and the single-product decision
+ranking. Two tags were moved after landing on the
 wrong commit, documented rather than rewritten out of the history.
 
 **AI Use Declaration.** AI assistance was material and is declared. **Google AI Studio (Gemini)**
 scaffolded the pre-approval React demo storefront, disclosed as existing work and not checkpoint
 evidence. **Claude Code (Opus)** was used throughout the assessed work: to review the proposal
 against the brief, to write the collector, migrations, category rules, feature extraction, cleaning
-pipeline, statistics, dashboard and tests, and to draft documentation and emails for my review. I
-directed the design decisions, chose the hypothesis design, supplied the sources and consent
-arrangements, and sent all correspondence myself. AI output was verified, not accepted: by tests
-(316, several written to reproduce a defect before fixing it), by running the code against live
-pages, and by mutation checks in which a deliberately broken rule was confirmed to fail tests. Errors
+pipeline, statistics, dashboard and tests, and to draft documentation and emails for my review. I directed the design decisions, chose the hypothesis
+design, and sent all correspondence myself. AI output was verified, not accepted: by tests (331, several written to reproduce a defect before
+fixing it), by running the code against live pages, and by mutation checks in which a deliberately
+broken rule was confirmed to fail tests. Errors
 caught that way are logged — a classifier reading a URL slug as a section, a potted orchid read as a
 single cut stem, an outlier rule that flagged all 19 of one shop's rose bouquets, and a permutation
 test whose passing was a lucky seed. It also declined twice: to invent Secret's prices, and to write
@@ -401,17 +390,30 @@ verification → closure chains.
 | LO2 database and collection | Two schemas with STRICT tables and constraints, 13 migrations, provenance chain, ten recorded quality checks, five stakeholder queries, snapshot replay | Section 2, 4; CP1, CP2 |
 | LO5 statistical analysis | Kruskal–Wallis with Holm and assumption checks, permutation tests, bootstrap B = 5,000, baseline plus two models under grouped CV, eight robustness checks | Section 3; CP3 |
 
-## Appendix C — Data-quality checks and selected test results
+## Appendix C — Entity-relationship diagram
 
-Ten checks on the assessed data, 19 November 2026, recorded as 13 rows because per-group freshness is
-measured once per operator group: products collected 2,571 (threshold 300) **pass**; runs completed
-22 (threshold 50) **fail**; run success rate 50% (threshold 95%) **fail**; quarantine rate 2.0% (≤5%)
-pass; unclassified rate 4.6% (≤25%) pass; price-outlier rate 1.4% (≤2%, 35 products above ten times
-their category median — a wider rule than the pipeline's within-group MAD flag) pass; freshness 0.67
-days (≤1) pass; per-group freshness, four groups, all pass; duplicate observations 0 pass; orphan
-observations 0 pass. Overall status **fail**, driven by the two collection-volume criteria. Test suite: 316 passing tests; selected results in Section 4.
+`docs/analysis/figures/er_diagram.svg`, one page, generated by `python tools/er_diagram.py` and
+checked against the live schema by `tests/test_er_diagram.py`. It is laid out by what the data
+**is**, so the three kinds cannot be confused: collected competitor data (primary), derived analysis
+tables, Secret's reference offers, and the synthetic operational core. The keys and constraints that
+matter are explained in Section 2.
 
-## Appendix D — AI Use Declaration log references
+## Appendix D — Data-quality checks and selected test results
+
+Twelve checks on the assessed data, recorded as 15 rows because per-group freshness is measured
+once per operator group. **[FINALISE: re-run on the final dataset.]** On 26 November 2026: products
+collected 2,571 (threshold 300) **pass**; runs completed 35 (threshold 50) **fail**;
+scheduled-slot completion 67.6% (threshold 95%) **fail** — 23 of 34 elapsed slots, one of which
+never started; run success rate of the runs that started 68.6% **fail**; consecutive complete runs
+22 (reported, not judged); quarantine rate 1.5% (≤5%) pass; unclassified rate 4.6% (≤25%) pass;
+price-outlier rate 1.2% (≤2%) pass; freshness and per-group freshness, four groups, all pass;
+duplicate observations 0 pass; orphan observations 0 pass. Overall **fail**, driven by the
+collection-volume and reliability criteria.
+
+Full test output, run logs and per-run coverage are in the repository rather than here:
+`python -m pytest -q` (331 passing), `docs/evidence-register.md`, and the `v_run_coverage` view.
+
+## Appendix E — AI Use Declaration log references
 
 `docs/ai-use-log.md` — 21 dated entries from 21 September to 20 November 2026, each naming the tool,
 purpose, output, the check applied and the commit.
