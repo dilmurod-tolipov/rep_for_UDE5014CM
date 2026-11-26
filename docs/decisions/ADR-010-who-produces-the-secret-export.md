@@ -119,3 +119,33 @@ decision output — is unaffected, because Secret's offers were never an input t
 **What this costs if the confirmation does not arrive.** Analytical question Q2 goes unanswered.
 Objective O3 is then partly met at best. The project still answers Q1 and Q3 from its own collected
 data, which is where the assessed evidence lives.
+
+---
+
+## Outcome, 2026-11-26: the fallback is the path taken
+
+Secret's written confirmation **cannot be obtained**. I have no contact for the shop's owner and no
+route to one, so there is no way to ask for permission covering this use and the sharing of the
+prices with assessors.
+
+The Module Leader's second branch therefore applies, and this is now settled rather than pending:
+
+- **No export is produced and no import is run.** `reference_offers` stays empty, and the real
+  Telegram Desktop export is not taken at all — there is no reason to hold a file that cannot be
+  used.
+- **Secret's records and comparisons are omitted entirely.** All 13 Secret comparisons continue to
+  report `insufficient_evidence`, which is the state the project has been in since the window
+  opened; nothing has to be deleted because nothing was ever imported.
+- **The importer is still assessed evidence.** It is exercised by nine tests against a labelled
+  synthetic export in `tests/fixtures/`, which is exactly what he permitted.
+- **The report states the limitation** in Sections 1, 3, 5 and 6: analytical question Q2 goes
+  unanswered, objective O3 is partly met, and the analysis is a comparison between competitors.
+
+**What this costs.** Q2 was the project's headline question, so this is the largest limitation in
+the submission, and Section 5 says so in those words. What survives is untouched: the primary data,
+the hypothesis tests on it, the models and the decision output never used Secret's offers, because
+reference data was excluded from every model matrix by design (ADR-007) and by a test.
+
+**If the shop can be reached before submission** the position reverses cleanly: obtain the
+confirmation, store it with this record, run `import-reference`, re-run `analyse`, and restore the
+Secret comparisons in Section 3. The places to change are listed in `docs/report/TODO.md`.

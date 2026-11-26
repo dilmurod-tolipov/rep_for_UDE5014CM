@@ -8,8 +8,8 @@ The draft is `docs/report/final-report.md`. Everything in it is computed from as
 | # | Item | Earliest date | Who |
 |---|---|---|---|
 | 1 | Collection window closes; final assessed dataset complete | 6 Dec 2026 | automatic (the scheduled workflow stops by date) |
-| 2 | **Secret's written confirmation** that its published prices may be used in this coursework and shared with assessors — the Module Leader ruled on 26 Nov that the channel being public is not consent. Without it, omit Secret's records and comparisons entirely (ADR-010) | before the import | me, from the shop |
-| 3 | `python -m priceintel import-reference` then re-run `analyse --replicates 5000`; fill in Section 3's Secret comparisons with their bootstrap intervals, and the pooled unweighted figure | 7 Dec | me |
+| 2 | ~~Secret's written confirmation~~ **Settled 26 Nov: it cannot be obtained** (no contact for the shop), so the Module Leader's fallback applies — no export, no import, Secret omitted, limitation explained (ADR-010) | done | — |
+| 3 | ~~Import and re-run the comparison~~ **Not applicable.** If the shop is somehow reached before submission: obtain the confirmation, store it beside ADR-010, `import-reference`, re-run `analyse --replicates 5000`, and restore Section 3's Q2 paragraph, the O3 row in Section 1, and the limitation sentences in Sections 5 and 6 | only if reached | me |
 | 4 | Re-run every figure in the report against the final dataset — Sections 2, 3, 5, 6 and Appendix C all cite counts that will change | 7 Dec | me |
 | 5 | Clean-checkout verification of the **final** commit; record the date, the test count and the reproduced decision in Section 4 | after the last commit | me |
 | 6 | Cover page: submission date and time, main report word count, full 40-character final commit hash | at submission | me |

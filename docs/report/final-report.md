@@ -61,9 +61,10 @@ only, not demand or margin.
 **Approved scope and boundaries.** The Module Leader approved the project on 3 November 2026 and set
 the assessed collection window to 9 November – 6 December 2026 (`docs/approval/APPROVED-SCOPE.md`).
 The design collects **primary data** from four independent competitor operator groups by reading
-their public catalogues, and treats Secret's own prices as **reference data**, taken once as a
-Telegram Desktop export of the shop's public channel and used only with Secret's written
-confirmation; without it they are omitted entirely (ADR-007, ADR-010). Four mirror sites are registered and never
+their public catalogues, and treated Secret's own prices as **reference data** from a single export
+of the shop's public channel. They are **not** in the submitted analysis: the Module Leader
+requires Secret's written confirmation for that use, and the shop could not be reached to ask
+for it, so the comparison is between competitors only (ADR-010). Four mirror sites are registered and never
 crawled, so one operator cannot be counted four times (ADR-001). Observations are advertised
 catalogue prices in UZS excluding delivery; promotions are recorded but analysed separately.
 
@@ -73,7 +74,7 @@ catalogue prices in UZS excluding delivery; promotions are recorded but analysed
 |---|---|---|---|
 | O1 | Reliable collection | ≥95% of **scheduled** runs reach every group, counting any that never started | **Not met** — 23 of 34 slots (67.6%); 22 consecutive clean |
 | O2 | Enough evidence | ≥300 listings from ≥4 independent sources | **Met** — 2,571 products, four groups |
-| O3 | Valid comparison | ≥10 usable products each side (plan v2.0) | **Partly** — two categories qualify; Secret's side empty |
+| O3 | Valid comparison | ≥10 usable products each side (plan v2.0) | **Partly** — two competitor categories qualify; Secret is absent, so no Secret comparison is made |
 | O4 | Honest evaluation | State whether a model beats the baseline | **Met** — both do (Section 3) |
 | O5 | Decision support | Dashboard names the category to examine first | **Met** — `/decision`, CP4 |
 
@@ -161,17 +162,17 @@ median is 965,840 UZS above UZFLORA's (p = 1.0 × 10⁻⁴, probability of super
 PROBUKET is 1,152,350 UZS above LOVEFLOWERS_NET (p = 2.0 × 10⁻⁴). Three categories report
 **insufficient evidence** with the reason, which is designed behaviour, not a failure.
 
-**Secret's price position (Q2).** The approved estimand is 100 x (Secret median / competitor median
-- 1) per category and group, with a percentile bootstrap interval (B = 5,000) in which Secret's
-sample is drawn once per replicate, so the intervals share one draw. All **13** comparisons currently
-return `insufficient_evidence` ("needs 10 of each") because Secret's offers are not imported. They
-are imported only with Secret's written confirmation that its published prices may be used in this
-coursework and shared with assessors: the channel being public establishes where the prices came
-from, not permission to use them this way, and the Module Leader ruled on 26 November 2026 that
-without that confirmation Secret's records and comparisons are omitted and the limitation explained
-(ADR-010). The competitor medians stand either way: in roses, LOVEFLOWERS_NET 475,000 UZS against
-PROBUKET 1,627,350 UZS. **[FINALISE after 6 December: either report the Secret comparisons with
-their intervals, or state here that the confirmation did not arrive and Q2 is unanswered.]**
+**Secret's price position (Q2): not answered.** The approved estimand is 100 x (Secret median /
+competitor median - 1) per category and group, with a percentile bootstrap interval (B = 5,000)
+in which Secret's sample is drawn once per replicate, so the intervals share one draw. It is
+implemented and tested, and it reports `insufficient_evidence` for all 13 category-and-group
+cells, because Secret's offers were never imported. Secret publishes its prices on a public
+channel, but publication records where a price came from, not permission to use it in assessed
+work: the Module Leader ruled on 26 November 2026 that Secret's written confirmation was needed,
+and the shop could not be reached to obtain it. Rather than use the prices anyway, they are left
+out entirely, which is the course he directed. The importer is exercised by nine tests against a
+labelled synthetic export. What remains is a comparison **between competitors**, and the
+competitor medians are real: in roses, LOVEFLOWERS_NET 475,000 UZS against PROBUKET 1,627,350 UZS.
 
 **What the comparison does not establish.** A category median compares the *assortments* two shops
 advertise, not two equivalent products. Secret's posts rarely name a flower type and never a stem
@@ -213,8 +214,8 @@ and no category median moves at all. The conclusions do not depend on the incomp
 sampled shops demonstrably do not price alike, with a spread in roses of 243% between the dearest and
 cheapest qualifying group, and that is what the dashboard tells the owner to examine first. But the
 result rests on one shop, it describes four sampled operators over eleven days rather than the
-Tashkent market, and it cannot yet say whether **Secret** is dear or cheap, because Secret's prices
-are not in the dataset. It names a category to inspect; it is not evidence that changing a price would raise revenue.
+Tashkent market, and it says nothing about whether **Secret** is dear or cheap, because
+Secret's prices are not in the dataset and, on the evidence available, cannot be. It names a category to inspect; it is not evidence that changing a price would raise revenue.
 
 ## Report Section 4: Integrated Application, Automated Testing and Reproducibility
 
@@ -265,9 +266,10 @@ subset whose shops publish a definite price, which plausibly skews towards simpl
 items. Every significant result depends on one shop: dropping PROBUKET removes them all, and only two
 of five categories could be tested. Advertised prices are not transaction prices, and nothing here
 measures demand or margin. The models are evaluated on unseen listings rather than a future period, so their numbers are not
-forecast accuracy. Finally, the
-comparison the project was approved to produce, Secret against the market, is not yet computed, and
-the report says `insufficient_evidence` rather than estimating it.
+forecast accuracy. Finally, the comparison the project was approved to produce - Secret
+against the market - is absent, because the shop's written confirmation could not be obtained
+and its prices were therefore not used. That is the single largest limitation here: one of three
+analytical questions goes unanswered, and the stakeholder value is correspondingly narrower.
 
 **Ethics, legality and privacy.** Only public catalogue pages are read, `robots.txt` obeyed before every
 crawl, and the one site that disallows crawling is never crawled. No personal data is collected
@@ -311,10 +313,12 @@ too thin. Both models beat the category-median baseline (MAE 368,570 UZS, MdAPE 
 850,985 UZS and 57.2%). O1 was **not** met: 23 of 34 scheduled runs reached every operator group,
 67.6% against the approved 95%, counting one slot that never started at all, from `robots.txt`
 timeouts and a site redesign; both are fixed and the last 22 runs are clean, but with 11 failures on
-the record the target would need 220 runs to recover and is unreachable inside the window. The main limitation is that Secret's own prices are not yet in the dataset, so the
-price-position comparison the project exists to produce is implemented, tested — and empty. The
-recommendation is to import the channel export once the window closes, treat the findings as a
-statement about four sampled shops, and act on them only as a prompt to inspect a category.
+the record the target would need 220 runs to recover and is unreachable inside the window. The main limitation is that Secret's own prices are absent: the
+price-position comparison the project exists to produce is implemented and tested but could not
+be run, because the shop could not be reached for the written confirmation the Module Leader
+requires. The recommendation is to treat the findings as a statement about four
+sampled shops, act on them only as a prompt to inspect a category, and obtain the shop's written
+confirmation before any future run that would put Secret's own prices back into the comparison.
 
 **Development story.** The four checkpoints are git tags, each runnable from a clean checkout: `cp1`
 (`1cd776d`, 187 tests) collection MVP; `cp2` (`35ba260`, 215 tests) reliable collection, quality
