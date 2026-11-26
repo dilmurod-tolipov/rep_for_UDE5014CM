@@ -22,7 +22,7 @@ What is checked, and why each one matters:
    migration 003) refuse a mismatched `is_synthetic` flag on INSERT; these checks cover the UPDATE
    path, where a flag could be flipped afterwards and a fabricated order would start to look real.
 6. **No synthetic fixture has reached the analysis side.** Secret's operational data is entirely
-   invented (the owner keeps no digital records), so if a fixture title ever appears in
+   invented (the shop has no ordering system), so if a fixture title ever appears in
    `reference_offers`, fabricated data has got into the comparison. There is no key between the two
    databases, so the check is by title - which is how a mistaken import would show, since an
    importer copies the title verbatim.

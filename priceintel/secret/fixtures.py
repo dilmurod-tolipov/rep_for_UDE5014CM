@@ -1,6 +1,7 @@
 """Load and remove Secret's synthetic operational data.
 
-The owner takes orders by phone and Telegram and keeps no digital record, so Secret's operational
+Secret has no ordering system - a storefront and admin panel were offered to the shop and
+declined - so its operational
 tables (clients, orders, payments, staff) have no real rows and never will in this project. They
 exist because the approved proposal promised them and because the schema is part of what LO2
 assesses - and they are exercised with declared fixtures rather than left empty, so the constraints,

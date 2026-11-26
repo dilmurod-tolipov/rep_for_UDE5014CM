@@ -99,3 +99,13 @@ introduced the decision-ranking defect above and the empty-state page bug that i
 > *Added 2026-11-25 (ADR-010): the export is produced by the student from Secret's public
 > channel, not handed over by the owner. The timing and the reference-only treatment are
 > unchanged.*
+
+> *Added 2026-11-26: the heading "Realised value" above overstates it. The shop declined an earlier
+> offer of a storefront and admin panel and does not use this system either, so the value described
+> is **available, not realised**. The capability claims — that the chain runs end to end and
+> produces a dated decision — are unaffected and are what the tests demonstrate. Report Section 5
+> states this.*
+
+> *Added 2026-11-26 (ADR-010): Secret's written confirmation could not be obtained, so its prices
+> are omitted from the submission entirely and every Secret comparison stays
+> `insufficient_evidence`. The competitor analysis is unaffected.*

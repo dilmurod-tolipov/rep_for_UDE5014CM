@@ -51,10 +51,13 @@
 
 ## Report Section 1: Introduction, Stakeholder Problem, Personalised Objectives and Rationale
 
-**Stakeholder and problem.** Secret is a small flower, berry and houseplant shop in Tashkent. Its
-owner sets prices from memory and occasional glances at competitors' websites; Tashkent has no
-published flower price index, so he has no dated evidence of where Secret sits against the shops his
-customers compare it with. The decision this project supports is narrow: **which categories should
+**Stakeholder and problem.** Secret is a small flower, berry and houseplant shop in Tashkent, run
+by a relative of a friend of mine. It has no ordering website and publishes its bouquets and
+prices only on a public Telegram channel; I know this directly, because a friend and I built a
+demonstration storefront and admin panel for the shop and offered it to the owner in person, and
+he declined to adopt it (`docs/baseline/`). Tashkent has no published flower price index either,
+so the shop has no dated evidence of where its prices sit against the shops its customers compare
+it with. The decision this project supports is narrow: **which categories should
 he examine first when reviewing prices.** It cannot recommend a price — it sees advertised prices
 only, not demand or margin.
 
@@ -270,6 +273,10 @@ forecast accuracy. Finally, the comparison the project was approved to produce -
 against the market - is absent, because the shop's written confirmation could not be obtained
 and its prices were therefore not used. That is the single largest limitation here: one of three
 analytical questions goes unanswered, and the stakeholder value is correspondingly narrower.
+**Adoption is not evidence here either.** The shop declined an earlier offer of a storefront and
+admin panel, and has not asked for this system; the value claimed throughout is therefore
+*available* rather than realised, and the honest test of it would be whether a shop that adopted it
+changed a price it would not otherwise have examined. Nothing in this report demonstrates that.
 
 **Ethics, legality and privacy.** Only public catalogue pages are read, `robots.txt` obeyed before every
 crawl, and the one site that disallows crawling is never crawled. No personal data is collected

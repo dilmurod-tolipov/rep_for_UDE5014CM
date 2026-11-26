@@ -123,7 +123,8 @@ python -m priceintel category-report --purpose dev  # Table 1: distinct listings
 
 ## Secret's own tables, and other shops' delivery terms
 
-Secret records no orders digitally, so its operational tables (`clients`, `addresses`, `orders`,
+Secret has no ordering system - a storefront and admin panel were offered to the shop and
+declined - so its operational tables (`clients`, `addresses`, `orders`,
 `order_items`, `payments`, `admin_users`) hold **declared synthetic fixtures** only. Every row has
 `is_synthetic = 1`, triggers refuse a row whose flag disagrees with its parent, a real order cannot
 contain a synthetic product, and the dashboard prints an "of which synthetic" column beside each

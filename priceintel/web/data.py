@@ -186,7 +186,7 @@ def secret_shop_state(databases: Databases) -> dict:
     tables = ("categories", "products", "product_price_history", "clients", "addresses", "orders",
               "order_items", "payments", "admin_users")
     counts: dict[str, int] = {}
-    # Secret's operational rows are synthetic fixtures (the owner keeps no digital records), so the
+    # Secret's operational rows are synthetic fixtures (the shop has no ordering system), so the
     # page reports how many of each table's rows are declared synthetic. A count of invented orders
     # shown without that column would read as real trade.
     synthetic: dict[str, int] = {}

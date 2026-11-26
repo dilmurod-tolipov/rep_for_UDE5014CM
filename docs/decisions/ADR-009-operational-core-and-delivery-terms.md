@@ -19,9 +19,10 @@ things make them worth building anyway: LO2 is assessed on the database solution
 ask about any database object. A gap between the approved proposal and the delivered schema is also
 a gap a marker can see, since the approval record is in the repository.
 
-The complication is honesty. Secret takes orders by phone and Telegram and keeps **no digital
-record**; the owner does not use an admin system and will not (that is also why Secret's prices
-arrive as a one-off export, ADR-007). So an operational core here can only ever hold invented rows.
+The complication is honesty. Secret has no ordering website and publishes only on its public Telegram
+channel; a friend and I built a demonstration storefront and admin panel for the shop and offered
+it in person, and the owner declined to adopt it. The shop therefore keeps no digital order record
+that this project could draw on, and there is no prospect of one. So an operational core here can only ever hold invented rows.
 Invented rows in a repository that also holds assessed evidence are a real risk: a marker, a future
 reader, or a careless `JOIN` could mistake them for data.
 
