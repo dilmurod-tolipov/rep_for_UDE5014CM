@@ -1,16 +1,16 @@
 check_run_id,run_at,purpose,check_name,scope,measured,threshold,unit,status,detail
-1,2026-11-27T00:05:38Z,assessed,products_collected,all,2571.0,300.0,count,pass,"distinct competitor products, mirrors excluded by design"
-2,2026-11-27T00:05:38Z,assessed,runs_completed,all,36.0,50.0,count,fail,
-3,2026-11-27T00:05:38Z,assessed,run_success_rate,all,69.4,95.0,percent,fail,25 of 36 runs that started
-4,2026-11-27T00:05:38Z,assessed,scheduled_slot_completion,all,68.6,95.0,percent,fail,24 of 35 elapsed scheduled slots reached every operator group; 1 slot(s) never started at all (56 slots in the approved window)
-5,2026-11-27T00:05:38Z,assessed,consecutive_complete_runs,all,23.0,,count,pass,"reported, not judged: the most recent 23 run(s) reached every operator group"
-6,2026-11-27T00:05:38Z,assessed,quarantine_rate,all,1.5,5.0,percent,pass,814 of 55662 parsed records; most common rule: missing_price (770)
-7,2026-11-27T00:05:38Z,assessed,unclassified_rate,all,4.6,25.0,percent,pass,119 of 2571 products excluded by the rules
-8,2026-11-27T00:05:38Z,assessed,price_outlier_rate,all,1.2,2.0,percent,pass,"31 products above 10x their category median; counted, not removed - the robustness checks handle them"
-9,2026-11-27T00:05:38Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-27T00:05:34Z
-10,2026-11-27T00:05:38Z,assessed,group_freshness_days,KAMILAS,0.01,1.0,days,pass,newest observation from this group: 2026-11-26T23:56:13Z
-11,2026-11-27T00:05:38Z,assessed,group_freshness_days,LOVEFLOWERS_NET,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T00:04:38Z
-12,2026-11-27T00:05:38Z,assessed,group_freshness_days,PROBUKET,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T00:04:43Z
-13,2026-11-27T00:05:38Z,assessed,group_freshness_days,UZFLORA,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T00:05:34Z
-14,2026-11-27T00:05:38Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
-15,2026-11-27T00:05:38Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
+1,2026-11-27T12:45:33Z,assessed,products_collected,all,2571.0,300.0,count,pass,"distinct competitor products, mirrors excluded by design"
+2,2026-11-27T12:45:33Z,assessed,runs_completed,all,37.0,50.0,count,fail,
+3,2026-11-27T12:45:33Z,assessed,run_success_rate,all,70.3,95.0,percent,fail,26 of 37 runs that started
+4,2026-11-27T12:45:33Z,assessed,scheduled_slot_completion,all,69.4,95.0,percent,fail,25 of 36 elapsed scheduled slots reached every operator group; 1 slot(s) never started at all (56 slots in the approved window)
+5,2026-11-27T12:45:33Z,assessed,consecutive_complete_runs,all,24.0,,count,pass,"reported, not judged: the most recent 24 run(s) reached every operator group"
+6,2026-11-27T12:45:33Z,assessed,quarantine_rate,all,1.4,5.0,percent,pass,838 of 57935 parsed records; most common rule: missing_price (792)
+7,2026-11-27T12:45:33Z,assessed,unclassified_rate,all,4.6,25.0,percent,pass,119 of 2571 products excluded by the rules
+8,2026-11-27T12:45:33Z,assessed,price_outlier_rate,all,1.2,2.0,percent,pass,"31 products above 10x their category median; counted, not removed - the robustness checks handle them"
+9,2026-11-27T12:45:33Z,assessed,freshness_days,all,0.0,1.0,days,pass,newest observation: 2026-11-27T12:45:28Z
+10,2026-11-27T12:45:33Z,assessed,group_freshness_days,KAMILAS,0.01,1.0,days,pass,newest observation from this group: 2026-11-27T12:36:06Z
+11,2026-11-27T12:45:33Z,assessed,group_freshness_days,LOVEFLOWERS_NET,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T12:44:30Z
+12,2026-11-27T12:45:33Z,assessed,group_freshness_days,PROBUKET,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T12:44:36Z
+13,2026-11-27T12:45:33Z,assessed,group_freshness_days,UZFLORA,0.0,1.0,days,pass,newest observation from this group: 2026-11-27T12:45:28Z
+14,2026-11-27T12:45:33Z,assessed,duplicate_observations,all,0.0,0.0,count,pass,"UNIQUE (listing_id, run_id) should make this impossible"
+15,2026-11-27T12:45:33Z,assessed,orphan_observations,all,0.0,0.0,count,pass,"every observation must trace to a listing, a run and its fetch"
